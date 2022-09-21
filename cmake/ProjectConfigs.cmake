@@ -15,3 +15,6 @@ if (JARVIS_ENABLE_TESTS)
 else()
     message(VERBOSE "Building without tests")
 endif()
+
+include(AddBoost)
+include(AddSpdLog)
