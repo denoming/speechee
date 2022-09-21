@@ -8,6 +8,7 @@ add_executable(Jarvis::Speaker ALIAS ${TARGET})
 target_sources(${TARGET}
     PRIVATE
         common/LoggerInitializer.cpp
+        speech/SpeechSynthesizer.cpp
         SpeakerService.cpp
 )
 
@@ -23,6 +24,8 @@ target_link_libraries(${TARGET}
         Boost::system
     PRIVATE
         spdlog::spdlog
+    PRIVATE
+        google-cloud-cpp::texttospeech
 )
 
 target_compile_features(${TARGET} PUBLIC cxx_std_20)

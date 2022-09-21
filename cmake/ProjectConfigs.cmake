@@ -18,3 +18,5 @@ endif()
 
 include(AddBoost)
 include(AddSpdLog)
+include(AddOpenSSL)
+include(AddGoogleTtsClient)
