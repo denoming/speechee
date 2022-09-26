@@ -1,7 +1,7 @@
 #include "SpeakerService.hpp"
 
-#include "common/Logger.hpp"
-#include "common/LoggerInitializer.hpp"
+#include "speech/Logger.hpp"
+#include "speech/LoggerInitializer.hpp"
 
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/signal_set.hpp>

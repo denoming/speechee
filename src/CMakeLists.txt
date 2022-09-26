@@ -6,26 +6,15 @@ add_executable(${TARGET} "")
 add_executable(Jarvis::Speaker ALIAS ${TARGET})
 
 target_sources(${TARGET}
-    PRIVATE
-        common/LoggerInitializer.cpp
-        speech/SpeechSynthesizer.cpp
-        SpeakerService.cpp
-)
-
-target_include_directories(${TARGET}
-    PRIVATE
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
+    PRIVATE SpeakerService.cpp
 )
 
 target_link_libraries(${TARGET}
     PRIVATE
-        Boost::headers
+        Jarvis::Speaker::Speech
+    PRIVATE
         Boost::program_options
         Boost::system
-    PRIVATE
-        spdlog::spdlog
-    PRIVATE
-        google-cloud-cpp::texttospeech
 )
 
 target_compile_features(${TARGET} PUBLIC cxx_std_20)
@@ -34,3 +23,5 @@ install(
     TARGETS ${TARGET}
     COMPONENT JarvisSpeaker_Runtime
 )
+
+add_subdirectory(speech)

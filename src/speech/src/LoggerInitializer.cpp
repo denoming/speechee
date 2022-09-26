@@ -1,4 +1,4 @@
-#include "common/LoggerInitializer.hpp"
+#include "speech/LoggerInitializer.hpp"
 
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
