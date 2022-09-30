@@ -3,7 +3,6 @@
 #include "ITextToSpeechClient.hpp"
 
 #include <memory>
-#include <optional>
 
 namespace jar {
 
