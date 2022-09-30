@@ -9,7 +9,7 @@
 #include <iostream>
 #include <memory>
 
-namespace asio = boost::asio;
+namespace io = boost::asio;
 
 namespace jar {
 
@@ -88,8 +88,8 @@ SpeakerService::proceed()
 bool
 SpeakerService::waitForTermination()
 {
-    asio::io_context context;
-    boost::asio::signal_set signals{context, SIGINT, SIGTERM};
+    io::io_context context;
+    io::signal_set signals{context, SIGINT, SIGTERM};
     signals.async_wait([&context](const auto& /*error*/, int /*signal*/) {
         if (!context.stopped()) {
             context.stop();
