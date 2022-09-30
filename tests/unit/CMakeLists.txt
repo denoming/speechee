@@ -3,12 +3,12 @@ set(TARGET jarvis-speaker-unit-test)
 add_executable(${TARGET} "")
 
 target_sources(${TARGET}
-    PRIVATE src/SpeechSynthesizerTest.cpp
+    PRIVATE src/SpeechSynthesizePoolTest.cpp
 )
 
 target_link_libraries(
     ${TARGET}
-    PRIVATE Jarvis::Speaker::Speech
+    PRIVATE Jarvis::Speaker::Test::Common
     PRIVATE GTest::gtest_main GTest::gmock_main
 )
 

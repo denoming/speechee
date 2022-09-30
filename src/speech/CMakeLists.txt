@@ -16,7 +16,9 @@ target_link_libraries(${TARGET}
 
 target_sources(${TARGET}
     PRIVATE src/LoggerInitializer.cpp
-            src/SpeechSynthesizer.cpp
+            src/TextToSpeechClient.cpp
+            src/SpeechSynthesizePool.cpp
+            src/SpeechSynthesizeTask.cpp
 )
 
 target_compile_features(${TARGET} PUBLIC cxx_std_20)
