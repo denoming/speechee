@@ -26,7 +26,7 @@ void
 SpeechSynthesizeTask::submit()
 {
     if (ready()) {
-        _callback(std::move(_audioContent), _error);
+        _callback(std::move(_audio), _error);
         reset();
     } else {
         throw std::logic_error{"Attempt to submit not ready task"};
@@ -40,9 +40,9 @@ SpeechSynthesizeTask::client()
 }
 
 void
-SpeechSynthesizeTask::setResult(std::string audioContent)
+SpeechSynthesizeTask::setResult(std::string audio)
 {
-    _audioContent = std::move(audioContent);
+    _audio = std::move(audio);
     _ready = true;
 }
 

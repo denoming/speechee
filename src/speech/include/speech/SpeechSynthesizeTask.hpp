@@ -13,7 +13,7 @@ class ITextToSpeechClient;
 class SpeechSynthesizeTask {
 public:
     using Ptr = std::unique_ptr<SpeechSynthesizeTask>;
-    using Callback = std::function<void(std::string audioContent, std::error_code error)>;
+    using Callback = std::function<void(std::string audio, std::error_code error)>;
 
     explicit SpeechSynthesizeTask(ITextToSpeechClient& client, Callback callback);
 
@@ -34,7 +34,7 @@ protected:
     client();
 
     void
-    setResult(std::string audioContent);
+    setResult(std::string audio);
 
     void
     setResult(std::error_code error);
@@ -45,7 +45,7 @@ protected:
 private:
     ITextToSpeechClient& _client;
     Callback _callback;
-    std::string _audioContent;
+    std::string _audio;
     std::error_code _error;
     bool _ready;
 };

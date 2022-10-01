@@ -17,7 +17,7 @@ class ITextToSpeechClient;
 
 class SpeechSynthesizePool final {
 public:
-    using OnCompleteSig = void(std::string audioContent, std::error_code error);
+    using OnCompleteSig = void(std::string audio, std::error_code error);
 
     explicit SpeechSynthesizePool(ITextToSpeechClient& client, std::size_t threads);
 
