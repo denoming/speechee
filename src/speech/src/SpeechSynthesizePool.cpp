@@ -20,6 +20,10 @@ SpeechSynthesizePool::synthesizeText(std::string_view text,
                                      std::string_view lang,
                                      std::function<OnCompleteSig> callback)
 {
+    BOOST_ASSERT(!text.empty());
+    BOOST_ASSERT(!lang.empty());
+    BOOST_ASSERT(callback);
+
     pushTask(std::make_unique<TextSpeechSynthesizeTask>(_client, text, lang, std::move(callback)));
 }
 
@@ -28,12 +32,17 @@ SpeechSynthesizePool::synthesizeSsml(std::string_view ssml,
                                      std::string_view lang,
                                      std::function<OnCompleteSig> callback)
 {
+    BOOST_ASSERT(!ssml.empty());
+    BOOST_ASSERT(!lang.empty());
+    BOOST_ASSERT(callback);
+
     pushTask(std::make_unique<SsmlSpeechSynthesizeTask>(_client, ssml, lang, std::move(callback)));
 }
 
 void
 SpeechSynthesizePool::setUp(std::size_t threads)
 {
+    BOOST_ASSERT_MSG(threads > 0, "Threads count should be greater than 0");
     while (threads--) {
         _threads.emplace_back(&SpeechSynthesizePool::threadFn, this);
     }
@@ -50,7 +59,7 @@ SpeechSynthesizePool::threadFn(std::stop_token stoken)
 {
     while (waitTask(stoken)) {
         auto task = nextTask();
-        BOOST_ASSERT_MSG(task, "Invalid task");
+        BOOST_ASSERT_MSG(task, "Invalid task object");
         task->perform();
         task->submit();
     };
@@ -77,6 +86,7 @@ SpeechSynthesizeTask::Ptr
 SpeechSynthesizePool::nextTask()
 {
     std::lock_guard lock{_dataGuard};
+    BOOST_ASSERT_MSG(!_tasks.empty(), "Tasks queue is empty");
     auto task = std::move(_tasks.front());
     _tasks.pop_front();
     return task;
