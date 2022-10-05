@@ -4,6 +4,7 @@ add_executable(${TARGET} "")
 
 target_sources(${TARGET}
     PRIVATE src/SpeechSynthesizePoolTest.cpp
+        src/PlayerTest.cpp
 )
 
 target_link_libraries(
