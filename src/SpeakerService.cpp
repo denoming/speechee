@@ -2,6 +2,10 @@
 
 #include "speech/Logger.hpp"
 #include "speech/LoggerInitializer.hpp"
+#include "speech/Speaker.hpp"
+#include "speech/SpeechSynthesizePool.hpp"
+#include "speech/Player.hpp"
+#include "speech/TextToSpeechClient.hpp"
 
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/signal_set.hpp>
@@ -80,9 +84,18 @@ SpeakerService::finalize()
 void
 SpeakerService::proceed()
 {
+    TextToSpeechClient client;
+    SpeechSynthesizePool pool{client, 2};
+    Player player;
+    Speaker speaker{pool, player};
+
+    player.initialize();
+
     if (!waitForTermination()) {
         LOGE("Waiting for termination has failed");
     }
+
+    player.finalize();
 }
 
 bool
