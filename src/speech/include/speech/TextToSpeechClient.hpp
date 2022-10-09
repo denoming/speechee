@@ -10,6 +10,8 @@ class TextToSpeechClient final : public ITextToSpeechClient {
 public:
     TextToSpeechClient();
 
+    ~TextToSpeechClient() final;
+
     std::string
     synthesizeText(const std::string& text, const std::string& lang, std::error_code& error) final;
 

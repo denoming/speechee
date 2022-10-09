@@ -84,6 +84,8 @@ TextToSpeechClient::TextToSpeechClient()
 {
 }
 
+TextToSpeechClient::~TextToSpeechClient() = default;
+
 std::string
 TextToSpeechClient::synthesizeText(const std::string& text,
                                    const std::string& lang,
