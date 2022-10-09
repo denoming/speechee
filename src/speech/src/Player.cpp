@@ -45,14 +45,14 @@ public:
     Impl()
         : _pipeline{nullptr}
         , _modeDataRequired{false}
-        , _state{Null}
+        , _state{PlayState::Null}
     {
     }
 
     bool
     initialize(int* argc, char** argv[])
     {
-        if (state() != State::Null) {
+        if (state() != PlayState::Null) {
             LOGE("Inconsistent state of player");
             return false;
         }
@@ -70,7 +70,7 @@ public:
         }
 
         startLoop();
-        setState(State::Idle);
+        setState(PlayState::Idle);
 
         return true;
     }
@@ -78,13 +78,13 @@ public:
     void
     finalize()
     {
-        setState(State::Null);
+        setState(PlayState::Null);
         stopLoop();
         destroyPipeline();
         finalizeGst();
     }
 
-    State
+    PlayState
     state() const
     {
         return _state;
@@ -93,20 +93,20 @@ public:
     bool
     play(std::string_view audio)
     {
-        if (state() != State::Idle) {
+        if (state() != PlayState::Idle) {
             LOGE("Inconsistent state of player");
             return false;
         }
 
         if (!startPipeline()) {
             LOGE("Failed to apply playing state towards player pipeline");
-            setState(State::Error);
+            setState(PlayState::Error);
             return false;
         }
 
         _bufferList = std::make_unique<AudioBufferList>(audio);
 
-        setState(State::Busy);
+        setState(PlayState::Busy);
 
         BOOST_ASSERT(_mainLoop);
         _mainLoop->invoke([this]() { return feed(); });
@@ -199,7 +199,7 @@ private:
     }
 
     void
-    setState(State state)
+    setState(PlayState state)
     {
         if (_state == state) {
             return;
@@ -214,7 +214,7 @@ private:
             return true;
         }
 
-        if (state() != State::Busy) {
+        if (state() != PlayState::Busy) {
             return false;
         }
         if (!_bufferList || _bufferList->empty()) {
@@ -247,7 +247,7 @@ private:
             LOGE("Failed to stop pipeline");
         }
 
-        setState(State::Error);
+        setState(PlayState::Error);
     }
 
     void
@@ -258,10 +258,10 @@ private:
         _bufferList.reset();
         if (!stopPipeline()) {
             LOGE("Failed to stop pipeline");
-            setState(State::Error);
+            setState(PlayState::Error);
         }
 
-        setState(State::Idle);
+        setState(PlayState::Idle);
     }
 
     void
@@ -340,7 +340,7 @@ private:
     AudioBufferList::Ptr _bufferList;
     PlayerLoop::Ptr _mainLoop;
     std::atomic<bool> _modeDataRequired;
-    std::atomic<State> _state;
+    std::atomic<PlayState> _state;
     OnStateUpdateSignal _onStateUpdateSig;
 };
 
@@ -369,7 +369,7 @@ Player::finalize()
     _impl->finalize();
 }
 
-Player::State
+PlayState
 Player::state() const
 {
     return _impl->state();

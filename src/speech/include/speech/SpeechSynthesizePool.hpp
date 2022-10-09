@@ -1,37 +1,32 @@
 #pragma once
 
+#include "speech/ISpeechSynthesizePool.hpp"
+#include "speech/SpeechSynthesizeTask.hpp"
+
 #include <condition_variable>
-#include <functional>
 #include <list>
-#include <queue>
-#include <string>
-#include <system_error>
 #include <thread>
 #include <vector>
-
-#include "speech/SpeechSynthesizeTask.hpp"
 
 namespace jar {
 
 class ITextToSpeechClient;
 
-class SpeechSynthesizePool final {
+class SpeechSynthesizePool final : public ISpeechSynthesizePool {
 public:
-    using OnCompleteSig = void(std::string audio, std::error_code error);
-
     explicit SpeechSynthesizePool(ITextToSpeechClient& client, std::size_t threads);
 
-    ~SpeechSynthesizePool();
+    ~SpeechSynthesizePool() override;
 
     void
     synthesizeText(std::string_view text,
                    std::string_view lang,
-                   std::function<OnCompleteSig> callback);
+                   std::function<OnCompleteSig> callback) final;
 
     void
     synthesizeSsml(std::string_view ssml,
                    std::string_view lang,
-                   std::function<OnCompleteSig> callback);
+                   std::function<OnCompleteSig> callback) final;
 
 private:
     using Tasks = std::list<SpeechSynthesizeTask::Ptr>;

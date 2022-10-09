@@ -22,7 +22,7 @@ public:
     void
     finalize();
 
-    [[nodiscard]] State
+    [[nodiscard]] PlayState
     state() const final;
 
     bool

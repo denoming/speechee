@@ -7,18 +7,20 @@
 
 namespace jar {
 
+enum class PlayState {
+    Null, Idle, Busy, Error
+};
+
 class IPlayer {
 public:
-    enum State { Null, Idle, Busy, Error };
-
     /* Signatures */
-    using OnStateUpdate = void(State state);
+    using OnStateUpdate = void(PlayState state);
     /* Signals */
     using OnStateUpdateSignal = sigc::signal<OnStateUpdate>;
 
     virtual ~IPlayer() = default;
 
-    [[nodiscard]] virtual State
+    [[nodiscard]] virtual PlayState
     state() const = 0;
 
     virtual bool

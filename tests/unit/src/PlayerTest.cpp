@@ -62,15 +62,15 @@ std::string PlayerTest::Audio2;
 
 TEST_F(PlayerTest, LifeCycle)
 {
-    EXPECT_EQ(player.state(), IPlayer::State::Null);
+    EXPECT_EQ(player.state(), PlayState::Null);
 
     MockFunction<IPlayer::OnStateUpdate> callback;
-    auto c = player.onStateUpdate([&](const IPlayer::State s) { callback.Call(s); });
+    auto c = player.onStateUpdate([&](const PlayState s) { callback.Call(s); });
 
-    EXPECT_CALL(callback, Call(IPlayer::State::Idle)).RetiresOnSaturation();
+    EXPECT_CALL(callback, Call(PlayState::Idle)).RetiresOnSaturation();
     EXPECT_TRUE(player.initialize());
 
-    EXPECT_CALL(callback, Call(IPlayer::State::Null)).RetiresOnSaturation();
+    EXPECT_CALL(callback, Call(PlayState::Null)).RetiresOnSaturation();
     player.finalize();
 
     c.disconnect();
@@ -81,14 +81,14 @@ TEST_F(PlayerTest, Play)
     using namespace std::chrono_literals;
 
     MockFunction<IPlayer::OnStateUpdate> callback;
-    auto c = player.onStateUpdate([&](IPlayer::State s) { callback.Call(s); });
+    auto c = player.onStateUpdate([&](PlayState s) { callback.Call(s); });
 
-    EXPECT_CALL(callback, Call(IPlayer::State::Idle)).RetiresOnSaturation();
+    EXPECT_CALL(callback, Call(PlayState::Idle)).RetiresOnSaturation();
     ASSERT_TRUE(player.initialize());
 
     bool guard{false};
-    EXPECT_CALL(callback, Call(IPlayer::State::Busy)).Times(2);
-    EXPECT_CALL(callback, Call(IPlayer::State::Idle)).Times(2).WillRepeatedly([&]() {
+    EXPECT_CALL(callback, Call(PlayState::Busy)).Times(2);
+    EXPECT_CALL(callback, Call(PlayState::Idle)).Times(2).WillRepeatedly([&]() {
         /* Notify about playing is finished */
         guard = true;
         waiter.notify();
@@ -98,14 +98,14 @@ TEST_F(PlayerTest, Play)
     player.play(Audio1);
     ASSERT_TRUE(waiter.waitFor(30s, [&]() { return guard; }));
 
-    EXPECT_EQ(player.state(), IPlayer::State::Idle);
+    EXPECT_EQ(player.state(), PlayState::Idle);
     guard = false;
 
     /* Waiting for playing Audio2 is finished */
     player.play(Audio2);
     ASSERT_TRUE(waiter.waitFor(30s, [&]() { return guard; }));
 
-    EXPECT_CALL(callback, Call(IPlayer::State::Null)).RetiresOnSaturation();
+    EXPECT_CALL(callback, Call(PlayState::Null)).RetiresOnSaturation();
     player.finalize();
 
     c.disconnect();
