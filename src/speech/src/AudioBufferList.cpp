@@ -41,6 +41,7 @@ AudioBufferList::pop() const
     BOOST_ASSERT(!empty());
     std::lock_guard lock{_guard};
     auto* buffer = gst_buffer_list_get(_bufferList, 0);
+    BOOST_ASSERT(buffer != nullptr);
     buffer = gst_buffer_ref(buffer);
     gst_buffer_list_remove(_bufferList, 0, 1);
     return buffer;
