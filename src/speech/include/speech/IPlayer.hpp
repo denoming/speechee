@@ -1,15 +1,13 @@
 #pragma once
 
-#include <string>
+#include "speech/Types.hpp"
 
 #include <sigc++/connection.h>
 #include <sigc++/signal.h>
 
-namespace jar {
+#include <string>
 
-enum class PlayState {
-    Null, Idle, Busy, Error
-};
+namespace jar {
 
 class IPlayer {
 public:
@@ -21,7 +19,8 @@ public:
     virtual ~IPlayer() = default;
 
     [[nodiscard]] virtual PlayState
-    state() const = 0;
+    state() const
+        = 0;
 
     virtual bool
     play(std::string_view audio)

@@ -2,10 +2,10 @@
 
 #include "speech/AudioBufferList.hpp"
 #include "speech/Logger.hpp"
+#include "speech/Formatters.hpp"
 #include "speech/PlayerLoop.hpp"
 
 #include <boost/assert.hpp>
-
 #include <gst/gst.h>
 #include <gst/gstelement.h>
 
@@ -44,7 +44,7 @@ class Player::Impl {
 public:
     Impl()
         : _pipeline{nullptr}
-        , _modeDataRequired{false}
+        , _dataRequired{false}
         , _state{PlayState::Null}
     {
     }
@@ -52,24 +52,30 @@ public:
     bool
     initialize(int* argc, char** argv[])
     {
+        LOGI("Initialize player");
+
         if (state() != PlayState::Null) {
             LOGE("Inconsistent state of player");
             return false;
         }
 
+        LOGD("Initialize gstreamer");
         if (!initializeGst(argc, argv)) {
             LOGE("Failed to initialize gstreamer");
             finalize();
             return false;
         }
 
+        LOGD("Create gstreamer pipeline");
         if (!createPipeline()) {
             LOGE("Failed to create pipeline");
             finalize();
             return false;
         }
 
+        LOGD("Start pipeline main loop");
         startLoop();
+
         setState(PlayState::Idle);
 
         return true;
@@ -78,9 +84,15 @@ public:
     void
     finalize()
     {
+        LOGI("Finalize player");
+
         setState(PlayState::Null);
+
+        LOGD("Stop pipeline main loop");
         stopLoop();
+        LOGD("Destroy gstreamer pipeline");
         destroyPipeline();
+        LOGD("Finalize gstreamer");
         finalizeGst();
     }
 
@@ -93,23 +105,27 @@ public:
     bool
     play(std::string_view audio)
     {
+        LOGI("Play audio content: size<{}>", audio.size());
+
         if (state() != PlayState::Idle) {
             LOGE("Inconsistent state of player");
             return false;
         }
 
+        LOGD("Start pipeline");
         if (!startPipeline()) {
             LOGE("Failed to apply playing state towards player pipeline");
             setState(PlayState::Error);
             return false;
         }
 
+        BOOST_ASSERT(!_bufferList);
         _bufferList = std::make_unique<AudioBufferList>(audio);
 
         setState(PlayState::Busy);
 
         BOOST_ASSERT(_mainLoop);
-        _mainLoop->invoke([this]() { return feed(); });
+        _mainLoop->invoke([this]() { return feedPipeline(); });
 
         return true;
     }
@@ -121,13 +137,37 @@ public:
     }
 
 private:
+    void
+    setState(PlayState newState)
+    {
+        const auto oldState = _state.load();
+        if (oldState == newState) {
+            return;
+        }
+        LOGI("Update state: {} -> {}", oldState, newState);
+        _onStateUpdateSig(_state = newState);
+    }
+
+    void
+    startLoop()
+    {
+        BOOST_ASSERT(!_mainLoop);
+        _mainLoop = std::make_unique<PlayerLoop>();
+    }
+
+    void
+    stopLoop()
+    {
+        _mainLoop.reset();
+    }
+
     bool
     createPipeline()
     {
         auto* src = gst_element_factory_make("appsrc", "src");
         auto* parser = gst_element_factory_make("wavparse", nullptr);
         auto* converter = gst_element_factory_make("audioconvert", nullptr);
-        auto* sink = gst_element_factory_make("alsasink", nullptr);
+        auto* sink = gst_element_factory_make("pulsesink", nullptr);
         if (!src || !parser || !converter || !sink) {
             LOGE("Failed to create pipeline elements");
             return false;
@@ -187,48 +227,35 @@ private:
         return (gst_element_set_state(_pipeline, GST_STATE_NULL) != GST_STATE_CHANGE_FAILURE);
     }
 
-    void startLoop()
-    {
-        BOOST_ASSERT(!_mainLoop);
-        _mainLoop = std::make_unique<PlayerLoop>();
-    }
-
-    void stopLoop()
-    {
-        _mainLoop.reset();
-    }
-
-    void
-    setState(PlayState state)
-    {
-        if (_state == state) {
-            return;
-        }
-        _onStateUpdateSig(_state = state);
-    }
-
     bool
-    feed()
+    feedPipeline()
     {
-        if (!_modeDataRequired) {
+        if (!_dataRequired) {
             return true;
         }
 
         if (state() != PlayState::Busy) {
             return false;
         }
-        if (!_bufferList || _bufferList->empty()) {
-            return false;
-        }
 
         auto* src = gst_bin_get_by_name(GST_BIN(_pipeline), "src");
         BOOST_ASSERT(src != nullptr);
-        GstFlowReturn ret{GST_FLOW_OK};
-        BOOST_ASSERT(_bufferList);
-        auto* buffer = _bufferList->pop();
-        g_signal_emit_by_name(src, "push-buffer", buffer, &ret);
-        if (ret != GstFlowReturn::GST_FLOW_OK) {
-            LOGE("Failed to push buffer");
+        if (_bufferList) {
+            if (_bufferList->empty()) {
+                LOGD("Buffer is empty");
+                return false;
+            } else {
+                auto* buffer = _bufferList->pop();
+                GstFlowReturn ret{GST_FLOW_OK};
+                g_signal_emit_by_name(src, "push-buffer", buffer, &ret);
+                gst_buffer_unref(buffer);
+                if (ret != GstFlowReturn::GST_FLOW_OK) {
+                    LOGE("Failed to push buffer");
+                }
+            }
+        } else {
+            LOGD("Buffer is invalid");
+            return false;
         }
 
         return true;
@@ -243,6 +270,7 @@ private:
         }
 
         _bufferList.reset();
+
         if (!stopPipeline()) {
             LOGE("Failed to stop pipeline");
         }
@@ -256,6 +284,7 @@ private:
         LOGD("EoS has been reached");
 
         _bufferList.reset();
+
         if (!stopPipeline()) {
             LOGE("Failed to stop pipeline");
             setState(PlayState::Error);
@@ -277,13 +306,13 @@ private:
     void
     onPipelineEnoughData(GstElement* /*appsrc*/)
     {
-        _modeDataRequired = false;
+        _dataRequired = false;
     }
 
     void
     onPipelineNeedData(GstElement* /*appsrc*/, guint /*length*/)
     {
-        _modeDataRequired = true;
+        _dataRequired = true;
     }
 
 private:
@@ -339,7 +368,7 @@ private:
     GstElement* _pipeline;
     AudioBufferList::Ptr _bufferList;
     PlayerLoop::Ptr _mainLoop;
-    std::atomic<bool> _modeDataRequired;
+    std::atomic<bool> _dataRequired;
     std::atomic<PlayState> _state;
     OnStateUpdateSignal _onStateUpdateSig;
 };
