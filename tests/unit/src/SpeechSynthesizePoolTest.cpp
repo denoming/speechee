@@ -3,7 +3,7 @@
 
 #include "speech/SpeechSynthesizePool.hpp"
 #include "tests/MockTextToSpeechClient.hpp"
-#include "tests/TestWaiter.hpp"
+#include "tests/Waiter.hpp"
 
 #include <chrono>
 
@@ -12,7 +12,7 @@ using namespace jar;
 
 class SpeechSynthesizePoolTest : public Test {
 public:
-    const std::chrono::seconds kTimeout{1};
+    const std::chrono::seconds kDefaultTimeout{1};
 
     SpeechSynthesizePoolTest()
         : pool{client, std::thread::hardware_concurrency()}
@@ -22,7 +22,6 @@ public:
 public:
     NiceMock<MockTextToSpeechClient> client;
     SpeechSynthesizePool pool;
-    TestWaiter waiter;
 };
 
 TEST_F(SpeechSynthesizePoolTest, SynthesizeText)
@@ -36,14 +35,13 @@ TEST_F(SpeechSynthesizePoolTest, SynthesizeText)
     MockFunction<SpeechSynthesizePool::OnCompleteSig> callback;
     EXPECT_CALL(callback, Call(cont, std::error_code{}));
 
-    bool guard;
-    pool.synthesizeText(text, lang, [&](std::string audio, std::error_code error) {
-        guard = true;
-        callback.Call(std::move(audio), error);
-        waiter.notify();
-    });
+    Waiter<SpeechSynthesizePool::OnCompleteSig> waiter;
+    pool.synthesizeText(
+        text, lang, waiter.enroll([&](std::string audio, std::error_code errorCode) {
+            callback.Call(std::move(audio), errorCode);
+        }));
 
-    ASSERT_TRUE(waiter.waitFor(kTimeout, [&]() { return guard; }));
+    EXPECT_TRUE(waiter.wait(kDefaultTimeout));
 }
 
 TEST_F(SpeechSynthesizePoolTest, SynthesizeSsml)
@@ -57,12 +55,11 @@ TEST_F(SpeechSynthesizePoolTest, SynthesizeSsml)
     MockFunction<SpeechSynthesizePool::OnCompleteSig> callback;
     EXPECT_CALL(callback, Call(cont, std::error_code{}));
 
-    bool guard;
-    pool.synthesizeSsml(ssml, lang, [&](std::string audio, std::error_code error) {
-        guard = true;
-        callback.Call(std::move(audio), error);
-        waiter.notify();
-    });
+    Waiter<SpeechSynthesizePool::OnCompleteSig> waiter;
+    pool.synthesizeSsml(
+        ssml, lang, waiter.enroll([&](std::string audio, std::error_code errorCode) {
+            callback.Call(std::move(audio), errorCode);
+        }));
 
-    ASSERT_TRUE(waiter.waitFor(kTimeout, [&]() { return guard; }));
+    EXPECT_TRUE(waiter.wait(kDefaultTimeout));
 }

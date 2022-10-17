@@ -1,11 +1,11 @@
 set(TARGET jarvis-speaker-test-common)
 
-add_library(${TARGET} STATIC "")
+add_library(${TARGET} STATIC)
 add_library(Jarvis::Speaker::Test::Common ALIAS ${TARGET})
 
 target_sources(${TARGET}
     PRIVATE src/MockTextToSpeechClient.cpp
-            src/TestWaiter.cpp
+            src/Waiter.cpp
 )
 
 target_include_directories(${TARGET}

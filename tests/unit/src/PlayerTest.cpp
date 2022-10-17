@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 
 #include "speech/Player.hpp"
-#include "tests/TestWaiter.hpp"
+#include "tests/Waiter.hpp"
 
 #include <chrono>
 #include <filesystem>
@@ -39,6 +39,8 @@ readAudioFile(const fs::path& filePath)
 
 class PlayerTest : public Test {
 public:
+    const std::chrono::seconds kDefaultTimeout{15};
+
     static void
     SetUpTestSuite()
     {
@@ -53,7 +55,6 @@ public:
 public:
     static std::string Audio1;
     static std::string Audio2;
-    TestWaiter waiter;
     Player player;
 };
 
@@ -62,48 +63,52 @@ std::string PlayerTest::Audio2;
 
 TEST_F(PlayerTest, LifeCycle)
 {
-    EXPECT_EQ(player.state(), PlayState::Null);
-
     MockFunction<IPlayer::OnStateUpdate> callback;
-    auto c = player.onStateUpdate([&](const PlayState s) { callback.Call(s); });
 
+    ASSERT_EQ(player.state(), PlayState::Null);
+
+    Waiter<IPlayer::OnStateUpdate> waiter;
+    auto c = player.onStateUpdate(waiter.enroll([&](const auto state) { callback.Call(state); }));
+
+    waiter.onCheck([](const auto state) { return (state == PlayState::Idle); });
     EXPECT_CALL(callback, Call(PlayState::Idle)).RetiresOnSaturation();
     EXPECT_TRUE(player.initialize());
+    EXPECT_TRUE(waiter.wait(kDefaultTimeout));
 
+    ASSERT_EQ(player.state(), PlayState::Idle);
+
+    waiter.onCheck([](const auto state) { return (state == PlayState::Null); });
     EXPECT_CALL(callback, Call(PlayState::Null)).RetiresOnSaturation();
     player.finalize();
+    EXPECT_TRUE(waiter.wait(kDefaultTimeout));
 
     c.disconnect();
 }
 
 TEST_F(PlayerTest, Play)
 {
-    using namespace std::chrono_literals;
-
     MockFunction<IPlayer::OnStateUpdate> callback;
-    auto c = player.onStateUpdate([&](PlayState s) { callback.Call(s); });
 
+    Waiter<IPlayer::OnStateUpdate> waiter;
+    auto c = player.onStateUpdate(waiter.enroll([&](const auto state) { callback.Call(state); }));
+
+    waiter.onCheck([](const auto state) { return (state == PlayState::Idle); });
     EXPECT_CALL(callback, Call(PlayState::Idle)).RetiresOnSaturation();
     ASSERT_TRUE(player.initialize());
+    EXPECT_TRUE(waiter.wait(kDefaultTimeout));
 
-    bool guard{false};
-    EXPECT_CALL(callback, Call(PlayState::Busy)).Times(2);
-    EXPECT_CALL(callback, Call(PlayState::Idle)).Times(2).WillRepeatedly([&]() {
-        /* Notify about playing is finished */
-        guard = true;
-        waiter.notify();
-    });
+    EXPECT_CALL(callback, Call(PlayState::Busy)).Times(2).RetiresOnSaturation();
+    EXPECT_CALL(callback, Call(PlayState::Idle)).Times(2).RetiresOnSaturation();
 
     /* Waiting for playing Audio1 is finished */
     player.play(Audio1);
-    ASSERT_TRUE(waiter.waitFor(30s, [&]() { return guard; }));
-
-    EXPECT_EQ(player.state(), PlayState::Idle);
-    guard = false;
+    EXPECT_TRUE(waiter.wait(kDefaultTimeout));
+    ASSERT_EQ(player.state(), PlayState::Idle);
 
     /* Waiting for playing Audio2 is finished */
     player.play(Audio2);
-    ASSERT_TRUE(waiter.waitFor(30s, [&]() { return guard; }));
+    ASSERT_TRUE(waiter.wait(kDefaultTimeout));
+    ASSERT_EQ(player.state(), PlayState::Idle);
 
     EXPECT_CALL(callback, Call(PlayState::Null)).RetiresOnSaturation();
     player.finalize();
