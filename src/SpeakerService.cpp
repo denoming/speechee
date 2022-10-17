@@ -89,7 +89,9 @@ SpeakerService::proceed()
     Player player;
     Speaker speaker{pool, player};
 
-    player.initialize();
+    if (!player.initialize()) {
+        LOGE("Failed to initialize player");
+    }
 
     if (!waitForTermination()) {
         LOGE("Waiting for termination has failed");
