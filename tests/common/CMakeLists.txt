@@ -5,6 +5,8 @@ add_library(Jarvis::Speaker::Test::Common ALIAS ${TARGET})
 
 target_sources(${TARGET}
     PRIVATE src/MockTextToSpeechClient.cpp
+            src/MockPlayer.cpp
+            src/MockSpeechSynthesizePool.cpp
             src/Waiter.cpp
 )
 

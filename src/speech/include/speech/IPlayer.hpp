@@ -27,7 +27,7 @@ public:
         = 0;
 
     [[nodiscard]] virtual sigc::connection
-    onStateUpdate(OnStateUpdateSignal::slot_type&&)
+    onStateUpdate(OnStateUpdateSignal::slot_type&& slot)
         = 0;
 };
 

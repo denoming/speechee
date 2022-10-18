@@ -1,5 +1,6 @@
 #include "speech/Speaker.hpp"
 
+#include "speech/Logger.hpp"
 #include "speech/Player.hpp"
 #include "speech/SpeechSynthesizePool.hpp"
 
@@ -16,8 +17,7 @@ Speaker::Speaker(ISpeechSynthesizePool& synthesizePool, IPlayer& player)
     : _synthesizePool{synthesizePool}
     , _player{player}
 {
-    _onPlayerStateCon
-        = _player.onStateUpdate([this](PlayState state) { onPlayerStateUpdate(state); });
+    _onPlayerStateCon = _player.onStateUpdate(std::bind_front(&Speaker::onPlayerStateUpdate, this));
 }
 
 Speaker::~Speaker()
@@ -28,11 +28,8 @@ Speaker::~Speaker()
 void
 Speaker::synthesizeText(std::string_view text, std::string_view lang)
 {
-    auto& request = _requests.emplace_back();
-    request.id = getId();
-
     _synthesizePool.synthesizeText(
-        text, lang, [this, id = request.id](std::string audio, std::error_code error) {
+        text, lang, [this, id = createRequest()](std::string audio, std::error_code error) {
             onSynthesizeDone(id, std::move(audio), error);
         });
 }
@@ -40,29 +37,49 @@ Speaker::synthesizeText(std::string_view text, std::string_view lang)
 void
 Speaker::synthesizeSsml(std::string_view ssml, std::string_view lang)
 {
-    auto& request = _requests.emplace_back();
-    request.id = getId();
-
-    _synthesizePool.synthesizeText(
-        ssml, lang, [this, id = request.id](std::string audio, std::error_code error) {
+    _synthesizePool.synthesizeSsml(
+        ssml, lang, [this, id = createRequest()](std::string audio, std::error_code error) {
             onSynthesizeDone(id, std::move(audio), error);
         });
+}
+
+uint64_t
+Speaker::createRequest()
+{
+    const auto id = getId();
+    std::unique_lock lock{_guard};
+    auto& request = _requests.emplace_back();
+    request.id = id;
+    lock.unlock();
+    return id;
+}
+
+Speaker::MatchResult
+Speaker::findRequest(std::uint64_t id)
+{
+    auto it = std::find_if(
+        _requests.begin(), _requests.end(), [id](const auto& r) { return (r.id == id); });
+    return std::make_tuple(it != _requests.end(), it);
 }
 
 void
 Speaker::onSynthesizeDone(std::uint64_t id, std::string audio, std::error_code errorCode)
 {
-    auto requestIt = std::find_if(
-        _requests.begin(), _requests.end(), [id](const Request& r) { return (r.id == id); });
-    if (requestIt == _requests.end()) {
+    std::lock_guard lock{_guard};
+
+    auto [ok, requestIt] = findRequest(id);
+    if (!ok) {
+        LOGE("Request with <{}> id not found", id);
+        playNext();
         return;
     }
 
-    if (errorCode) {
-        _requests.erase(requestIt);
-    } else {
+    if (!errorCode) {
         requestIt->done = true;
         requestIt->audio = std::move(audio);
+    } else {
+        LOGE("Request <{}> has failed with <{}> error", id, errorCode.message());
+        _requests.erase(requestIt);
     }
 
     playNext();
@@ -79,18 +96,18 @@ Speaker::onPlayerStateUpdate(PlayState state)
 void
 Speaker::playNext()
 {
-    auto& next = _requests.front();
-    if (!next.done) {
-        return;
-    }
-
     if (_player.state() == PlayState::Busy) {
         return;
     }
 
-    _player.play(next.audio);
-
-    _requests.pop_front();
+    std::lock_guard lock{_guard};
+    if (!_requests.empty()) {
+        const auto& next = _requests.front();
+        if (next.done) {
+            _player.play(next.audio);
+            _requests.pop_front();
+        }
+    }
 }
 
 } // namespace jar

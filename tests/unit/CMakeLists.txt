@@ -8,8 +8,7 @@ target_sources(${TARGET}
             src/SpeakerTest.cpp
 )
 
-target_link_libraries(
-    ${TARGET}
+target_link_libraries(${TARGET}
     PRIVATE Jarvis::Speaker::Test::Common
     PRIVATE GTest::gtest_main GTest::gmock_main
 )
