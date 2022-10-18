@@ -10,7 +10,6 @@ target_sources(${TARGET}
 
 target_link_libraries(${TARGET}
     PRIVATE Jarvis::Speaker::Test::Common
-    PRIVATE GTest::gtest_main GTest::gmock_main
 )
 
 if (NOT CMAKE_CROSSCOMPILING)
