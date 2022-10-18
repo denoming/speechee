@@ -1,4 +1,4 @@
-#include "tests/MockPlayer.hpp"
+#include "test/MockPlayer.hpp"
 
 namespace jar {
 

@@ -2,8 +2,8 @@
 #include <gtest/gtest.h>
 
 #include "speech/SpeechSynthesizePool.hpp"
-#include "tests/MockTextToSpeechClient.hpp"
-#include "tests/Waiter.hpp"
+#include "test/MockTextToSpeechClient.hpp"
+#include "test/Waiter.hpp"
 
 #include <chrono>
 

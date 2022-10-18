@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 
 #include "speech/Player.hpp"
-#include "tests/Waiter.hpp"
+#include "test/Waiter.hpp"
 
 #include <chrono>
 #include <filesystem>

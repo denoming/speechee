@@ -1,4 +1,4 @@
-#include "tests/MockSpeechSynthesizePool.hpp"
+#include "test/MockSpeechSynthesizePool.hpp"
 
 using namespace testing;
 

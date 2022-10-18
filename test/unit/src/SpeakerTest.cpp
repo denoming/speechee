@@ -3,8 +3,8 @@
 
 #include "speech/Speaker.hpp"
 #include "speech/SpeechSynthesizePool.hpp"
-#include "tests/MockPlayer.hpp"
-#include "tests/MockSpeechSynthesizePool.hpp"
+#include "test/MockPlayer.hpp"
+#include "test/MockSpeechSynthesizePool.hpp"
 
 using namespace testing;
 using namespace jar;

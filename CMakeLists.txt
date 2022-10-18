@@ -11,5 +11,5 @@ include(cmake/ProjectInstall.cmake)
 
 add_subdirectory(src)
 if(JARVIS_ENABLE_TESTS)
-    add_subdirectory(tests)
+    add_subdirectory(test)
 endif()
