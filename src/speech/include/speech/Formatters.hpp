@@ -2,6 +2,7 @@
 
 #include "speech/Types.hpp"
 
+#include <fmt/std.h>
 #include <fmt/format.h>
 
 template<>
@@ -28,7 +29,3 @@ struct fmt::formatter<jar::PlayState> : fmt::formatter<std::string_view> {
         return formatter<string_view>::format(output, context);
     }
 };
-
-namespace jar {
-
-} // namespace jar

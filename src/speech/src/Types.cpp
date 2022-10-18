@@ -2,6 +2,8 @@
 
 #include "speech/Formatters.hpp"
 
+#include <fmt/format.h>
+
 namespace jar {
 
 std::ostream&
