@@ -25,3 +25,4 @@ install(
 )
 
 add_subdirectory(speech)
+add_subdirectory(service)

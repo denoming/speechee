@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<node name="/org/denoming/jarvis/speaker">
+    <interface name="org.denoming.jarvis.speaker">
+        <method name="synthesizeText">
+            <annotation name="org.freedesktop.DBus.Method.NoReply" value="true" />
+            <arg name="text" type="s" direction="in"/>
+            <arg name="lang" type="s" direction="in"/>
+        </method>
+        <method name="synthesizeSsml">
+            <annotation name="org.freedesktop.DBus.Method.NoReply" value="true" />
+            <arg name="ssml" type="s" direction="in"/>
+            <arg name="lang" type="s" direction="in"/>
+        </method>
+    </interface>
+</node>

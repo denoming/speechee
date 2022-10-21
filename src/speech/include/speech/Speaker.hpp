@@ -1,28 +1,32 @@
 #pragma once
 
+#include "speech/ISpeaker.hpp"
+#include "speech/Types.hpp"
+
+#include <sigc++/connection.h>
+
 #include <list>
 #include <mutex>
 #include <string>
-#include <string_view>
-#include <system_error>
 
-#include "speech/IPlayer.hpp"
+#include <system_error>
 
 namespace jar {
 
 class ISpeechSynthesizePool;
+class IPlayer;
 
-class Speaker {
+class Speaker final : public ISpeaker {
 public:
     Speaker(ISpeechSynthesizePool& synthesizePool, IPlayer& player);
 
-    ~Speaker();
+    ~Speaker() final;
 
     void
-    synthesizeText(std::string_view text, std::string_view lang);
+    synthesizeText(std::string_view text, std::string_view lang) final;
 
     void
-    synthesizeSsml(std::string_view ssml, std::string_view lang);
+    synthesizeSsml(std::string_view ssml, std::string_view lang) final;
 
 private:
     struct Request {
