@@ -6,12 +6,12 @@ namespace po = boost::program_options;
 
 namespace jar {
 
-class SpeakerService {
+class SpeakerApplication {
 public:
-    static SpeakerService&
+    static SpeakerApplication&
     instance();
 
-    const char*
+    [[nodiscard]] const char*
     name() const;
 
     void
@@ -21,7 +21,7 @@ public:
     run();
 
 private:
-    SpeakerService();
+    SpeakerApplication();
 
     void
     initialize();

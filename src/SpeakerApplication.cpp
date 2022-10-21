@@ -1,11 +1,7 @@
-#include "SpeakerService.hpp"
+#include "SpeakerApplication.hpp"
 
 #include "speech/Logger.hpp"
 #include "speech/LoggerInitializer.hpp"
-#include "speech/Speaker.hpp"
-#include "speech/SpeechSynthesizePool.hpp"
-#include "speech/Player.hpp"
-#include "speech/TextToSpeechClient.hpp"
 
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/signal_set.hpp>
@@ -17,29 +13,29 @@ namespace io = boost::asio;
 
 namespace jar {
 
-SpeakerService&
-SpeakerService::instance()
+SpeakerApplication&
+SpeakerApplication::instance()
 {
-    static std::unique_ptr<SpeakerService> instance;
+    static std::unique_ptr<SpeakerApplication> instance;
     if (!instance) {
-        instance.reset(new SpeakerService);
+        instance.reset(new SpeakerApplication);
     }
     return *instance;
 }
 
-SpeakerService::SpeakerService()
+SpeakerApplication::SpeakerApplication()
     : _helpRequested{false}
 {
 }
 
 const char*
-SpeakerService::name() const
+SpeakerApplication::name() const
 {
-    return "SpeakerService";
+    return "SpeakerApplication";
 }
 
 void
-SpeakerService::parseArgs(int argc, char* argv[])
+SpeakerApplication::parseArgs(int argc, char* argv[])
 {
     po::options_description d{"Options"};
     defineOptions(d);
@@ -50,7 +46,7 @@ SpeakerService::parseArgs(int argc, char* argv[])
 }
 
 int
-SpeakerService::run()
+SpeakerApplication::run()
 {
     LoggerInitializer::initialize();
 
@@ -70,38 +66,27 @@ SpeakerService::run()
 }
 
 void
-SpeakerService::initialize()
+SpeakerApplication::initialize()
 {
     LOGI("Initialize <{}> application", name());
 }
 
 void
-SpeakerService::finalize()
+SpeakerApplication::finalize()
 {
     LOGI("Finalize <{}> application", name());
 }
 
 void
-SpeakerService::proceed()
+SpeakerApplication::proceed()
 {
-    TextToSpeechClient client;
-    SpeechSynthesizePool pool{client, 2};
-    Player player;
-    Speaker speaker{pool, player};
-
-    if (!player.initialize()) {
-        LOGE("Failed to initialize player");
-    }
-
     if (!waitForTermination()) {
         LOGE("Waiting for termination has failed");
     }
-
-    player.finalize();
 }
 
 bool
-SpeakerService::waitForTermination()
+SpeakerApplication::waitForTermination()
 {
     io::io_context context;
     io::signal_set signals{context, SIGINT, SIGTERM};
@@ -114,13 +99,13 @@ SpeakerService::waitForTermination()
 }
 
 void
-SpeakerService::defineOptions(po::options_description& description)
+SpeakerApplication::defineOptions(po::options_description& description)
 {
     description.add_options()("help,h", "Display help");
 }
 
 void
-SpeakerService::handleHelp(const po::options_description& description)
+SpeakerApplication::handleHelp(const po::options_description& description)
 {
     _helpRequested = true;
 
@@ -133,7 +118,7 @@ int
 main(int argc, char* argv[])
 {
     try {
-        auto& service = jar::SpeakerService::instance();
+        auto& service = jar::SpeakerApplication::instance();
         service.parseArgs(argc, argv);
         return service.run();
     } catch (...) {
