@@ -1,11 +1,14 @@
 #pragma once
 
+#include <memory>
 #include <string_view>
 
 namespace jar {
 
 class ISpeaker {
 public:
+    using Ptr = std::unique_ptr<ISpeaker>;
+
     virtual ~ISpeaker() = default;
 
     virtual void

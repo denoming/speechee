@@ -1,6 +1,6 @@
 #include "speech/TextToSpeechClient.hpp"
 
-#include "speech/Logger.hpp"
+#include "jarvis/Logger.hpp"
 
 #include <google/cloud/common_options.h>
 #include <google/cloud/grpc_options.h>

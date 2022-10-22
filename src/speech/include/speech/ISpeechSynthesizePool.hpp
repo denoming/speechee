@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <memory>
 #include <string_view>
 #include <system_error>
 
@@ -8,6 +9,8 @@ namespace jar {
 
 class ISpeechSynthesizePool {
 public:
+    using Ptr = std::unique_ptr<ISpeechSynthesizePool>;
+
     using OnCompleteSig = void(std::string audio, std::error_code error);
 
     virtual ~ISpeechSynthesizePool() = default;

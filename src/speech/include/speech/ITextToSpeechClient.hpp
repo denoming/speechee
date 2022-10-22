@@ -2,11 +2,14 @@
 
 #include <string>
 #include <system_error>
+#include <memory>
 
 namespace jar {
 
 class ITextToSpeechClient {
 public:
+    using Ptr = std::unique_ptr<ITextToSpeechClient>;
+
     virtual ~ITextToSpeechClient() = default;
 
     virtual std::string

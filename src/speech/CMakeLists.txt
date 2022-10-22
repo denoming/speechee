@@ -9,21 +9,20 @@ target_include_directories(${TARGET}
 )
 
 target_link_libraries(${TARGET}
+    PUBLIC Jarvis::Common
     PUBLIC
-        Boost::headers
-        spdlog::spdlog
-        google-cloud-cpp::texttospeech
         PkgConfig::SigCpp
     PRIVATE
+        Boost::headers
         PkgConfig::GLib
         PkgConfig::GLibmm
         PkgConfig::Gst
         PkgConfig::GstApp
+        google-cloud-cpp::texttospeech
 )
 
 target_sources(${TARGET}
     PRIVATE src/Types.cpp
-            src/LoggerInitializer.cpp
             src/TextToSpeechClient.cpp
             src/SpeechSynthesizePool.cpp
             src/SpeechSynthesizeTask.cpp
@@ -31,6 +30,7 @@ target_sources(${TARGET}
             src/Player.cpp
             src/PlayerLoop.cpp
             src/Speaker.cpp
+            src/SpeechSubsystem.cpp
 )
 
 target_compile_features(${TARGET} PUBLIC cxx_std_20)

@@ -1,6 +1,6 @@
 #include "speech/Speaker.hpp"
 
-#include "speech/Logger.hpp"
+#include "jarvis/Logger.hpp"
 #include "speech/Player.hpp"
 #include "speech/SpeechSynthesizePool.hpp"
 

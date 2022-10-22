@@ -1,6 +1,6 @@
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/modules")
 
-if (EXISTS $ENV{HOME}/.local)
+if (EXISTS "$ENV{HOME}/.local")
     list(APPEND CMAKE_PREFIX_PATH $ENV{HOME}/.local)
 endif()
 
@@ -29,3 +29,4 @@ include(AddSigCpp)
 include(AddGLibmm)
 include(AddGst)
 include(AddSdbusCpp)
+include(AddJarvis)

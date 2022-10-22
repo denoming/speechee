@@ -17,6 +17,10 @@ public:
 public:
     MOCK_METHOD(PlayState, state, (), (const, override));
 
+    MOCK_METHOD(bool, initialize, (), (override));
+
+    MOCK_METHOD(void, finalize, (), (override));
+
     MOCK_METHOD(bool, play, (std::string_view audio), (override));
 
 private:

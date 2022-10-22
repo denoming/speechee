@@ -13,17 +13,14 @@ public:
 
     ~Player() final;
 
-    [[nodiscard]] bool
-    initialize();
-
-    [[nodiscard]] bool
-    initialize(int* argc, char** argv[]);
-
-    void
-    finalize();
-
     [[nodiscard]] PlayState
     state() const final;
+
+    [[nodiscard]] bool
+    initialize() final;
+
+    void
+    finalize() final;
 
     bool
     play(std::string_view audio) final;

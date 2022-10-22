@@ -1,7 +1,7 @@
 #include "speech/Player.hpp"
 
+#include "jarvis/Logger.hpp"
 #include "speech/AudioBufferList.hpp"
-#include "speech/Logger.hpp"
 #include "speech/Formatters.hpp"
 #include "speech/PlayerLoop.hpp"
 
@@ -14,10 +14,10 @@
 namespace {
 
 bool
-initializeGst(int* argc, char** argv[])
+initializeGst()
 {
     GError* error{nullptr};
-    if (gst_init_check(argc, argv, &error) != TRUE) {
+    if (gst_init_check(NULL, NULL, &error) != TRUE) {
         BOOST_ASSERT(error != nullptr);
         LOGE("Initialization failed: code: <{}>, domain: <{}>, message: <{}>",
              error->code,
@@ -50,7 +50,7 @@ public:
     }
 
     bool
-    initialize(int* argc, char** argv[])
+    initialize()
     {
         LOGI("Initialize player");
 
@@ -60,7 +60,7 @@ public:
         }
 
         LOGD("Initialize gstreamer");
-        if (!initializeGst(argc, argv)) {
+        if (!initializeGst()) {
             LOGE("Failed to initialize gstreamer");
             finalize();
             return false;
@@ -380,28 +380,22 @@ Player::Player()
 
 Player::~Player() = default;
 
-bool
-Player::initialize()
+PlayState
+Player::state() const
 {
-    return _impl->initialize(nullptr, nullptr);
+    return _impl->state();
 }
 
 bool
-Player::initialize(int* argc, char** argv[])
+Player::initialize()
 {
-    return _impl->initialize(argc, argv);
+    return _impl->initialize();
 }
 
 void
 Player::finalize()
 {
     _impl->finalize();
-}
-
-PlayState
-Player::state() const
-{
-    return _impl->state();
 }
 
 bool

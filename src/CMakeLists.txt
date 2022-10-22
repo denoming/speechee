@@ -11,6 +11,7 @@ target_sources(${TARGET}
 
 target_link_libraries(${TARGET}
     PRIVATE
+        Jarvis::Common
         Jarvis::Speaker::Speech
     PRIVATE
         Boost::headers

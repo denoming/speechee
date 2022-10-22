@@ -1,49 +1,22 @@
 #pragma once
 
-#include <boost/program_options.hpp>
-
-namespace po = boost::program_options;
+#include "jarvis/Application.hpp"
 
 namespace jar {
 
-class SpeakerApplication {
+class SpeakerApplication final : public jar::Application {
 public:
-    static SpeakerApplication&
-    instance();
+    SpeakerApplication() = default;
 
     [[nodiscard]] const char*
-    name() const;
-
-    void
-    parseArgs(int argc, char* argv[]);
-
-    int
-    run();
+    name() const final;
 
 private:
-    SpeakerApplication();
+    void
+    initialize(Application& application) final;
 
     void
-    initialize();
-
-    void
-    finalize();
-
-    void
-    proceed();
-
-    bool
-    waitForTermination();
-
-    void
-    defineOptions(po::options_description& description);
-
-    void
-    handleHelp(const po::options_description& description);
-
-private:
-    bool _helpRequested;
-    po::variables_map _options;
+    proceed() final;
 };
 
 } // namespace jar
