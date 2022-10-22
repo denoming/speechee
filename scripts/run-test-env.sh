@@ -37,11 +37,13 @@ run_image() {
   --hostname "${USER_NAME}" \
   --rm \
   --user="${USER_UID}:${USER_GID}"
-  --volume="${PROJECT_DIR}:${PROJECT_DIR}:rw" \
+  --volume="${PROJECT_DIR}:${PROJECT_DIR}" \
   --volume="${XDG_RUNTIME_DIR}/pulse:${XDG_RUNTIME_DIR}/pulse" \
+  --volume="$HOME/.local:$HOME/.local" \
   --network=bridge \
   --workdir="${PROJECT_DIR}" \
   --env PULSE_SERVER="unix:${XDG_RUNTIME_DIR}/pulse/native" \
+  --env GOOGLE_APPLICATION_CREDENTIALS="$HOME/.local/share/google/jarvis-google-cloud.json" \
   "${DOCKER_IMAGE_NAME}" /bin/bash)
 
   if [ -n "$(docker images -q ${DOCKER_IMAGE_NAME})" ]; then
