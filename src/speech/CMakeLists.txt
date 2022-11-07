@@ -19,6 +19,7 @@ target_link_libraries(${TARGET}
         PkgConfig::Gst
         PkgConfig::GstApp
         google-cloud-cpp::texttospeech
+        Jarvis::Speaker::DbusGlue
 )
 
 target_sources(${TARGET}
@@ -30,6 +31,7 @@ target_sources(${TARGET}
             src/Player.cpp
             src/PlayerLoop.cpp
             src/Speaker.cpp
+            src/SpeakerService.cpp
             src/SpeechSubsystem.cpp
 )
 

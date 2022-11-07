@@ -29,6 +29,12 @@ public:
     void
     finalize() final;
 
+    [[nodiscard]] const ISpeaker&
+    speaker() const;
+
+    [[nodiscard]] ISpeaker&
+    speaker();
+
 private:
     class Impl;
     std::unique_ptr<Impl> _impl;

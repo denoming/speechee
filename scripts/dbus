@@ -1,0 +1,4 @@
+
+DBUS_SERVICE=org.denoming.jarvis.speaker
+DBUS_OBJECT=/org/denoming/jarvis/speaker
+DBUS_INTERFACE=org.denoming.jarvis.speaker

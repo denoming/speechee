@@ -18,7 +18,6 @@ fi
 
 build_image() {
   BUILD_CMD="docker build --tag ${DOCKER_IMAGE_NAME} \
-  --build-arg UNAME=${USER_NAME} \
   --build-arg UID=${USER_UID} \
   --build-arg UID=${USER_GID} \
   --build-arg PULSE_SERVER="unix:${XDG_RUNTIME_DIR}/pulse/native" \
@@ -36,7 +35,7 @@ run_image() {
   RUN_CMD=(docker run -it \
   --hostname "${USER_NAME}" \
   --rm \
-  --user="${USER_UID}:${USER_GID}"
+  --user="${USER_UID}:${USER_GID}" \
   --volume="${PROJECT_DIR}:${PROJECT_DIR}" \
   --volume="${XDG_RUNTIME_DIR}/pulse:${XDG_RUNTIME_DIR}/pulse" \
   --volume="$HOME/.local:$HOME/.local" \
@@ -44,7 +43,8 @@ run_image() {
   --workdir="${PROJECT_DIR}" \
   --env PULSE_SERVER="unix:${XDG_RUNTIME_DIR}/pulse/native" \
   --env GOOGLE_APPLICATION_CREDENTIALS="$HOME/.local/share/google/jarvis-google-cloud.json" \
-  "${DOCKER_IMAGE_NAME}" /bin/bash)
+  --entrypoint="/usr/sbin/run.sh" \
+  "${DOCKER_IMAGE_NAME}")
 
   if [ -n "$(docker images -q ${DOCKER_IMAGE_NAME})" ]; then
     "${RUN_CMD[@]}"

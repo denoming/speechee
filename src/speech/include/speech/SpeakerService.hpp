@@ -14,6 +14,12 @@ public:
 
     ~SpeakerService();
 
+    void
+    start();
+
+    void
+    stop();
+
 private:
     class Impl;
     std::unique_ptr<Impl> _impl;

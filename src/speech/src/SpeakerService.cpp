@@ -1,9 +1,10 @@
-#include "service/SpeakerService.hpp"
+#include "speech/SpeakerService.hpp"
 
 #include "DbusConfig.hpp"
 #include "jarvis-speaker-server-glue.h"
 #include "speech/ISpeaker.hpp"
 
+#include <boost/assert.hpp>
 #include <sdbus-c++/sdbus-c++.h>
 
 namespace jar {
@@ -14,6 +15,8 @@ getConnection()
     static std::unique_ptr<sdbus::IConnection> connection;
     if (!connection) {
         connection = sdbus::createSystemBusConnection(std::string{dbus::kServiceName});
+        BOOST_ASSERT(connection);
+        connection->enterEventLoopAsync();
     }
     return *connection;
 }
@@ -25,12 +28,6 @@ public:
         : AdaptorInterfaces{connection, std::move(objectPath)}
         , _speaker{speaker}
     {
-        registerAdaptor();
-    }
-
-    ~Impl()
-    {
-        unregisterAdaptor();
     }
 
     void
@@ -55,5 +52,19 @@ SpeakerService::SpeakerService(ISpeaker& speaker)
 }
 
 SpeakerService::~SpeakerService() = default;
+
+void
+SpeakerService::start()
+{
+    BOOST_ASSERT(_impl);
+    _impl->registerAdaptor();
+}
+
+void
+SpeakerService::stop()
+{
+    BOOST_ASSERT(_impl);
+    _impl->unregisterAdaptor();
+}
 
 } // namespace jar
