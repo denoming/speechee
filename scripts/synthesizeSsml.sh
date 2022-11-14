@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
-PROJECT_DIR=$(dirname "$(dirname "$(realpath -s $0)")")
-
-source ${PROJECT_DIR}/scripts/dbus
+source dbus-env
 
 TEXT=${1:-"<speak>Hello World with <say-as interpret-as='characters'>SSML</say-as></speak>"}
 LANG=${2:-"en-US"}
