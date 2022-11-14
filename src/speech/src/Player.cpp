@@ -167,7 +167,7 @@ private:
         auto* src = gst_element_factory_make("appsrc", "src");
         auto* parser = gst_element_factory_make("wavparse", nullptr);
         auto* converter = gst_element_factory_make("audioconvert", nullptr);
-        auto* sink = gst_element_factory_make("pulsesink", nullptr);
+        auto* sink = gst_element_factory_make("autoaudiosink", nullptr);
         if (!src || !parser || !converter || !sink) {
             LOGE("Failed to create pipeline elements");
             return false;
