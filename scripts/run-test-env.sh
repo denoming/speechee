@@ -18,6 +18,7 @@ fi
 
 build_image() {
   BUILD_CMD="docker build --tag ${DOCKER_IMAGE_NAME} \
+  --build-arg UNAME=${USER_NAME} \
   --build-arg UID=${USER_UID} \
   --build-arg UID=${USER_GID} \
   --build-arg PULSE_SERVER="unix:${XDG_RUNTIME_DIR}/pulse/native" \

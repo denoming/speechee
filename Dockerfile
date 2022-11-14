@@ -1,5 +1,6 @@
 FROM my/jarvis-dev-image
 
+ARG UNAME=dev
 ARG UID=1000
 ARG GID=1000
 ARG PULSE_SERVER="unix:/run/user/$UID/pulse/native"
@@ -9,10 +10,10 @@ ENV PULSE_SERVER=$PULSE_SERVER
 
 # Create default user
 USER root
-RUN groupadd -f -g $GID dev
-RUN useradd -l -g $GID --uid $UID -ms /bin/bash dev
-RUN echo dev:dev | chpasswd
-RUN echo 'dev ALL=(ALL) NOPASSWD:SETENV: ALL' > /etc/sudoers.d/dev || true
+RUN groupadd -f -g $GID $UNAME
+RUN useradd -l -g $GID --uid $UID -ms /bin/bash $UNAME
+RUN echo $UNAME:$UNAME | chpasswd
+RUN echo $UNAME 'ALL=(ALL) NOPASSWD:SETENV: ALL' > /etc/sudoers.d/$UNAME || true
 # Create missing folder for dbus
 RUN mkdir -p /run/dbus
 
@@ -23,5 +24,5 @@ COPY config/dbus/org.denoming.jarvis.speaker.conf /etc/dbus-1/system.d
 # Copy entrypoint script
 COPY scripts/entrypoint.sh /usr/sbin
 
-USER dev
+USER $UNAME
 ENTRYPOINT ["/bin/bash"]
