@@ -22,7 +22,8 @@ target_compile_features(${TARGET} PUBLIC cxx_std_20)
 
 install(
     TARGETS ${TARGET}
-    COMPONENT JarvisSpeaker_Runtime
+    COMPONENT JarvisSpeakerRuntime
 )
 
+add_subdirectory(client)
 add_subdirectory(speech)
