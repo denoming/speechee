@@ -2,7 +2,7 @@
 
 set -e
 
-DOCKER_IMAGE_NAME=my/jarvis-dev-image:user
+DOCKER_IMAGE_NAME=my/jarvis-dev-image:speaker
 
 PROJECT_DIR=$(dirname "$(dirname "$(realpath -s $0)")")
 USER_NAME=${USER}
