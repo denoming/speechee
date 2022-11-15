@@ -43,7 +43,7 @@ run_image() {
   --network=bridge \
   --workdir="${PROJECT_DIR}" \
   --env PULSE_SERVER="unix:${XDG_RUNTIME_DIR}/pulse/native" \
-  --env GOOGLE_APPLICATION_CREDENTIALS="$HOME/.local/share/google/jarvis-google-cloud.json" \
+  --env GOOGLE_APPLICATION_CREDENTIALS="$HOME/.local/share/jarvis/google-cloud-credentials.json" \
   --entrypoint="/usr/sbin/entrypoint.sh" \
   "${DOCKER_IMAGE_NAME}")
 
