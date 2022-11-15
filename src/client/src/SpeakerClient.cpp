@@ -1,6 +1,6 @@
 #include "jarvis/SpeakerClient.hpp"
 
-#include "DbusConfig.hpp"
+#include "dbus/DbusConfig.hpp"
 #include "client/SpeakerClientImpl.hpp"
 
 namespace jar {

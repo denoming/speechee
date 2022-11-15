@@ -1,6 +1,6 @@
 #include "speech/SpeakerService.hpp"
 
-#include "DbusConfig.hpp"
+#include "dbus/DbusConfig.hpp"
 #include "jarvis-speaker-server-glue.h"
 #include "speech/ISpeaker.hpp"
 

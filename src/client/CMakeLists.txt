@@ -34,7 +34,7 @@ target_sources(${TARGET}
 
 target_link_libraries(${TARGET}
     PRIVATE
-        Jarvis::Speaker::DbusGlue
+        Jarvis::Speaker::Dbus
 )
 
 target_compile_features(${TARGET} PUBLIC cxx_std_20)

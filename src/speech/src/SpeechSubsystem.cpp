@@ -126,18 +126,4 @@ SpeechSubsystem::finalize()
     _impl->finalize();
 }
 
-const ISpeaker&
-SpeechSubsystem::speaker() const
-{
-    BOOST_ASSERT(_impl);
-    return _impl->speaker();
-}
-
-ISpeaker&
-SpeechSubsystem::speaker()
-{
-    BOOST_ASSERT(_impl);
-    return _impl->speaker();
-}
-
 } // namespace jar

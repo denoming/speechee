@@ -19,7 +19,7 @@ target_link_libraries(${TARGET}
         PkgConfig::Gst
         PkgConfig::GstApp
         google-cloud-cpp::texttospeech
-        Jarvis::Speaker::DbusGlue
+        Jarvis::Speaker::Dbus
 )
 
 target_sources(${TARGET}
