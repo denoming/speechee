@@ -4,10 +4,11 @@ set -e
 
 DOCKER_IMAGE_NAME=my/jarvis-dev-image:speaker
 
-PROJECT_DIR=$(dirname "$(dirname "$(realpath -s $0)")")
 USER_NAME=${USER}
 USER_UID=$(id -u)
 USER_GID=$(id -g)
+
+PROJECT_DIR=$(dirname "$(dirname "$(realpath -s $0)")")
 
 command -v docker > /dev/null
 if [ $? != 0 ]; then
@@ -20,7 +21,7 @@ build_image() {
   BUILD_CMD="docker build --tag ${DOCKER_IMAGE_NAME} \
   --build-arg UNAME=${USER_NAME} \
   --build-arg UID=${USER_UID} \
-  --build-arg UID=${USER_GID} \
+  --build-arg GID=${USER_GID} \
   --build-arg PULSE_SERVER="unix:${XDG_RUNTIME_DIR}/pulse/native" \
   --file ${PROJECT_DIR}/Dockerfile ${PROJECT_DIR}
   "
@@ -39,7 +40,7 @@ run_image() {
   --user="${USER_UID}:${USER_GID}" \
   --volume="${PROJECT_DIR}:${PROJECT_DIR}" \
   --volume="${XDG_RUNTIME_DIR}/pulse:${XDG_RUNTIME_DIR}/pulse" \
-  --volume="$HOME/.local:$HOME/.local" \
+  --volume="$HOME/.local/share/jarvis:$HOME/.local/share/jarvis" \
   --network=bridge \
   --workdir="${PROJECT_DIR}" \
   --env PULSE_SERVER="unix:${XDG_RUNTIME_DIR}/pulse/native" \
