@@ -14,7 +14,6 @@ target_link_libraries(${TARGET}
         PkgConfig::SigCpp
     PRIVATE
         Boost::headers
-        PkgConfig::GLib
         PkgConfig::GLibmm
         PkgConfig::Gst
         PkgConfig::GstApp
