@@ -1,6 +1,6 @@
 #pragma once
 
-#include "speech/ISpeechSynthesizePool.hpp"
+#include "speaker/ISpeechSynthesizePool.hpp"
 
 #include <gmock/gmock.h>
 

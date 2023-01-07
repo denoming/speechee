@@ -8,11 +8,11 @@ namespace jar {
 
 class ISpeaker;
 
-class SpeechSubsystem final : public Subsystem {
+class SpeakerSubsystem final : public Subsystem {
 public:
-    SpeechSubsystem();
+    SpeakerSubsystem();
 
-    ~SpeechSubsystem() final;
+    ~SpeakerSubsystem() final;
 
     [[nodiscard]] const char*
     name() const final;

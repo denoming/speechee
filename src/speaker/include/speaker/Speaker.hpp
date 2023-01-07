@@ -1,7 +1,7 @@
 #pragma once
 
-#include "speech/ISpeaker.hpp"
-#include "speech/Types.hpp"
+#include "speaker/ISpeaker.hpp"
+#include "speaker/Types.hpp"
 
 #include <sigc++/connection.h>
 

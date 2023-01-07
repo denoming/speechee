@@ -1,6 +1,6 @@
 #pragma once
 
-#include "speech/Types.hpp"
+#include "speaker/Types.hpp"
 
 #include <sigc++/connection.h>
 #include <sigc++/signal.h>

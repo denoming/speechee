@@ -1,6 +1,6 @@
 #pragma once
 
-#include "speech/Types.hpp"
+#include "speaker/Types.hpp"
 
 #include <fmt/std.h>
 #include <fmt/format.h>

@@ -1,8 +1,8 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "speech/Speaker.hpp"
-#include "speech/SpeechSynthesizePool.hpp"
+#include "speaker/Speaker.hpp"
+#include "speaker/SpeechSynthesizePool.hpp"
 #include "test/MockPlayer.hpp"
 #include "test/MockSpeechSynthesizePool.hpp"
 

@@ -1,17 +1,17 @@
-#include "speech/SpeechSubsystem.hpp"
+#include "speaker/SpeakerSubsystem.hpp"
 
 #include "jarvis/Logger.hpp"
-#include "speech/Player.hpp"
-#include "speech/Speaker.hpp"
-#include "speech/SpeakerService.hpp"
-#include "speech/SpeechSynthesizePool.hpp"
-#include "speech/TextToSpeechClient.hpp"
+#include "speaker/Player.hpp"
+#include "speaker/Speaker.hpp"
+#include "speaker/SpeakerService.hpp"
+#include "speaker/SpeechSynthesizePool.hpp"
+#include "speaker/TextToSpeechClient.hpp"
 
 #include <boost/assert.hpp>
 
 namespace jar {
 
-class SpeechSubsystem::Impl {
+class SpeakerSubsystem::Impl {
 public:
     void
     initialize(Application& application)
@@ -77,21 +77,21 @@ private:
     Player::Ptr _player;
 };
 
-SpeechSubsystem::SpeechSubsystem()
+SpeakerSubsystem::SpeakerSubsystem()
     : _impl{std::make_unique<Impl>()}
 {
 }
 
-SpeechSubsystem::~SpeechSubsystem() = default;
+SpeakerSubsystem::~SpeakerSubsystem() = default;
 
 const char*
-SpeechSubsystem::name() const
+SpeakerSubsystem::name() const
 {
     return "Speech";
 }
 
 void
-SpeechSubsystem::initialize(Application& application)
+SpeakerSubsystem::initialize(Application& application)
 {
     Subsystem::initialize(application);
 
@@ -100,7 +100,7 @@ SpeechSubsystem::initialize(Application& application)
 }
 
 void
-SpeechSubsystem::setUp(Application& application)
+SpeakerSubsystem::setUp(Application& application)
 {
     Subsystem::setUp(application);
 
@@ -109,7 +109,7 @@ SpeechSubsystem::setUp(Application& application)
 }
 
 void
-SpeechSubsystem::tearDown()
+SpeakerSubsystem::tearDown()
 {
     Subsystem::tearDown();
 
@@ -118,7 +118,7 @@ SpeechSubsystem::tearDown()
 }
 
 void
-SpeechSubsystem::finalize()
+SpeakerSubsystem::finalize()
 {
     Subsystem::finalize();
 

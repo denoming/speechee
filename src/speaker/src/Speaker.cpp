@@ -1,8 +1,8 @@
-#include "speech/Speaker.hpp"
+#include "speaker/Speaker.hpp"
 
 #include "jarvis/Logger.hpp"
-#include "speech/Player.hpp"
-#include "speech/SpeechSynthesizePool.hpp"
+#include "speaker/Player.hpp"
+#include "speaker/SpeechSynthesizePool.hpp"
 
 static std::uint64_t
 getId()

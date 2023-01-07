@@ -1,7 +1,7 @@
 #pragma once
 
-#include "speech/ISpeechSynthesizePool.hpp"
-#include "speech/SpeechSynthesizeTask.hpp"
+#include "speaker/ISpeechSynthesizePool.hpp"
+#include "speaker/SpeechSynthesizeTask.hpp"
 
 #include <condition_variable>
 #include <list>

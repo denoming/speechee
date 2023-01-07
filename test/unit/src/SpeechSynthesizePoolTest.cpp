@@ -1,7 +1,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "speech/SpeechSynthesizePool.hpp"
+#include "speaker/SpeechSynthesizePool.hpp"
 #include "test/MockTextToSpeechClient.hpp"
 #include "test/Waiter.hpp"
 

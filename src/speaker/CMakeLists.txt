@@ -1,7 +1,7 @@
 set(TARGET jarvis-speaker-speech)
 
 add_library(${TARGET} STATIC)
-add_library(Jarvis::Speaker::Speech ALIAS ${TARGET})
+add_library(Jarvis::Speaker::Speaker ALIAS ${TARGET})
 
 target_include_directories(${TARGET}
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
@@ -31,7 +31,7 @@ target_sources(${TARGET}
             src/PlayerLoop.cpp
             src/Speaker.cpp
             src/SpeakerService.cpp
-            src/SpeechSubsystem.cpp
+            src/SpeakerSubsystem.cpp
 )
 
 target_compile_features(${TARGET} PUBLIC cxx_std_20)

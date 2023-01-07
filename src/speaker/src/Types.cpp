@@ -1,6 +1,6 @@
-#include "speech/Types.hpp"
+#include "speaker/Types.hpp"
 
-#include "speech/Formatters.hpp"
+#include "speaker/Formatters.hpp"
 
 #include <fmt/format.h>
 

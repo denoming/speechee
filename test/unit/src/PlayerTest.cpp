@@ -1,7 +1,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "speech/Player.hpp"
+#include "speaker/Player.hpp"
 #include "test/Waiter.hpp"
 
 #include <chrono>

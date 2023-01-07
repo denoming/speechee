@@ -1,4 +1,4 @@
-#include "speech/SpeechSynthesizePool.hpp"
+#include "speaker/SpeechSynthesizePool.hpp"
 
 #include <boost/assert.hpp>
 

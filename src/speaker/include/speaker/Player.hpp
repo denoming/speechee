@@ -1,6 +1,6 @@
 #pragma once
 
-#include "speech/IPlayer.hpp"
+#include "speaker/IPlayer.hpp"
 
 #include <memory>
 #include <string>

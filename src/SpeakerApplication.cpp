@@ -1,7 +1,7 @@
 #include "SpeakerApplication.hpp"
 
 #include "jarvis/Logger.hpp"
-#include "speech/SpeechSubsystem.hpp"
+#include "speaker/SpeakerSubsystem.hpp"
 
 namespace jar {
 
@@ -14,7 +14,7 @@ SpeakerApplication::name() const
 void
 SpeakerApplication::initialize(Application& application)
 {
-    addSubsystem(std::make_unique<SpeechSubsystem>());
+    addSubsystem(std::make_unique<SpeakerSubsystem>());
 
     Application::initialize(application);
 }

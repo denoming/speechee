@@ -12,7 +12,7 @@ target_sources(${TARGET}
 target_link_libraries(${TARGET}
     PRIVATE
         Jarvis::Common
-        Jarvis::Speaker::Speech
+        Jarvis::Speaker::Speaker
     PRIVATE
         Boost::headers
         Boost::program_options
@@ -26,4 +26,4 @@ install(
 )
 
 add_subdirectory(client)
-add_subdirectory(speech)
+add_subdirectory(speaker)

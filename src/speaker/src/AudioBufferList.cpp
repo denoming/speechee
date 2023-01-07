@@ -1,4 +1,4 @@
-#include "speech/AudioBufferList.hpp"
+#include "speaker/AudioBufferList.hpp"
 
 #include <boost/assert.hpp>
 
