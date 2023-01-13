@@ -10,20 +10,18 @@ target_include_directories(${TARGET}
 
 target_link_libraries(${TARGET}
     PUBLIC Jarvis::Common
-    PUBLIC
-        PkgConfig::SigCpp
+           PkgConfig::SigCpp
     PRIVATE
-        Boost::headers
+        Jarvis::Speaker::Tts
+        Jarvis::Speaker::Dbus
         PkgConfig::GLibmm
         PkgConfig::Gst
         PkgConfig::GstApp
-        google-cloud-cpp::texttospeech
-        Jarvis::Speaker::Dbus
+        Boost::headers
 )
 
 target_sources(${TARGET}
     PRIVATE src/Types.cpp
-            src/TextToSpeechClient.cpp
             src/SpeechSynthesizePool.cpp
             src/SpeechSynthesizeTask.cpp
             src/AudioBufferList.cpp

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "speaker/ITextToSpeechClient.hpp"
+#include "tts/ITextToSpeechClient.hpp"
 
 #include <gmock/gmock.h>
 

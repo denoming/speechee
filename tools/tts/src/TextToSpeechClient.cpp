@@ -1,6 +1,4 @@
-#include "speaker/TextToSpeechClient.hpp"
-
-#include "jarvis/Logger.hpp"
+#include "tts/TextToSpeechClient.hpp"
 
 #include <google/cloud/common_options.h>
 #include <google/cloud/grpc_options.h>
@@ -68,7 +66,6 @@ private:
         tts::TextToSpeechClient client{_connection};
         auto response = client.SynthesizeSpeech(input, voice, audio);
         if (!response) {
-            LOGE("Text synthesize has failed: {}", response.status().message());
             error = std::make_error_code(std::errc::protocol_error);
             return {};
         }

@@ -15,6 +15,7 @@ target_include_directories(${TARGET}
 
 target_link_libraries(${TARGET}
     PUBLIC Jarvis::Speaker::Speaker
+           Jarvis::Speaker::Tts
     PUBLIC GTest::gtest GTest::gmock
 )
 

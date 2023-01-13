@@ -1,6 +1,6 @@
 #include "speaker/SpeechSynthesizeTask.hpp"
 
-#include "speaker/ITextToSpeechClient.hpp"
+#include "tts/ITextToSpeechClient.hpp"
 
 #include <boost/assert.hpp>
 

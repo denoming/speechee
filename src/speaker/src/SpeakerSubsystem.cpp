@@ -5,7 +5,7 @@
 #include "speaker/Speaker.hpp"
 #include "speaker/SpeakerService.hpp"
 #include "speaker/SpeechSynthesizePool.hpp"
-#include "speaker/TextToSpeechClient.hpp"
+#include "tts/TextToSpeechClient.hpp"
 
 #include <boost/assert.hpp>
 

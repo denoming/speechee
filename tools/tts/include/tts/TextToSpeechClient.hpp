@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ITextToSpeechClient.hpp"
+#include "tts/ITextToSpeechClient.hpp"
 
 #include <memory>
 
