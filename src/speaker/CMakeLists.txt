@@ -1,4 +1,4 @@
-set(TARGET jarvis-speaker-speech)
+set(TARGET jarvis-speaker-speaker)
 
 add_library(${TARGET} STATIC)
 add_library(Jarvis::Speaker::Speaker ALIAS ${TARGET})

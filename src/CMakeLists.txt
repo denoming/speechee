@@ -13,9 +13,6 @@ target_link_libraries(${TARGET}
     PRIVATE
         Jarvis::Common
         Jarvis::Speaker::Speaker
-    PRIVATE
-        Boost::headers
-        Boost::program_options
 )
 
 target_compile_features(${TARGET} PUBLIC cxx_std_20)
