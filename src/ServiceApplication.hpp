@@ -4,9 +4,9 @@
 
 namespace jar {
 
-class SpeakerApplication final : public jar::Application {
+class ServiceApplication final : public jar::Application {
 public:
-    SpeakerApplication() = default;
+    ServiceApplication() = default;
 
     [[nodiscard]] const char*
     name() const final;
