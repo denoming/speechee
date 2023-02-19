@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
 
 project(jarvis-speaker
-    VERSION 0.1.0
+    VERSION 0.1.1
     DESCRIPTION "Jarvis Speaker Project"
 )
 
