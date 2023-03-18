@@ -28,6 +28,7 @@ target_sources(${TARGET}
             src/Player.cpp
             src/PlayerLoop.cpp
             src/Speaker.cpp
+            src/SpeakerAdapter.cpp
             src/SpeakerService.cpp
             src/SpeakerSubsystem.cpp
 )

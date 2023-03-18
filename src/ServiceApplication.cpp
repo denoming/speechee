@@ -1,6 +1,5 @@
 #include "ServiceApplication.hpp"
 
-#include "jarvis/Logger.hpp"
 #include "speaker/SpeakerSubsystem.hpp"
 
 namespace jar {
@@ -11,20 +10,24 @@ ServiceApplication::name() const
     return "Speaker";
 }
 
+const char*
+ServiceApplication::contextId()
+{
+    return "SPKR";
+}
+
+const char*
+ServiceApplication::contextDesc()
+{
+    return "J.A.R.V.I.S Speaker Context";
+}
+
 void
 ServiceApplication::initialize(Application& application)
 {
     addSubsystem(std::make_unique<SpeakerSubsystem>());
 
     Application::initialize(application);
-}
-
-void
-ServiceApplication::proceed()
-{
-    if (!waitForTermination()) {
-        LOGE("Waiting for termination has failed");
-    }
 }
 
 } // namespace jar

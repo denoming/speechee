@@ -55,20 +55,6 @@ public:
         _client.reset();
     }
 
-    [[nodiscard]] const ISpeaker&
-    speaker() const
-    {
-        BOOST_ASSERT(_speaker);
-        return *_speaker;
-    }
-
-    [[nodiscard]] ISpeaker&
-    speaker()
-    {
-        BOOST_ASSERT(_speaker);
-        return *_speaker;
-    }
-
 private:
     Speaker::Ptr _speaker;
     SpeakerService::Ptr _speakerService;

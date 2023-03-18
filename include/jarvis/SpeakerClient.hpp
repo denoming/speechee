@@ -20,7 +20,8 @@ public:
     synthesizeSsml(const std::string& ssml, const std::string& lang);
 
 private:
-    std::unique_ptr<class SpeakerClientImpl> _impl;
+    class Impl;
+    std::unique_ptr<Impl> _impl;
 };
 
 } // namespace jar

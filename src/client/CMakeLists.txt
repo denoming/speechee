@@ -28,8 +28,8 @@ target_include_directories(${TARGET}
 
 target_sources(${TARGET}
     PRIVATE
+        src/SpeakerProxy.cpp
         src/SpeakerClient.cpp
-        src/SpeakerClientImpl.cpp
 )
 
 target_link_libraries(${TARGET}

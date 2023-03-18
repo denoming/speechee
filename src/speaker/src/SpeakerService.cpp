@@ -1,11 +1,12 @@
 #include "speaker/SpeakerService.hpp"
 
-#include "dbus/DbusConfig.hpp"
-#include "jarvis-speaker-server-glue.h"
+#include "dbus/Config.hpp"
 #include "speaker/ISpeaker.hpp"
+#include "speaker/SpeakerAdapter.hpp"
 
 #include <boost/assert.hpp>
-#include <sdbus-c++/sdbus-c++.h>
+#include <sdbus-c++/AdaptorInterfaces.h>
+#include <sdbus-c++/IConnection.h>
 
 namespace jar {
 
@@ -21,11 +22,10 @@ getConnection()
     return *connection;
 }
 
-class SpeakerService::Impl final
-    : public sdbus::AdaptorInterfaces<org::denoming::jarvis::speaker_adaptor> {
+class SpeakerService::Impl final : public sdbus::AdaptorInterfaces<SpeakerAdapter> {
 public:
-    Impl(sdbus::IConnection& connection, std::string objectPath, ISpeaker& speaker)
-        : AdaptorInterfaces{connection, std::move(objectPath)}
+    explicit Impl(ISpeaker& speaker)
+        : AdaptorInterfaces{getConnection(), dbus::kObjectPath}
         , _speaker{speaker}
     {
     }
@@ -47,7 +47,7 @@ private:
 };
 
 SpeakerService::SpeakerService(ISpeaker& speaker)
-    : _impl{std::make_unique<Impl>(getConnection(), std::string{dbus::kObjectPath}, speaker)}
+    : _impl{std::make_unique<Impl>(speaker)}
 {
 }
 

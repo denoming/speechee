@@ -12,11 +12,14 @@ public:
     name() const final;
 
 private:
-    void
-    initialize(Application& application) final;
+    const char*
+    contextId() final;
+
+    const char*
+    contextDesc() final;
 
     void
-    proceed() final;
+    initialize(Application& application) final;
 };
 
 } // namespace jar
