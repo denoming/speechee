@@ -18,4 +18,4 @@ target_sources(${TARGET}
     PRIVATE src/TextToSpeechClient.cpp
 )
 
-target_compile_features(${TARGET} PUBLIC cxx_std_20)
+target_compile_features(${TARGET} PUBLIC cxx_std_23)

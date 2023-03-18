@@ -15,7 +15,7 @@ target_link_libraries(${TARGET}
     PRIVATE Jarvis::Speaker::Client
 )
 
-target_compile_features(${TARGET} PRIVATE cxx_std_20)
+target_compile_features(${TARGET} PRIVATE cxx_std_23)
 
 install(
     TARGETS ${TARGET}

@@ -33,4 +33,4 @@ target_sources(${TARGET}
             src/SpeakerSubsystem.cpp
 )
 
-target_compile_features(${TARGET} PUBLIC cxx_std_20)
+target_compile_features(${TARGET} PUBLIC cxx_std_23)
