@@ -1,29 +1,29 @@
-#include "ServiceApplication.hpp"
+#include "SpeakerApplication.hpp"
 
 #include "speaker/SpeakerSubsystem.hpp"
 
 namespace jar {
 
 const char*
-ServiceApplication::name() const
+SpeakerApplication::name() const
 {
     return "Speaker";
 }
 
 const char*
-ServiceApplication::contextId()
+SpeakerApplication::contextId()
 {
     return "SPKR";
 }
 
 const char*
-ServiceApplication::contextDesc()
+SpeakerApplication::contextDesc()
 {
     return "J.A.R.V.I.S Speaker Context";
 }
 
 void
-ServiceApplication::initialize(Application& application)
+SpeakerApplication::initialize(Application& application)
 {
     addSubsystem(std::make_unique<SpeakerSubsystem>());
 
@@ -32,4 +32,4 @@ ServiceApplication::initialize(Application& application)
 
 } // namespace jar
 
-APP_MAIN(jar::ServiceApplication)
+APP_MAIN(jar::SpeakerApplication)

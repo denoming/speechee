@@ -6,7 +6,7 @@ add_executable(${TARGET} "")
 add_executable(Jarvis::Speaker ALIAS ${TARGET})
 
 target_sources(${TARGET}
-    PRIVATE ServiceApplication.cpp
+    PRIVATE SpeakerApplication.cpp
 )
 
 target_link_libraries(${TARGET}
