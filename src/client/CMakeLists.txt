@@ -72,7 +72,7 @@ install(TARGETS ${TARGET}
 
 # Install package config file
 install(EXPORT JarvisSpeakerRuntime
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Jarvis
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/JarvisSpeaker
     NAMESPACE Jarvis::
     COMPONENT JarvisSpeakerRuntime
     FILE JarvisSpeakerRuntime.cmake
@@ -80,7 +80,7 @@ install(EXPORT JarvisSpeakerRuntime
 
 # Install package config file
 install(EXPORT JarvisSpeakerDevelopment
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Jarvis
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/JarvisSpeaker
     NAMESPACE Jarvis::
     COMPONENT JarvisSpeakerDevelopment
     FILE JarvisSpeakerDevelopment.cmake
@@ -104,7 +104,7 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/jarvis/SpeakerExport.hpp
 configure_package_config_file(
     ${PROJECT_SOURCE_DIR}/config/cmake/JarvisSpeakerConfig.cmake.in
     JarvisSpeakerConfig.cmake
-    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Jarvis
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/JarvisSpeaker
     NO_SET_AND_CHECK_MACRO
     NO_CHECK_REQUIRED_COMPONENTS_MACRO
 )
@@ -115,11 +115,11 @@ write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/JarvisSpeakerConfig
 # Install package config and version file
 install(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/JarvisSpeakerConfig.cmake
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Jarvis
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/JarvisSpeaker
     COMPONENT JarvisSpeakerDevelopment
 )
 install(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/JarvisSpeakerConfigVersion.cmake
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Jarvis
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/JarvisSpeaker
     COMPONENT JarvisSpeakerDevelopment
 )
