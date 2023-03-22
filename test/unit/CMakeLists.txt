@@ -12,8 +12,13 @@ target_link_libraries(${TARGET}
     PRIVATE Jarvis::Speaker::Test::Common
 )
 
+target_compile_features(${TARGET} PUBLIC cxx_std_23)
+
+install(
+    TARGETS ${TARGET}
+    COMPONENT JarvisSpeakerRuntime
+)
+
 if (NOT CMAKE_CROSSCOMPILING)
     gtest_discover_tests(${TARGET} WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 endif()
-
-target_compile_features(${TARGET} PUBLIC cxx_std_23)
