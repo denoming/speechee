@@ -42,7 +42,7 @@ target_compile_features(${TARGET} PUBLIC cxx_std_23)
 # Generate export header file with export macros
 generate_export_header(${TARGET}
     BASE_NAME JARVIS_SPEAKER
-    EXPORT_FILE_NAME jarvis/SpeakerExport.hpp
+    EXPORT_FILE_NAME jarvis/speaker/SpeakerExport.hpp
 )
 
 # Install target files except namelink file
@@ -95,8 +95,8 @@ install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/
 )
 
 # Install export header file
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/jarvis/SpeakerExport.hpp
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/jarvis
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/jarvis/speaker/SpeakerExport.hpp
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/jarvis/speaker
     COMPONENT JarvisSpeakerDevelopment
 )
 

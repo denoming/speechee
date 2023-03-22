@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "jarvis/SpeakerClient.hpp"
+#include "jarvis/speaker/SpeakerClient.hpp"
 
 #include <boost/program_options.hpp>
 

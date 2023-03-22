@@ -1,4 +1,4 @@
-#include "jarvis/SpeakerClient.hpp"
+#include "jarvis/speaker/SpeakerClient.hpp"
 
 #include "client/SpeakerProxy.hpp"
 #include "dbus/Config.hpp"
