@@ -1,7 +1,5 @@
 set(TARGET jarvis-speaker-tts)
 
-find_package(google_cloud_cpp_texttospeech REQUIRED)
-
 add_library(${TARGET} STATIC)
 add_library(Jarvis::Speaker::Tts ALIAS ${TARGET})
 
