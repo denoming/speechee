@@ -21,12 +21,12 @@ public:
     void
     synthesizeText(std::string_view text,
                    std::string_view lang,
-                   std::function<OnDone> callback) final;
+                   std::move_only_function<OnDone> callback) final;
 
     void
     synthesizeSsml(std::string_view ssml,
                    std::string_view lang,
-                   std::function<OnDone> callback) final;
+                   std::move_only_function<OnDone> callback) final;
 
 private:
     using Tasks = std::list<std::unique_ptr<SpeechSynthesizeTask>>;

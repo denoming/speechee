@@ -11,9 +11,10 @@ class ITextToSpeechClient;
 
 class SpeechSynthesizeTask {
 public:
-    using Callback = std::function<void(std::string audio, std::error_code error)>;
+    using OnDone = void(std::string audio, std::error_code error);
 
-    explicit SpeechSynthesizeTask(ITextToSpeechClient& client, Callback callback);
+    explicit SpeechSynthesizeTask(ITextToSpeechClient& client,
+                                  std::move_only_function<OnDone> callback);
 
     virtual ~SpeechSynthesizeTask() = default;
 
@@ -42,7 +43,7 @@ protected:
 
 private:
     ITextToSpeechClient& _client;
-    Callback _callback;
+    std::move_only_function<OnDone> _callback;
     std::string _audio;
     std::error_code _error;
     bool _ready;
@@ -53,7 +54,7 @@ public:
     TextSpeechSynthesizeTask(ITextToSpeechClient& client,
                              std::string_view text,
                              std::string_view lang,
-                             Callback callback);
+                             std::move_only_function<OnDone> callback);
 
     void
     perform() final;
@@ -68,7 +69,7 @@ public:
     SsmlSpeechSynthesizeTask(ITextToSpeechClient& client,
                              std::string_view ssml,
                              std::string_view lang,
-                             Callback callback);
+                             std::move_only_function<OnDone> callback);
 
     void
     perform() final;

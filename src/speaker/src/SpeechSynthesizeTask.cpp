@@ -8,7 +8,8 @@
 
 namespace jar {
 
-SpeechSynthesizeTask::SpeechSynthesizeTask(ITextToSpeechClient& client, Callback callback)
+SpeechSynthesizeTask::SpeechSynthesizeTask(ITextToSpeechClient& client,
+                                           std::move_only_function<OnDone> callback)
     : _client{client}
     , _callback{std::move(callback)}
     , _ready{false}
@@ -67,7 +68,7 @@ namespace jar {
 TextSpeechSynthesizeTask::TextSpeechSynthesizeTask(ITextToSpeechClient& client,
                                                    std::string_view text,
                                                    std::string_view lang,
-                                                   Callback callback)
+                                                   std::move_only_function<OnDone> callback)
     : SpeechSynthesizeTask{client, std::move(callback)}
     , _text{text}
     , _lang{lang}
@@ -93,7 +94,7 @@ namespace jar {
 SsmlSpeechSynthesizeTask::SsmlSpeechSynthesizeTask(ITextToSpeechClient& client,
                                                    std::string_view ssml,
                                                    std::string_view lang,
-                                                   Callback callback)
+                                                   std::move_only_function<OnDone> callback)
     : SpeechSynthesizeTask{client, std::move(callback)}
     , _ssml{ssml}
     , _lang{lang}

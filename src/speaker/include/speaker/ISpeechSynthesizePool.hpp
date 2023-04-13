@@ -13,11 +13,15 @@ public:
     virtual ~ISpeechSynthesizePool() = default;
 
     virtual void
-    synthesizeText(std::string_view text, std::string_view lang, std::function<OnDone> callback)
+    synthesizeText(std::string_view text,
+                   std::string_view lang,
+                   std::move_only_function<OnDone> callback)
         = 0;
 
     virtual void
-    synthesizeSsml(std::string_view ssml, std::string_view lang, std::function<OnDone> callback)
+    synthesizeSsml(std::string_view ssml,
+                   std::string_view lang,
+                   std::move_only_function<OnDone> callback)
         = 0;
 };
 
