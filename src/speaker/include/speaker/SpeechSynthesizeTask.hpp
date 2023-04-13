@@ -1,7 +1,6 @@
 #pragma once
 
 #include <functional>
-#include <memory>
 #include <string>
 #include <string_view>
 #include <system_error>
@@ -12,7 +11,6 @@ class ITextToSpeechClient;
 
 class SpeechSynthesizeTask {
 public:
-    using Ptr = std::unique_ptr<SpeechSynthesizeTask>;
     using Callback = std::function<void(std::string audio, std::error_code error)>;
 
     explicit SpeechSynthesizeTask(ITextToSpeechClient& client, Callback callback);

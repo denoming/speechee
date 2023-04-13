@@ -366,8 +366,8 @@ private:
 
 private:
     GstElement* _pipeline;
-    AudioBufferList::Ptr _bufferList;
-    PlayerLoop::Ptr _mainLoop;
+    std::unique_ptr<AudioBufferList> _bufferList;
+    std::unique_ptr<PlayerLoop> _mainLoop;
     std::atomic<bool> _dataRequired;
     std::atomic<PlayState> _state;
     OnStateUpdateSignal _onStateUpdateSig;

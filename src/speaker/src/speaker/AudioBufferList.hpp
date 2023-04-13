@@ -1,6 +1,5 @@
 #pragma once
 
-#include <memory>
 #include <mutex>
 #include <string_view>
 
@@ -11,8 +10,6 @@ namespace jar {
 
 class AudioBufferList {
 public:
-    using Ptr = std::unique_ptr<AudioBufferList>;
-
     explicit AudioBufferList(std::size_t initialSize = 16);
 
     explicit AudioBufferList(std::string_view audio);

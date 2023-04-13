@@ -2,18 +2,14 @@
 
 #include "speaker/Types.hpp"
 
-#include <sigc++/connection.h>
 #include <sigc++/signal.h>
 
-#include <memory>
 #include <string>
 
 namespace jar {
 
 class IPlayer {
 public:
-    using Ptr = std::unique_ptr<IPlayer>;
-
     /* Signatures */
     using OnStateUpdate = void(PlayState state);
     /* Signals */

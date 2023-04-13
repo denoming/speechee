@@ -1,7 +1,6 @@
 #pragma once
 
 #include <functional>
-#include <memory>
 #include <string_view>
 #include <system_error>
 
@@ -9,22 +8,16 @@ namespace jar {
 
 class ISpeechSynthesizePool {
 public:
-    using Ptr = std::unique_ptr<ISpeechSynthesizePool>;
-
-    using OnCompleteSig = void(std::string audio, std::error_code error);
+    using OnDone = void(std::string audio, std::error_code error);
 
     virtual ~ISpeechSynthesizePool() = default;
 
     virtual void
-    synthesizeText(std::string_view text,
-                   std::string_view lang,
-                   std::function<OnCompleteSig> callback)
+    synthesizeText(std::string_view text, std::string_view lang, std::function<OnDone> callback)
         = 0;
 
     virtual void
-    synthesizeSsml(std::string_view ssml,
-                   std::string_view lang,
-                   std::function<OnCompleteSig> callback)
+    synthesizeSsml(std::string_view ssml, std::string_view lang, std::function<OnDone> callback)
         = 0;
 };
 

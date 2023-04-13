@@ -56,11 +56,11 @@ public:
     }
 
 private:
-    Speaker::Ptr _speaker;
-    SpeakerService::Ptr _speakerService;
-    SpeechSynthesizePool::Ptr _synthesizePool;
-    TextToSpeechClient::Ptr _client;
-    Player::Ptr _player;
+    std::unique_ptr<Speaker> _speaker;
+    std::unique_ptr<SpeakerService> _speakerService;
+    std::unique_ptr<SpeechSynthesizePool> _synthesizePool;
+    std::unique_ptr<TextToSpeechClient> _client;
+    std::unique_ptr<Player> _player;
 };
 
 SpeakerSubsystem::SpeakerSubsystem()

@@ -18,7 +18,7 @@ SpeechSynthesizePool::~SpeechSynthesizePool()
 void
 SpeechSynthesizePool::synthesizeText(std::string_view text,
                                      std::string_view lang,
-                                     std::function<OnCompleteSig> callback)
+                                     std::function<OnDone> callback)
 {
     BOOST_ASSERT(!text.empty());
     BOOST_ASSERT(!lang.empty());
@@ -30,7 +30,7 @@ SpeechSynthesizePool::synthesizeText(std::string_view text,
 void
 SpeechSynthesizePool::synthesizeSsml(std::string_view ssml,
                                      std::string_view lang,
-                                     std::function<OnCompleteSig> callback)
+                                     std::function<OnDone> callback)
 {
     BOOST_ASSERT(!ssml.empty());
     BOOST_ASSERT(!lang.empty());
@@ -82,7 +82,7 @@ SpeechSynthesizePool::waitTask(std::stop_token stoken)
     return !stoken.stop_requested();
 }
 
-SpeechSynthesizeTask::Ptr
+std::unique_ptr<SpeechSynthesizeTask>
 SpeechSynthesizePool::nextTask()
 {
     std::lock_guard lock{_dataGuard};

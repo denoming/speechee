@@ -21,15 +21,15 @@ public:
     void
     synthesizeText(std::string_view text,
                    std::string_view lang,
-                   std::function<OnCompleteSig> callback) final;
+                   std::function<OnDone> callback) final;
 
     void
     synthesizeSsml(std::string_view ssml,
                    std::string_view lang,
-                   std::function<OnCompleteSig> callback) final;
+                   std::function<OnDone> callback) final;
 
 private:
-    using Tasks = std::list<SpeechSynthesizeTask::Ptr>;
+    using Tasks = std::list<std::unique_ptr<SpeechSynthesizeTask>>;
 
     void
     setUp(std::size_t threads);
@@ -46,7 +46,7 @@ private:
     bool
     waitTask(std::stop_token stoken);
 
-    SpeechSynthesizeTask::Ptr
+    std::unique_ptr<SpeechSynthesizeTask>
     nextTask();
 
 private:

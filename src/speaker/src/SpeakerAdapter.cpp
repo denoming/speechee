@@ -2,6 +2,8 @@
 
 #include "dbus/Config.hpp"
 
+#include <sdbus-c++/IObject.h>
+
 namespace jar {
 
 SpeakerAdapter::SpeakerAdapter(sdbus::IObject& object)

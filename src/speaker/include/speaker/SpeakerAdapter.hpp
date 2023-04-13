@@ -1,6 +1,10 @@
 #pragma once
 
-#include <sdbus-c++/IObject.h>
+#include <string>
+
+namespace sdbus {
+class IObject;
+}
 
 namespace jar {
 

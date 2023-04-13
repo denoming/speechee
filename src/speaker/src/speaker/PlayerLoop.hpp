@@ -1,6 +1,5 @@
 #pragma once
 
-#include <memory>
 #include <thread>
 
 #include <glibmm.h>
@@ -9,8 +8,6 @@ namespace jar {
 
 class PlayerLoop {
 public:
-    using Ptr = std::unique_ptr<PlayerLoop>;
-
     PlayerLoop();
 
     ~PlayerLoop();
