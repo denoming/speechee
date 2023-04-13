@@ -29,15 +29,15 @@ TEST_F(SpeakerTest, SynthesizeText)
     static constexpr std::string_view kText{"Some text"};
     static constexpr std::string_view kLang{"en-gb"};
 
-    std::function<ISpeechSynthesizePool::OnCompleteSig> callback1;
+    std::move_only_function<ISpeechSynthesizePool::OnDone> callback1;
     EXPECT_CALL(pool, synthesizeText(kText, kLang, _))
-        .WillOnce(SaveArg<2>(&callback1))
+        .WillOnce([&](auto, auto, auto c) { callback1 = std::move(c); })
         .RetiresOnSaturation();
     speaker.synthesizeText(kText, kLang);
 
-    std::function<ISpeechSynthesizePool::OnCompleteSig> callback2;
+    std::move_only_function<ISpeechSynthesizePool::OnDone> callback2;
     EXPECT_CALL(pool, synthesizeText(kText, kLang, _))
-        .WillOnce(SaveArg<2>(&callback2))
+        .WillOnce([&](auto, auto, auto c) { callback2 = std::move(c); })
         .RetiresOnSaturation();
     speaker.synthesizeText(kText, kLang);
 
@@ -58,7 +58,7 @@ TEST_F(SpeakerTest, SynthesizeSsml)
     static constexpr std::string_view kLang{"en-gb"};
 
     EXPECT_CALL(pool, synthesizeSsml(kSsml, kLang, _))
-        .WillOnce(InvokeArgument<2>(std::string{}, std::error_code{}))
+        .WillOnce([&](auto, auto, auto callback) { callback(std::string{}, std::error_code{}); })
         .RetiresOnSaturation();
     speaker.synthesizeSsml(kSsml, kLang);
 }
@@ -68,9 +68,9 @@ TEST_F(SpeakerTest, SynthesizeError)
     static constexpr std::string_view kText{"Some ssml"};
     static constexpr std::string_view kLang{"en-gb"};
 
-    std::function<ISpeechSynthesizePool::OnCompleteSig> callback;
+    std::move_only_function<ISpeechSynthesizePool::OnDone> callback;
     EXPECT_CALL(pool, synthesizeText(kText, kLang, _))
-        .WillOnce(SaveArg<2>(&callback))
+        .WillOnce([&](auto, auto, auto c) { callback = std::move(c); })
         .RetiresOnSaturation();
 
     speaker.synthesizeText(kText, kLang);

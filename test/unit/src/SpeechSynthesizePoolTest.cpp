@@ -32,10 +32,10 @@ TEST_F(SpeechSynthesizePoolTest, SynthesizeText)
 
     EXPECT_CALL(client, synthesizeText(text, lang, _)).WillOnce(Return(cont));
 
-    MockFunction<SpeechSynthesizePool::OnCompleteSig> callback;
+    MockFunction<SpeechSynthesizePool::OnDone> callback;
     EXPECT_CALL(callback, Call(cont, std::error_code{}));
 
-    Waiter<SpeechSynthesizePool::OnCompleteSig> waiter;
+    Waiter<SpeechSynthesizePool::OnDone> waiter;
     pool.synthesizeText(
         text, lang, waiter.enroll([&](std::string audio, std::error_code errorCode) {
             callback.Call(std::move(audio), errorCode);
@@ -52,10 +52,10 @@ TEST_F(SpeechSynthesizePoolTest, SynthesizeSsml)
 
     EXPECT_CALL(client, synthesizeSsml(ssml, lang, _)).WillOnce(Return(cont));
 
-    MockFunction<SpeechSynthesizePool::OnCompleteSig> callback;
+    MockFunction<SpeechSynthesizePool::OnDone> callback;
     EXPECT_CALL(callback, Call(cont, std::error_code{}));
 
-    Waiter<SpeechSynthesizePool::OnCompleteSig> waiter;
+    Waiter<SpeechSynthesizePool::OnDone> waiter;
     pool.synthesizeSsml(
         ssml, lang, waiter.enroll([&](std::string audio, std::error_code errorCode) {
             callback.Call(std::move(audio), errorCode);
