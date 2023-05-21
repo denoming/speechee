@@ -1,11 +1,12 @@
 #include "speaker/SpeakerSubsystem.hpp"
 
-#include "jarvis/Logger.hpp"
 #include "speaker/Player.hpp"
 #include "speaker/Speaker.hpp"
 #include "speaker/SpeakerService.hpp"
 #include "speaker/SpeechSynthesizePool.hpp"
 #include "tts/TextToSpeechClient.hpp"
+
+#include <jarvis/Logger.hpp>
 
 #include <boost/assert.hpp>
 

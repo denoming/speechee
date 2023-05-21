@@ -1,9 +1,8 @@
-#include <iostream>
-
-#include "jarvis/speaker/SpeakerClient.hpp"
+#include <jarvis/speaker/SpeakerClient.hpp>
 
 #include <boost/program_options.hpp>
 
+#include <iostream>
 #include <string>
 
 namespace po = boost::program_options;

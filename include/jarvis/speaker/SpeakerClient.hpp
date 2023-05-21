@@ -1,9 +1,9 @@
 #pragma once
 
-#include <memory>
+#include <jarvis/speaker/ISpeakerClient.hpp>
+#include <jarvis/speaker/SpeakerExport.hpp>
 
-#include "jarvis/speaker/ISpeakerClient.hpp"
-#include "jarvis/speaker/SpeakerExport.hpp"
+#include <memory>
 
 namespace jar {
 

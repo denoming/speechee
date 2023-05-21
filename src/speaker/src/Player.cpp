@@ -1,9 +1,10 @@
 #include "speaker/Player.hpp"
 
-#include "jarvis/Logger.hpp"
 #include "speaker/AudioBufferList.hpp"
 #include "speaker/Formatters.hpp"
 #include "speaker/PlayerLoop.hpp"
+
+#include <jarvis/Logger.hpp>
 
 #include <boost/assert.hpp>
 #include <gst/gst.h>
