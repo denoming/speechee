@@ -21,8 +21,6 @@ else()
 endif()
 
 include(AddBoost)
-include(AddSpdLog)
-include(AddOpenSSL)
 include(AddSigCpp)
 include(AddGLibmm)
 include(AddGst)
