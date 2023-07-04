@@ -1,25 +1,25 @@
 include(GNUInstallDirs)
 
-set(TARGET jarvis-speaker)
+set(TARGET speechee)
 
 add_executable(${TARGET} "")
-add_executable(Jarvis::Speaker ALIAS ${TARGET})
+add_executable(Speechee::Speechee ALIAS ${TARGET})
 
 target_sources(${TARGET}
-    PRIVATE SpeakerApplication.cpp
+    PRIVATE ServiceApplication.cpp
 )
 
 target_link_libraries(${TARGET}
     PRIVATE
-        Jarvis::Common
-        Jarvis::Speaker::Speaker
+        Jarvisto::Jarvisto
+        Speechee::Speaker
 )
 
 target_compile_features(${TARGET} PUBLIC cxx_std_23)
 
 install(
     TARGETS ${TARGET}
-    COMPONENT JarvisSpeakerRuntime
+    COMPONENT SpeecheeRuntime
 )
 
 add_subdirectory(client)

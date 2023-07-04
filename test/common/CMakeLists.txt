@@ -1,7 +1,7 @@
-set(TARGET jarvis-speaker-test-common)
+set(TARGET speechee-test-common)
 
 add_library(${TARGET} STATIC)
-add_library(Jarvis::Speaker::Test::Common ALIAS ${TARGET})
+add_library(Speechee::Test::Common ALIAS ${TARGET})
 
 target_sources(${TARGET}
     PRIVATE src/TestMain.cpp
@@ -14,8 +14,8 @@ target_include_directories(${TARGET}
 )
 
 target_link_libraries(${TARGET}
-    PUBLIC Jarvis::Speaker::Speaker
-           Jarvis::Speaker::Tts
+    PUBLIC Speechee::Speaker
+           Speechee::Tts
     PUBLIC GTest::gtest GTest::gmock
 )
 

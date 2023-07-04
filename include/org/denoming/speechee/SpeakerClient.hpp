@@ -1,13 +1,13 @@
 #pragma once
 
-#include <jarvis/speaker/ISpeakerClient.hpp>
-#include <jarvis/speaker/SpeakerExport.hpp>
+#include <org/denoming/speechee/ISpeakerClient.hpp>
+#include <org/denoming/speechee/SpeecheeExport.hpp>
 
 #include <memory>
 
 namespace jar {
 
-class JARVIS_SPEAKER_EXPORT SpeakerClient final : public ISpeakerClient {
+class SPEECHEE_EXPORT SpeakerClient final : public ISpeakerClient {
 public:
     SpeakerClient();
 

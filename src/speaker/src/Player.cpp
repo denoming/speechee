@@ -4,7 +4,7 @@
 #include "speaker/Formatters.hpp"
 #include "speaker/PlayerLoop.hpp"
 
-#include <jarvis/Logger.hpp>
+#include <jarvisto/Logger.hpp>
 
 #include <boost/assert.hpp>
 #include <gst/gst.h>

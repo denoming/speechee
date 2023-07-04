@@ -1,4 +1,4 @@
-set(TARGET jarvis-speaker-unit-test)
+set(TARGET speechee-unit-test)
 
 add_executable(${TARGET} "")
 
@@ -9,14 +9,14 @@ target_sources(${TARGET}
 )
 
 target_link_libraries(${TARGET}
-    PRIVATE Jarvis::Speaker::Test::Common
+    PRIVATE Speechee::Test::Common
 )
 
 target_compile_features(${TARGET} PUBLIC cxx_std_23)
 
 install(
     TARGETS ${TARGET}
-    COMPONENT JarvisSpeakerRuntime
+    COMPONENT SpeecheeRuntime
 )
 
 if (NOT CMAKE_CROSSCOMPILING)

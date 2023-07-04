@@ -1,7 +1,7 @@
-set(TARGET jarvis-speaker-dbus)
+set(TARGET speechee-dbus)
 
 add_library(${TARGET} INTERFACE)
-add_library(Jarvis::Speaker::Dbus ALIAS ${TARGET})
+add_library(Speechee::Dbus ALIAS ${TARGET})
 
 target_include_directories(${TARGET}
     INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

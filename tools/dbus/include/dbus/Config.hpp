@@ -15,11 +15,11 @@ struct SignalSpec {
 };
 
 /* The dbus service name */
-inline const char* kServiceName{"org.denoming.jarvis.speaker"};
+inline const char* kServiceName{"org.denoming.speechee"};
 /* The object path to dbus service */
-inline const char* kObjectPath{"/org/denoming/jarvis/speaker"};
+inline const char* kObjectPath{"/org/denoming/speechee"};
 /* The interface name */
-inline const char* kInterfaceName{"org.denoming.jarvis.speaker"};
+inline const char* kInterfaceName{"org.denoming.speechee"};
 
 namespace client {
 // clang-format off

@@ -1,7 +1,7 @@
-set(TARGET jarvis-speaker-speaker)
+set(TARGET speechee-speaker)
 
 add_library(${TARGET} STATIC)
-add_library(Jarvis::Speaker::Speaker ALIAS ${TARGET})
+add_library(Speechee::Speaker ALIAS ${TARGET})
 
 target_include_directories(${TARGET}
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
@@ -9,11 +9,11 @@ target_include_directories(${TARGET}
 )
 
 target_link_libraries(${TARGET}
-    PUBLIC Jarvis::Common
+    PUBLIC Jarvisto::Jarvisto
            PkgConfig::SigCpp
     PRIVATE
-        Jarvis::Speaker::Tts
-        Jarvis::Speaker::Dbus
+        Speechee::Tts
+        Speechee::Dbus
         PkgConfig::GLibmm
         PkgConfig::Gst
         PkgConfig::GstApp

@@ -1,7 +1,7 @@
-set(TARGET jarvis-speaker-tts)
+set(TARGET speechee-tts)
 
 add_library(${TARGET} STATIC)
-add_library(Jarvis::Speaker::Tts ALIAS ${TARGET})
+add_library(Speechee::Tts ALIAS ${TARGET})
 
 target_include_directories(${TARGET}
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

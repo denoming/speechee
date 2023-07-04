@@ -6,7 +6,7 @@
 #include "speaker/SpeechSynthesizePool.hpp"
 #include "tts/TextToSpeechClient.hpp"
 
-#include <jarvis/Logger.hpp>
+#include <jarvisto/Logger.hpp>
 
 #include <boost/assert.hpp>
 

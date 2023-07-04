@@ -21,7 +21,7 @@ RUN mkdir -p /run/dbus
 # Copy pulse client config file
 COPY config/pulse/pulse-client.conf /etc/pulse/client.conf
 # Copy dbus policy config file
-COPY config/dbus/org.denoming.jarvis.speaker.conf /etc/dbus-1/system.d
+COPY config/dbus/org.denoming.speechee.conf /etc/dbus-1/system.d
 # Copy entrypoint script
 COPY scripts/entrypoint.sh /usr/sbin
 

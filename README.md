@@ -1,8 +1,8 @@
-# J.A.R.V.I.S Speaker
+# Speechee
 
 # Introduction
 
-The J.A.R.V.I.S speaker service provides synthesizing opportunities of text into speech.
+The speechee service provides synthesizing opportunities of text into speech.
 
 # Build
 
@@ -11,7 +11,7 @@ The J.A.R.V.I.S speaker service provides synthesizing opportunities of text into
 Get test docker image (only once):
 * Build `jarvis-dev-image` yocto image following particular instruction (see `jarvis/doc/build.md`);
 * Run `jarvis/scripts/import-dev-image.sh` script and specify dir with build artifacts as argument;
-* Run local `scripts/run-test-env.sh` script to create `my/jarvis-dev-image:speaker` test docker image.
+* Run local `scripts/run-test-env.sh` script to create `my/jarvis-dev-image:speechee` test docker image.
 
 Note: The yocto build artifacts located at `jarvis/build-qemu/tmp/deploy/images/qemux86-64` folder and should
 contain `jarvis-dev-image-qemux86-64.tar.bz2` file.
@@ -43,7 +43,7 @@ $ cmake --build build-debug --parallel
 # Install
 
 ```shell
-$ cmake --install <build-dir> --prefix <destination-path>/jarvis-speaker
+$ cmake --install <build-dir> --prefix <destination-path>/speechee
 ```
 
 Note: The project should be built previously

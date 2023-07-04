@@ -23,7 +23,7 @@ set(${CMAKE_FIND_PACKAGE_NAME}_comps ${comps})
 # Figure out all components are present
 foreach(comp IN LISTS ${CMAKE_FIND_PACKAGE_NAME}_comps)
     if(${CMAKE_FIND_PACKAGE_NAME}_FIND_REQUIRED_${comp}
-       AND NOT EXISTS ${CMAKE_CURRENT_LIST_DIR}/JarvisSpeaker${comp}.cmake)
+       AND NOT EXISTS ${CMAKE_CURRENT_LIST_DIR}/Speechee${comp}.cmake)
         set(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE "Missing required component: ${comp}")
         set(${CMAKE_FIND_PACKAGE_NAME}_FOUND FALSE)
         return()
@@ -32,5 +32,5 @@ endforeach()
 
 # Include all components one by one
 foreach(comp IN LISTS ${CMAKE_FIND_PACKAGE_NAME}_comps)
-    include(${CMAKE_CURRENT_LIST_DIR}/JarvisSpeaker${comp}.cmake OPTIONAL)
+    include(${CMAKE_CURRENT_LIST_DIR}/Speechee${comp}.cmake OPTIONAL)
 endforeach()

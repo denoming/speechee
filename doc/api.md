@@ -1,11 +1,11 @@
 # Introduction
 
-J.A.R.V.I.S speaker service API represents reliable C++ API.
-This API is based on DBus communication and wrapped by simple C++ class.
+Speechee service API represents reliable C++ API.
+This API is based on DBus communication and represented by simple C++ classes.
 
 # Purpose
 
-The main purpose of J.A.R.V.I.S speaker service API is providing a reliable way to synthesize text into speech.
+The main purpose of speechee service API is providing a reliable way to synthesize text into speech.
 
 # Component Structure
 

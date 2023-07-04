@@ -2,7 +2,7 @@
 
 set -e
 
-DOCKER_IMAGE_NAME=my/jarvis-dev-image:speaker
+DOCKER_IMAGE_NAME=my/jarvis-dev-image:speechee
 
 USER_NAME=${USER}
 USER_UID=$(id -u)
@@ -40,11 +40,11 @@ run_image() {
   --user="${USER_UID}:${USER_GID}" \
   --volume="${PROJECT_DIR}:${PROJECT_DIR}" \
   --volume="${XDG_RUNTIME_DIR}/pulse:${XDG_RUNTIME_DIR}/pulse" \
-  --volume="$HOME/.local/share/jarvis:$HOME/.local/share/jarvis" \
+  --volume="$HOME/.local/share/speechee:$HOME/.local/share/speechee" \
   --network=bridge \
   --workdir="${PROJECT_DIR}" \
   --env PULSE_SERVER="unix:${XDG_RUNTIME_DIR}/pulse/native" \
-  --env GOOGLE_APPLICATION_CREDENTIALS="$HOME/.local/share/jarvis/google-cloud-credentials.json" \
+  --env GOOGLE_APPLICATION_CREDENTIALS="$HOME/.local/share/speechee/google-cloud-credentials.json" \
   --entrypoint="/usr/sbin/entrypoint.sh" \
   "${DOCKER_IMAGE_NAME}")
 

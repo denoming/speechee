@@ -1,4 +1,4 @@
-#include <jarvis/speaker/SpeakerClient.hpp>
+#include <org/denoming/speechee/SpeakerClient.hpp>
 
 #include <boost/program_options.hpp>
 
@@ -30,7 +30,7 @@ main(int argn, char* argv[])
     std::string ssml;
     std::string lang;
 
-    po::options_description d{"J.A.R.V.I.S Speaker CLI"};
+    po::options_description d{"Speechee CLI"};
     // clang-format off
     d.add_options()
         ("help,h", "Display help")
