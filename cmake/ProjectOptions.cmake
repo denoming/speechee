@@ -1,5 +1,10 @@
 include(FeatureSummary)
 
+option(ENABLE_DLT "Enable DLT logging" OFF)
+add_feature_info(
+    ENABLE_DLT ENABLE_DLT "Build project with DLT logging"
+)
+
 option(ENABLE_CLI "Enable building cli" ON)
 add_feature_info(
     ENABLE_CLI ENABLE_CLI "Enable building project with cli"

@@ -1,0 +1,3 @@
+
+#cmakedefine ENABLE_TESTS
+#cmakedefine ENABLE_DLT
