@@ -1,4 +1,4 @@
-#include "speaker/SpeakerService.hpp"
+#include "speaker/DbusSpeakerService.hpp"
 
 #include "dbus/Config.hpp"
 #include "speaker/ISpeaker.hpp"
@@ -22,7 +22,7 @@ getConnection()
     return *connection;
 }
 
-class SpeakerService::Impl final : public sdbus::AdaptorInterfaces<SpeakerAdapter> {
+class DbusSpeakerService::Impl final : public sdbus::AdaptorInterfaces<SpeakerAdapter> {
 public:
     explicit Impl(ISpeaker& speaker)
         : AdaptorInterfaces{getConnection(), dbus::kObjectPath}
@@ -46,22 +46,22 @@ private:
     ISpeaker& _speaker;
 };
 
-SpeakerService::SpeakerService(ISpeaker& speaker)
+DbusSpeakerService::DbusSpeakerService(ISpeaker& speaker)
     : _impl{std::make_unique<Impl>(speaker)}
 {
 }
 
-SpeakerService::~SpeakerService() = default;
+DbusSpeakerService::~DbusSpeakerService() = default;
 
 void
-SpeakerService::start()
+DbusSpeakerService::start()
 {
     BOOST_ASSERT(_impl);
     _impl->registerAdaptor();
 }
 
 void
-SpeakerService::stop()
+DbusSpeakerService::stop()
 {
     BOOST_ASSERT(_impl);
     _impl->unregisterAdaptor();

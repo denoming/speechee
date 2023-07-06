@@ -6,11 +6,11 @@ namespace jar {
 
 class ISpeaker;
 
-class SpeakerService final {
+class HttpSpeakerService {
 public:
-    explicit SpeakerService(ISpeaker& speaker);
+    explicit HttpSpeakerService(std::size_t concurrency, std::uint16_t port, ISpeaker& speaker);
 
-    ~SpeakerService();
+    ~HttpSpeakerService();
 
     void
     start();

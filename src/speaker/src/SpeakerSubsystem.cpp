@@ -1,8 +1,9 @@
 #include "speaker/SpeakerSubsystem.hpp"
 
+#include "speaker/DbusSpeakerService.hpp"
+#include "speaker/HttpSpeakerService.hpp"
 #include "speaker/Player.hpp"
 #include "speaker/Speaker.hpp"
-#include "speaker/SpeakerService.hpp"
 #include "speaker/SpeechSynthesizePool.hpp"
 #include "tts/TextToSpeechClient.hpp"
 
@@ -14,6 +15,9 @@ namespace jar {
 
 class SpeakerSubsystem::Impl {
 public:
+    inline static unsigned kHttpServiceConcurrency{2U};
+    inline static std::uint16_t kHttpServicePort{8080U};
+
     void
     initialize(Application& application)
     {
@@ -21,7 +25,9 @@ public:
         _synthesizePool = std::make_unique<SpeechSynthesizePool>(*_client, 2);
         _player = std::make_unique<Player>();
         _speaker = std::make_unique<Speaker>(*_synthesizePool, *_player);
-        _speakerService = std::make_unique<SpeakerService>(*_speaker);
+        _dbusService = std::make_unique<DbusSpeakerService>(*_speaker);
+        _httpService = std::make_unique<HttpSpeakerService>(
+            kHttpServiceConcurrency, kHttpServicePort, *_speaker);
     }
 
     void
@@ -32,15 +38,19 @@ public:
             LOGE("Failed to initialize player");
         }
 
-        BOOST_ASSERT(_speakerService);
-        _speakerService->start();
+        BOOST_ASSERT(_dbusService);
+        _dbusService->start();
+        BOOST_ASSERT(_httpService);
+        _httpService->start();
     }
 
     void
     tearDown()
     {
-        BOOST_ASSERT(_speakerService);
-        _speakerService->stop();
+        BOOST_ASSERT(_httpService);
+        _httpService->stop();
+        BOOST_ASSERT(_dbusService);
+        _dbusService->stop();
 
         BOOST_ASSERT(_player);
         _player->finalize();
@@ -49,7 +59,8 @@ public:
     void
     finalize()
     {
-        _speakerService.reset();
+        _httpService.reset();
+        _dbusService.reset();
         _speaker.reset();
         _player.reset();
         _synthesizePool.reset();
@@ -58,7 +69,8 @@ public:
 
 private:
     std::unique_ptr<Speaker> _speaker;
-    std::unique_ptr<SpeakerService> _speakerService;
+    std::unique_ptr<DbusSpeakerService> _dbusService;
+    std::unique_ptr<HttpSpeakerService> _httpService;
     std::unique_ptr<SpeechSynthesizePool> _synthesizePool;
     std::unique_ptr<TextToSpeechClient> _client;
     std::unique_ptr<Player> _player;

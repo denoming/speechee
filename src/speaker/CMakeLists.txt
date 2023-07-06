@@ -11,13 +11,13 @@ target_include_directories(${TARGET}
 target_link_libraries(${TARGET}
     PUBLIC Jarvisto::Jarvisto
            PkgConfig::SigCpp
-    PRIVATE
-        Speechee::Tts
-        Speechee::Dbus
-        PkgConfig::GLibmm
-        PkgConfig::Gst
-        PkgConfig::GstApp
-        Boost::headers
+    PRIVATE Boost::headers
+            Boost::json
+            PkgConfig::GLibmm
+            PkgConfig::Gst
+            PkgConfig::GstApp
+            Speechee::Tts
+            Speechee::Dbus
 )
 
 target_sources(${TARGET}
@@ -29,8 +29,9 @@ target_sources(${TARGET}
             src/PlayerLoop.cpp
             src/Speaker.cpp
             src/SpeakerAdapter.cpp
-            src/SpeakerService.cpp
             src/SpeakerSubsystem.cpp
+            src/DbusSpeakerService.cpp
+            src/HttpSpeakerService.cpp
 )
 
 target_compile_features(${TARGET} PUBLIC cxx_std_23)
