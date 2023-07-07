@@ -146,7 +146,7 @@ private:
         };
 
         if (req.method() != http::verb::post) {
-            LOGD("Unknown HTTP method: {}", req.method_string());
+            LOGD("Unknown HTTP method: {}", std::string_view{req.method_string()});
             return makeResponse(http::status::bad_request);
         }
 
@@ -171,7 +171,7 @@ private:
             }
             return res;
         }
-        LOGD("Unknown HTTP target: {}", req.target());
+        LOGD("Unknown HTTP target: {}", std::string_view{req.target()});
         return makeResponse(http::status::bad_request);
     }
 
