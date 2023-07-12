@@ -1,18 +1,20 @@
 #pragma once
 
+#include "speaker/AvailabilitySubject.hpp"
+
 #include <memory>
 
 namespace jar {
 
 class ISpeaker;
 
-class DbusSpeakerService final {
+class DbusSpeakerService final : public AvailabilitySubject {
 public:
     explicit DbusSpeakerService(ISpeaker& speaker);
 
-    ~DbusSpeakerService();
+    ~DbusSpeakerService() final;
 
-    void
+    [[nodiscard]] bool
     start();
 
     void

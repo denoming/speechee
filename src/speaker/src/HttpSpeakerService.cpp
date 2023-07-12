@@ -47,18 +47,19 @@ getMessage(const std::string& message)
                 value.assign(jsStr->begin(), jsStr->end());
             }
         }
+
         std::string lang{"en-US"};
         if (auto jsLang = root->if_contains("lang"); jsLang) {
             if (auto jsStr = jsLang->if_string(); jsStr) {
                 lang.assign(jsStr->begin(), jsStr->end());
             }
         }
+
         if (value.empty()) {
             LOGD("Required value field is missing");
             return std::nullopt;
-        } else {
-            return std::make_tuple(std::move(value), std::move(lang));
         }
+        return std::make_tuple(std::move(value), std::move(lang));
     }
 
     return std::nullopt;
@@ -219,11 +220,11 @@ private:
             _acceptor.set_option(net::socket_base::reuse_address{true});
             _acceptor.bind(_endpoint);
             _acceptor.listen();
-            return true;
         } catch (const sys::system_error& e) {
             LOGE("Exception: {}", e.what());
             return false;
         }
+        return true;
     }
 
     void
@@ -260,6 +261,8 @@ public:
         , _ioc{static_cast<int>(concurrency)}
         , _listener{std::make_shared<HttpListener>(_ioc, tcp::endpoint{tcp::v4(), port}, speaker)}
     {
+        BOOST_ASSERT(concurrency > 0);
+        BOOST_ASSERT(port > 0);
     }
 
     ~HttpServer()
@@ -267,7 +270,7 @@ public:
         stop();
     }
 
-    void
+    [[nodiscard]] bool
     start()
     {
         if (_ioc.stopped()) {
@@ -278,10 +281,13 @@ public:
         LOGD("Start listening on <{}> port", _listener->port());
         if (!_listener->listen()) {
             LOGE("Error on start HTTP server listening");
-        } else {
-            LOGD("Start <{}> HTTP server threads", _concurrency);
-            startThreads();
+            return false;
         }
+
+        LOGD("Start <{}> HTTP server threads", _concurrency);
+        startThreads();
+
+        return true;
     }
 
     void
@@ -340,10 +346,10 @@ public:
     {
     }
 
-    void
+    [[nodiscard]] bool
     start()
     {
-        _server.start();
+        return _server.start();
     }
 
     void
@@ -359,24 +365,51 @@ private:
 HttpSpeakerService::HttpSpeakerService(std::size_t concurrency,
                                        std::uint16_t port,
                                        ISpeaker& speaker)
-    : _impl{std::make_unique<Impl>(concurrency, port, speaker)}
+    : AvailabilitySubject{"SpeakerService.HTTP"}
 {
+    try {
+        _impl = std::make_unique<Impl>(concurrency, port, speaker);
+    } catch (const std::exception& e) {
+        LOGE("Exception: {}", e.what());
+    }
 }
 
-HttpSpeakerService::~HttpSpeakerService() = default;
+HttpSpeakerService::~HttpSpeakerService()
+{
+    if (_impl) {
+        _impl.reset();
+    }
+}
 
-void
+bool
 HttpSpeakerService::start()
 {
-    BOOST_ASSERT(_impl);
-    _impl->start();
+    try {
+        BOOST_ASSERT(_impl);
+        if (_impl) {
+            const bool started = _impl->start();
+            if (started) {
+                availability(AvailabilityStatus::Online);
+            }
+            return started;
+        }
+    } catch (const std::exception& e) {
+        LOGE("Exception: {}", e.what());
+    }
+    return false;
 }
 
 void
 HttpSpeakerService::stop()
 {
-    BOOST_ASSERT(_impl);
-    _impl->stop();
+    try {
+        if (_impl) {
+            availability(AvailabilityStatus::Offline);
+            _impl->stop();
+        }
+    } catch (const std::exception& e) {
+        LOGE("Exception: {}", e.what());
+    }
 }
 
 } // namespace jar

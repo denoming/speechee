@@ -33,6 +33,8 @@ target_sources(${TARGET}
             src/SpeakerSubsystem.cpp
             src/DbusSpeakerService.cpp
             src/HttpSpeakerService.cpp
+            src/AvailabilitySubject.cpp
+            src/AvailabilityObserver.cpp
 )
 
 target_compile_features(${TARGET} PUBLIC cxx_std_23)

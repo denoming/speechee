@@ -1,5 +1,7 @@
 #pragma once
 
+#include "speaker/AvailabilitySubject.hpp"
+
 #include <cstdint>
 #include <memory>
 
@@ -7,13 +9,13 @@ namespace jar {
 
 class ISpeaker;
 
-class HttpSpeakerService {
+class HttpSpeakerService final : public AvailabilitySubject {
 public:
     explicit HttpSpeakerService(std::size_t concurrency, std::uint16_t port, ISpeaker& speaker);
 
-    ~HttpSpeakerService();
+    ~HttpSpeakerService() final;
 
-    void
+    bool
     start();
 
     void

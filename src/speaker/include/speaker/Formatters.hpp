@@ -2,8 +2,8 @@
 
 #include "speaker/Types.hpp"
 
-#include <fmt/std.h>
 #include <fmt/format.h>
+#include <fmt/std.h>
 
 template<>
 struct fmt::formatter<jar::PlayState> : fmt::formatter<std::string_view> {
@@ -14,16 +14,35 @@ struct fmt::formatter<jar::PlayState> : fmt::formatter<std::string_view> {
         std::string_view output{"Unknown"};
         switch (state) {
         case jar::PlayState::Null:
-            output = "PlayState::Null";
+            output = "Null";
             break;
         case jar::PlayState::Idle:
-            output = "PlayState::Idle";
+            output = "Idle";
             break;
         case jar::PlayState::Busy:
-            output = "PlayState::Busy";
+            output = "Busy";
             break;
         case jar::PlayState::Error:
-            output = "PlayState::Error";
+            output = "Error";
+            break;
+        }
+        return formatter<string_view>::format(output, context);
+    }
+};
+
+template<>
+struct fmt::formatter<jar::AvailabilityStatus> : fmt::formatter<std::string_view> {
+    template<typename FormatContext>
+    auto
+    format(jar::AvailabilityStatus state, FormatContext& context) const
+    {
+        std::string_view output{"Unknown"};
+        switch (state) {
+        case jar::AvailabilityStatus::Online:
+            output = "Online";
+            break;
+        case jar::AvailabilityStatus::Offline:
+            output = "Offline";
             break;
         }
         return formatter<string_view>::format(output, context);

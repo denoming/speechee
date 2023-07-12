@@ -6,6 +6,7 @@ target_sources(${TARGET}
     PRIVATE src/SpeechSynthesizePoolTest.cpp
             src/PlayerTest.cpp
             src/SpeakerTest.cpp
+            src/AvailabilityObserverTest.cpp
 )
 
 target_link_libraries(${TARGET}

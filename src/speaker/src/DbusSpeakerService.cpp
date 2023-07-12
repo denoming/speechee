@@ -1,5 +1,7 @@
 #include "speaker/DbusSpeakerService.hpp"
 
+#include <jarvisto/Logger.hpp>
+
 #include "dbus/Config.hpp"
 #include "speaker/ISpeaker.hpp"
 #include "speaker/SpeakerAdapter.hpp"
@@ -47,24 +49,49 @@ private:
 };
 
 DbusSpeakerService::DbusSpeakerService(ISpeaker& speaker)
-    : _impl{std::make_unique<Impl>(speaker)}
+    : AvailabilitySubject{"SpeakerService.DBus"}
 {
+    try {
+        _impl = std::make_unique<Impl>(speaker);
+    } catch (const std::exception& e) {
+        LOGE("Exception: {}", e.what());
+    }
 }
 
-DbusSpeakerService::~DbusSpeakerService() = default;
+DbusSpeakerService::~DbusSpeakerService()
+{
+    if (_impl) {
+        _impl.reset();
+    }
+}
 
-void
+bool
 DbusSpeakerService::start()
 {
-    BOOST_ASSERT(_impl);
-    _impl->registerAdaptor();
+    try {
+        BOOST_ASSERT(_impl);
+        if (_impl) {
+            _impl->registerAdaptor();
+            availability(AvailabilityStatus::Online);
+            return true;
+        }
+    } catch (const std::exception& e) {
+        LOGE("Exception: {}", e.what());
+    }
+    return false;
 }
 
 void
 DbusSpeakerService::stop()
 {
-    BOOST_ASSERT(_impl);
-    _impl->unregisterAdaptor();
+    try {
+        if (_impl) {
+            availability(AvailabilityStatus::Offline);
+            _impl->unregisterAdaptor();
+        }
+    } catch (const std::exception& e) {
+        LOGE("Exception: {}", e.what());
+    }
 }
 
 } // namespace jar
