@@ -19,6 +19,7 @@ target_link_libraries(${TARGET}
             PkgConfig::GstApp
             Speechee::Tts
             Speechee::Dbus
+            Mosquitto::Mosquitto
 )
 
 target_sources(${TARGET}
@@ -35,6 +36,7 @@ target_sources(${TARGET}
             src/HttpSpeakerService.cpp
             src/AvailabilitySubject.cpp
             src/AvailabilityObserver.cpp
+            src/MqttPublisher.cpp
 )
 
 target_compile_features(${TARGET} PUBLIC cxx_std_23)
