@@ -34,14 +34,14 @@ public:
         return _connected;
     }
 
-    [[nodiscard]] bool
+    [[maybe_unused]] bool
     credentials(std::string_view user, std::string_view password)
     {
         return (mosquitto_username_pw_set(_handle, user.data(), password.data())
                 == MOSQ_ERR_SUCCESS);
     }
 
-    bool
+    [[maybe_unused]] bool
     connect(std::string_view host, std::uint16_t port, int keepAlive)
     {
         if (mosquitto_loop_start(_handle) == MOSQ_ERR_SUCCESS) {
@@ -51,7 +51,7 @@ public:
         return false;
     }
 
-    bool
+    [[maybe_unused]] bool
     disconnect(bool force)
     {
         bool disconnected = (mosquitto_disconnect(_handle) == MOSQ_ERR_SUCCESS);
@@ -59,7 +59,7 @@ public:
         return disconnected;
     }
 
-    bool
+    [[maybe_unused]] bool
     publish(std::string_view topic, const void* data, std::size_t size, int qos, bool retain)
     {
         return (mosquitto_publish(
@@ -67,13 +67,13 @@ public:
                 == MOSQ_ERR_SUCCESS);
     }
 
-    sigc::connection
+    [[maybe_unused]] sigc::connection
     onConnect(OnConnectSignal::slot_type&& slot)
     {
         return _onConnectSig.connect(std::move(slot));
     }
 
-    sigc::connection
+    [[maybe_unused]] sigc::connection
     onDisconnect(OnDisconnectSignal::slot_type&& slot)
     {
         return _onDisconnectSig.connect(std::move(slot));
@@ -87,15 +87,15 @@ private:
     }
 
     void
-    notifyConnect(ConnectReturnCode returnCode)
+    notifyConnect(bool success, MqttConnectReturnCode code)
     {
-        _onConnectSig(returnCode);
+        _onConnectSig(success, code);
     }
 
     void
-    notifyDisconnect(bool expected)
+    notifyDisconnect(bool success)
     {
-        _onDisconnectSig(expected);
+        _onDisconnectSig(success);
     }
 
     static void
@@ -103,8 +103,10 @@ private:
     {
         Impl* self = static_cast<Impl*>(object);
         BOOST_ASSERT(self != nullptr);
-        self->connected(code == int(ConnectReturnCode::Accepted));
-        self->notifyConnect(ConnectReturnCode{code});
+
+        const bool success = (code == int(MqttConnectReturnCode::Accepted));
+        self->connected(success);
+        self->notifyConnect(success, MqttConnectReturnCode{code});
     }
 
     static void
@@ -112,6 +114,7 @@ private:
     {
         Impl* self = static_cast<Impl*>(object);
         BOOST_ASSERT(self != nullptr);
+
         self->connected(false);
         self->notifyDisconnect(code == 0);
     }

@@ -36,6 +36,7 @@ target_sources(${TARGET}
             src/HttpSpeakerService.cpp
             src/AvailabilitySubject.cpp
             src/AvailabilityObserver.cpp
+            src/AvailabilityPublisher.cpp
             src/MqttPublisher.cpp
 )
 

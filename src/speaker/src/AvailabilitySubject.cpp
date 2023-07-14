@@ -13,23 +13,23 @@ AvailabilitySubject::name() const
     return _name;
 }
 
-AvailabilityStatus
-AvailabilitySubject::availability() const
+AvailabilityState
+AvailabilitySubject::state() const
 {
-    return _status;
+    return _state;
 }
 
 sigc::connection
-AvailabilitySubject::onAvailabilityUpdate(OnStateUpdateSignal::slot_type&& slot)
+AvailabilitySubject::onStateUpdate(OnStateUpdateSignal::slot_type&& slot)
 {
     return _signal.connect(std::move(slot));
 }
 
 void
-AvailabilitySubject::availability(AvailabilityStatus status)
+AvailabilitySubject::availability(AvailabilityState state)
 {
-    if (_status != status) {
-        _signal(_name, _status = status);
+    if (_state != state) {
+        _signal(_name, _state = state);
     }
 }
 

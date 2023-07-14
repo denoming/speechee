@@ -25,7 +25,7 @@ private:
     updateAvailability();
 
 private:
-    std::unordered_map<std::string, AvailabilityStatus> _statuses;
+    std::unordered_map<std::string, AvailabilityState> _states;
 };
 
 } // namespace jar

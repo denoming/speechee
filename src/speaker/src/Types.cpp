@@ -14,7 +14,7 @@ operator<<(std::ostream& s, PlayState in)
 }
 
 std::ostream&
-operator<<(std::ostream& s, AvailabilityStatus in)
+operator<<(std::ostream& s, AvailabilityState in)
 {
     s << fmt::to_string(in);
     return s;

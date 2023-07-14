@@ -6,27 +6,24 @@ namespace jar {
 
 class AvailabilitySubject : public IAvailabilitySubject {
 public:
-    using OnStateUpdate = void(const std::string& name, AvailabilityStatus state);
-    using OnStateUpdateSignal = sigc::signal<OnStateUpdate>;
-
     explicit AvailabilitySubject(std::string name);
 
     [[nodiscard]] const std::string&
     name() const override;
 
-    [[nodiscard]] AvailabilityStatus
-    availability() const override;
+    [[nodiscard]] AvailabilityState
+    state() const override;
 
     [[maybe_unused]] sigc::connection
-    onAvailabilityUpdate(OnStateUpdateSignal::slot_type&& slot) override;
+    onStateUpdate(OnStateUpdateSignal::slot_type&& slot) override;
 
 protected:
     void
-    availability(AvailabilityStatus status);
+    availability(AvailabilityState status);
 
 private:
     std::string _name;
-    AvailabilityStatus _status{AvailabilityStatus::Offline};
+    AvailabilityState _state{AvailabilityState::Offline};
     OnStateUpdateSignal _signal;
 };
 

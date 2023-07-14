@@ -389,7 +389,7 @@ HttpSpeakerService::start()
         if (_impl) {
             const bool started = _impl->start();
             if (started) {
-                availability(AvailabilityStatus::Online);
+                availability(AvailabilityState::Online);
             }
             return started;
         }
@@ -404,7 +404,7 @@ HttpSpeakerService::stop()
 {
     try {
         if (_impl) {
-            availability(AvailabilityStatus::Offline);
+            availability(AvailabilityState::Offline);
             _impl->stop();
         }
     } catch (const std::exception& e) {

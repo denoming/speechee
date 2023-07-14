@@ -72,7 +72,7 @@ DbusSpeakerService::start()
         BOOST_ASSERT(_impl);
         if (_impl) {
             _impl->registerAdaptor();
-            availability(AvailabilityStatus::Online);
+            availability(AvailabilityState::Online);
             return true;
         }
     } catch (const std::exception& e) {
@@ -86,7 +86,7 @@ DbusSpeakerService::stop()
 {
     try {
         if (_impl) {
-            availability(AvailabilityStatus::Offline);
+            availability(AvailabilityState::Offline);
             _impl->unregisterAdaptor();
         }
     } catch (const std::exception& e) {

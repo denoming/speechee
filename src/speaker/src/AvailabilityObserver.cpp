@@ -12,15 +12,15 @@ AvailabilityObserver::AvailabilityObserver(std::string name)
 void
 AvailabilityObserver::add(AvailabilitySubject& subject)
 {
-    const auto [entry, ok] = _statuses.insert({subject.name(), subject.availability()});
+    const auto [entry, ok] = _states.insert({subject.name(), subject.state()});
 
-    subject.onAvailabilityUpdate(sigc::track_obj(
-        [entry, this](const std::string& name, const AvailabilityStatus newStatus) {
-            std::get<AvailabilityStatus>(*entry) = newStatus;
-            if (newStatus == AvailabilityStatus::Online) {
+    subject.onStateUpdate(sigc::track_obj(
+        [entry, this](const std::string& name, const AvailabilityState state) {
+            std::get<AvailabilityState>(*entry) = state;
+            if (state == AvailabilityState::Online) {
                 updateAvailability();
             } else {
-                availability(AvailabilityStatus::Offline);
+                availability(AvailabilityState::Offline);
             }
         },
         *this));
@@ -31,7 +31,7 @@ AvailabilityObserver::add(AvailabilitySubject& subject)
 void
 AvailabilityObserver::remove(AvailabilitySubject& subject)
 {
-    if (_statuses.erase(subject.name()) > 0) {
+    if (_states.erase(subject.name()) > 0) {
         updateAvailability();
     }
 }
@@ -39,19 +39,18 @@ AvailabilityObserver::remove(AvailabilitySubject& subject)
 void
 AvailabilityObserver::updateAvailability()
 {
-    if (_statuses.empty()) {
-        availability(AvailabilityStatus::Offline);
+    if (_states.empty()) {
+        availability(AvailabilityState::Offline);
     } else {
-        auto ownStatus = AvailabilityStatus::Online;
-        for (const auto& [name, status] : _statuses) {
-            if (status != AvailabilityStatus::Online) {
-                ownStatus = AvailabilityStatus::Offline;
+        auto ownStatus = AvailabilityState::Online;
+        for (const auto& [name, status] : _states) {
+            if (status != AvailabilityState::Online) {
+                ownStatus = AvailabilityState::Offline;
                 break;
             }
         }
         availability(ownStatus);
     }
-
 }
 
 } // namespace jar

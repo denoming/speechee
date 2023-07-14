@@ -1,8 +1,10 @@
 #include "speaker/SpeakerSubsystem.hpp"
 
 #include "speaker/AvailabilityObserver.hpp"
+#include "speaker/AvailabilityPublisher.hpp"
 #include "speaker/DbusSpeakerService.hpp"
 #include "speaker/HttpSpeakerService.hpp"
+#include "speaker/MqttPublisher.hpp"
 #include "speaker/Player.hpp"
 #include "speaker/Speaker.hpp"
 #include "speaker/SpeechSynthesizePool.hpp"
@@ -29,11 +31,17 @@ public:
         _dbusService = std::make_unique<DbusSpeakerService>(*_speaker);
         _httpService = std::make_unique<HttpSpeakerService>(kHttpConcurrency, kHttpPort, *_speaker);
         _observer = std::make_unique<AvailabilityObserver>("speechee");
+        _mqtt = std::make_unique<MqttPublisher>();
+        _publisher = std::make_unique<AvailabilityPublisher>(*_mqtt, *_observer);
     }
 
     void
     setUp(Application& /*application*/)
     {
+        BOOST_ASSERT(_mqtt);
+        _mqtt->connect("192.168.1.43");
+        _mqtt->credentials("denys", "123456");
+
         BOOST_ASSERT(_observer);
         _observer->add(*_dbusService);
         _observer->add(*_httpService);
@@ -57,6 +65,15 @@ public:
     void
     tearDown()
     {
+        if (_mqtt) {
+            _mqtt->disconnect();
+        }
+
+        if (_observer) {
+            _observer->remove(*_httpService);
+            _observer->remove(*_dbusService);
+        }
+
         if (_httpService) {
             _httpService->stop();
         }
@@ -68,16 +85,13 @@ public:
         if (_player) {
             _player->finalize();
         }
-
-        if (_observer) {
-            _observer->remove(*_httpService);
-            _observer->remove(*_dbusService);
-        }
     }
 
     void
     finalize()
     {
+        _mqtt.reset();
+        _publisher.reset();
         _observer.reset();
         _httpService.reset();
         _dbusService.reset();
@@ -95,6 +109,8 @@ private:
     std::unique_ptr<TextToSpeechClient> _client;
     std::unique_ptr<AvailabilityObserver> _observer;
     std::unique_ptr<Player> _player;
+    std::unique_ptr<MqttPublisher> _mqtt;
+    std::unique_ptr<AvailabilityPublisher> _publisher;
 };
 
 SpeakerSubsystem::SpeakerSubsystem()
