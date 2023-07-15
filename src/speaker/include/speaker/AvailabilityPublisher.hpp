@@ -17,7 +17,7 @@ private:
     publish();
 
     void
-    onAvailabilityUpdate(const std::string& name, AvailabilityState state);
+    onStateUpdate(const std::string& name, AvailabilityState state);
 
     void
     onPublisherConnect(bool success, MqttConnectReturnCode code);

@@ -15,4 +15,9 @@ add_feature_info(
     ENABLE_TESTS ENABLE_TESTS "Build project with tests"
 )
 
+option(ENABLE_INTEGRATION "Enable HomeAssistant integration" OFF)
+add_feature_info(
+    ENABLE_INTEGRATION ENABLE_INTEGRATION "Build project with HomeAssistant integration"
+)
+
 feature_summary(WHAT ALL)

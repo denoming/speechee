@@ -20,6 +20,10 @@ class SpeakerSubsystem::Impl {
 public:
     inline static std::size_t kHttpConcurrency{2U};
     inline static std::uint16_t kHttpPort{8080U};
+    inline static std::string kMqttUser{"<username>"};
+    inline static std::string kMqttPassword{"<password>"};
+    inline static std::string kMqttServer{"<address>"};
+
 
     void
     initialize(Application& /*application*/)
@@ -39,8 +43,8 @@ public:
     setUp(Application& /*application*/)
     {
         BOOST_ASSERT(_mqtt);
-        _mqtt->connect("192.168.1.43");
-        _mqtt->credentials("denys", "123456");
+        _mqtt->credentials(kMqttUser, kMqttPassword);
+        _mqtt->connect(kMqttServer);
 
         BOOST_ASSERT(_observer);
         _observer->add(*_dbusService);
@@ -65,15 +69,6 @@ public:
     void
     tearDown()
     {
-        if (_mqtt) {
-            _mqtt->disconnect();
-        }
-
-        if (_observer) {
-            _observer->remove(*_httpService);
-            _observer->remove(*_dbusService);
-        }
-
         if (_httpService) {
             _httpService->stop();
         }
@@ -84,6 +79,15 @@ public:
 
         if (_player) {
             _player->finalize();
+        }
+
+        if (_observer) {
+            _observer->remove(*_httpService);
+            _observer->remove(*_dbusService);
+        }
+
+        if (_mqtt) {
+            _mqtt->disconnect();
         }
     }
 
