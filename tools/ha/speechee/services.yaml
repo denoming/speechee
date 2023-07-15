@@ -1,0 +1,37 @@
+synthesize_text:
+  name: Synthesize Text
+  description: Synthesizes given text to speech
+  fields:
+    text:
+      name: Text
+      description: The text for synthesis
+      required: true
+      example: "Hello World"
+      selector:
+        text:
+    lang:
+      name: Language
+      description: The language of speech
+      required: true
+      default: en-US
+      selector:
+        text:
+
+synthesize_ssml:
+  name: Synthesize SSML
+  description: Synthesizes given text in SSML format to speech
+  fields:
+    text:
+      name: Text
+      description: The text for synthesis in SSML format
+      required: true
+      example: '<speak>Hello <break time="1s"/> World</speak>'
+      selector:
+        text:
+    lang:
+      name: Language
+      description: The language of speech
+      required: true
+      default: en-US
+      selector:
+        text:
