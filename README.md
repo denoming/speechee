@@ -47,3 +47,33 @@ $ cmake --install <build-dir> --prefix <destination-path>/speechee
 ```
 
 Note: The project should be built previously
+
+# Using 
+
+Synthesize text request example:
+```bash
+curl -X POST http://<ip-address>:8080/synthesize-text \
+  -H "Content-Type: application/json" \
+  -d '{"text": "Hello World", "lang": "en-US"}'
+```
+
+Synthesize SSML request example:
+```bash
+curl -X POST http://<ip-address>:8080/synthesize-ssml \
+  -H "Content-Type: application/json" \
+  -d '{"value": "<speak>Hello <break time=\"1s\"/> World</speak>", "lang": "en-US"}'
+```
+
+Bad request example 1:
+```bash
+curl -X POST http://<ip-address>:8080/synthesize-ssml \
+  -H "Content-Type: application/json" \
+  -d '{"body": "Hello World"}'
+```
+
+Bad request example 2:
+```bash
+curl -X GET http://<ip-address>:8080/synthesize-ssml
+```
+
+Note: Change `<ip-address>` to particular IP address of server where `speechee` service is running.
