@@ -41,10 +41,10 @@ getMessage(const std::string& message)
     }
 
     if (auto root = json.if_object(); root) {
-        std::string value;
-        if (auto jsValue = root->if_contains("value"); jsValue) {
-            if (auto jsStr = jsValue->if_string(); jsStr) {
-                value.assign(jsStr->begin(), jsStr->end());
+        std::string text;
+        if (auto jsText = root->if_contains("text"); jsText) {
+            if (auto jsStr = jsText->if_string(); jsStr) {
+                text.assign(jsStr->begin(), jsStr->end());
             }
         }
 
@@ -55,11 +55,11 @@ getMessage(const std::string& message)
             }
         }
 
-        if (value.empty()) {
+        if (text.empty()) {
             LOGD("Required value field is missing");
             return std::nullopt;
         }
-        return std::make_tuple(std::move(value), std::move(lang));
+        return std::make_tuple(std::move(text), std::move(lang));
     }
 
     return std::nullopt;
