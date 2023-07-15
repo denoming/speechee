@@ -29,7 +29,7 @@ public:
     credentials(std::string_view user, std::string_view password);
 
     [[maybe_unused]] bool
-    connect(std::string_view host, std::uint16_t port = 1883, int keepAlive = 60);
+    connect(std::string_view host, unsigned short port = 1883, int keepAlive = 60);
 
     [[maybe_unused]] bool
     disconnect(bool force = false);

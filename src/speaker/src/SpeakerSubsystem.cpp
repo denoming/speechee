@@ -20,9 +20,9 @@ class SpeakerSubsystem::Impl {
 public:
     inline static std::size_t kHttpConcurrency{2U};
     inline static std::uint16_t kHttpPort{8080U};
-    inline static std::string kMqttUser{"<username>"};
-    inline static std::string kMqttPassword{"<password>"};
-    inline static std::string kMqttServer{"<address>"};
+    inline static std::string kMqttUser{"denys"};
+    inline static std::string kMqttPassword{"123456"};
+    inline static std::string kMqttServer{"192.168.1.43"};
 
 
     void

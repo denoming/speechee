@@ -42,7 +42,7 @@ public:
     }
 
     [[maybe_unused]] bool
-    connect(std::string_view host, std::uint16_t port, int keepAlive)
+    connect(std::string_view host, unsigned short port, int keepAlive)
     {
         if (mosquitto_loop_start(_handle) == MOSQ_ERR_SUCCESS) {
             return (mosquitto_connect_async(_handle, host.data(), port, keepAlive)
@@ -148,7 +148,7 @@ MqttPublisher::credentials(std::string_view user, std::string_view password)
 }
 
 bool
-MqttPublisher::connect(std::string_view host, std::uint16_t port, int keepAlive)
+MqttPublisher::connect(std::string_view host, unsigned short port, int keepAlive)
 {
     BOOST_ASSERT(_impl);
     return _impl->connect(host, port, keepAlive);
