@@ -36,6 +36,7 @@ build_image() {
 run_image() {
   RUN_CMD=(docker run -it \
   --hostname "${USER_NAME}" \
+  -p 8080:8080 \
   --rm \
   --user="${USER_UID}:${USER_GID}" \
   --volume="${PROJECT_DIR}:${PROJECT_DIR}" \

@@ -1,20 +1,20 @@
 # Speechee
 
-# Introduction
+## Introduction
 
-The speechee service provides synthesizing opportunities of text into speech.
+The speechee service provides synthesizing text into speech opportunities.
+Additionally, integration with HomeAssistant is available.
 
-# Build
+## Building
 
-## By Docker
+### By Docker
 
-Get test docker image (only once):
-* Build `jarvis-dev-image` yocto image following particular instruction (see `jarvis/doc/build.md`);
+Prepare docker image (only once):
+* Build `jarvis-dev-image` yocto image following `jarvis/doc/build.md` instruction (see [jarvis](https://github.com/karz0n/jarvis));
 * Run `jarvis/scripts/import-dev-image.sh` script and specify dir with build artifacts as argument;
-* Run local `scripts/run-test-env.sh` script to create `my/jarvis-dev-image:speechee` test docker image.
 
-Note: The yocto build artifacts located at `jarvis/build-qemu/tmp/deploy/images/qemux86-64` folder and should
-contain `jarvis-dev-image-qemux86-64.tar.bz2` file.
+Note: The yocto build artifacts usually located at `jarvis/build-qemu/tmp/deploy/images/qemux86-64` dir
+as `jarvis-dev-image-qemux86-64.tar.bz2` file.
 
 Building:
 ```shell
@@ -23,24 +23,27 @@ $ cmake -B build-debug-docker -G Ninja
 $ cmake --build build-debug-docker --parallel
 ```
 
-## By SDK
+### By SDK
 
 Get SDK installation (only once):
-* Build SDK installation file following particular instruction (see `jarvis/doc/build.md`);
+* Build SDK installation file following `jarvis/doc/build.md` instruction (see [jarvis](https://github.com/karz0n/jarvis));
 * Install SDK using installation file into any dir:
 ```shell
 $ chmod +x jarvis-...-qemux86-64-toolchain-0.1.sh
 $ ./jarvis-...-qemux86-64-toolchain-0.1.sh
 ```
 
+Note: The SDK installation file usually located at `jarvis/build-qemu/tmp/deploy/sdk` dir
+as `jarvis-glibc-*-toolchain-0.1.sh` file.
+
 Building:
 ```shell
 $ source <SDK-installation-path>/environment-setup-core2-64-jarvis-linux
-$ cmake -B build-debug -G Ninja -DCMAKE_TOOLCHAIN_FILE=toolchain/x86_64-jarsdk-linux.cmake
+$ cmake -B build-debug -G Ninja
 $ cmake --build build-debug --parallel
 ```
 
-# Install
+## Installing
 
 ```shell
 $ cmake --install <build-dir> --prefix <destination-path>/speechee
@@ -48,7 +51,17 @@ $ cmake --install <build-dir> --prefix <destination-path>/speechee
 
 Note: The project should be built previously
 
-# Using 
+## Running
+
+```shell
+$ bash scripts/run-test-env.sh
+$ build-debug-docker/stage/bin/speechee
+...
+Start listening on <8080> port
+...
+```
+
+## Using 
 
 Synthesize text request example:
 ```bash
@@ -57,7 +70,7 @@ curl -X POST http://<ip-address>:8080/synthesize-text \
   -d '{"text": "Hello World", "lang": "en-US"}'
 ```
 
-Synthesize SSML request example:
+Synthesize SSML text request example:
 ```bash
 curl -X POST http://<ip-address>:8080/synthesize-ssml \
   -H "Content-Type: application/json" \
