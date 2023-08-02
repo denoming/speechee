@@ -18,7 +18,6 @@ target_link_libraries(${TARGET}
             PkgConfig::Gst
             PkgConfig::GstApp
             Speechee::Tts
-            Speechee::Dbus
             Mosquitto::Mosquitto
 )
 
@@ -30,14 +29,27 @@ target_sources(${TARGET}
             src/Player.cpp
             src/PlayerLoop.cpp
             src/Speaker.cpp
-            src/SpeakerAdapter.cpp
             src/SpeakerSubsystem.cpp
-            src/DbusSpeakerService.cpp
-            src/HttpSpeakerService.cpp
             src/AvailabilitySubject.cpp
             src/AvailabilityObserver.cpp
             src/AvailabilityPublisher.cpp
             src/MqttPublisher.cpp
 )
+
+if(ENABLE_DBUS_SUPPORT)
+    target_link_libraries(${TARGET}
+        PRIVATE Speechee::Dbus
+    )
+    target_sources(${TARGET}
+        PRIVATE src/SpeakerAdapter.cpp
+                src/DbusSpeakerService.cpp
+    )
+endif()
+
+if(ENABLE_HTTP_SUPPORT)
+    target_sources(${TARGET}
+        PRIVATE src/HttpSpeakerService.cpp
+    )
+endif()
 
 target_compile_features(${TARGET} PUBLIC cxx_std_23)

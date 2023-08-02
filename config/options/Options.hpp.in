@@ -1,4 +1,7 @@
 
-#cmakedefine ENABLE_TESTS
 #cmakedefine ENABLE_DLT
+#cmakedefine ENABLE_CLI
+#cmakedefine ENABLE_TESTS
+#cmakedefine ENABLE_DBUS_SUPPORT
+#cmakedefine ENABLE_HTTP_SUPPORT
 #cmakedefine ENABLE_INTEGRATION

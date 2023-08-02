@@ -5,9 +5,9 @@ add_feature_info(
     ENABLE_DLT ENABLE_DLT "Build project with DLT logging"
 )
 
-option(ENABLE_CLI "Enable building cli" ON)
+option(ENABLE_CLI "Enable CLI building" ON)
 add_feature_info(
-    ENABLE_CLI ENABLE_CLI "Enable building project with cli"
+    ENABLE_CLI ENABLE_CLI "Enable building project with CLI"
 )
 
 option(ENABLE_TESTS "Enable testing" ON)
@@ -15,9 +15,19 @@ add_feature_info(
     ENABLE_TESTS ENABLE_TESTS "Build project with tests"
 )
 
-option(ENABLE_INTEGRATION "Enable HomeAssistant integration" OFF)
+option(ENABLE_DBUS_SUPPORT "Enable DBus support" OFF)
 add_feature_info(
-    ENABLE_INTEGRATION ENABLE_INTEGRATION "Build project with HomeAssistant integration"
+    ENABLE_CLI ENABLE_CLI "Enable DBus support (client+service)"
+)
+
+option(ENABLE_HTTP_SUPPORT "Enable HTTP support" ON)
+add_feature_info(
+    ENABLE_CLI ENABLE_CLI "Enable HTTP support (service)"
+)
+
+option(ENABLE_INTEGRATION "Enable HomeAssistant integration support" OFF)
+add_feature_info(
+    ENABLE_INTEGRATION ENABLE_INTEGRATION "Enable HomeAssistant integration support"
 )
 
 feature_summary(WHAT ALL)
