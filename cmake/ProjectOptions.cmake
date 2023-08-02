@@ -5,12 +5,12 @@ add_feature_info(
     ENABLE_DLT ENABLE_DLT "Build project with DLT logging"
 )
 
-option(ENABLE_CLI "Enable CLI building" ON)
+option(ENABLE_CLI "Enable CLI building" OFF)
 add_feature_info(
     ENABLE_CLI ENABLE_CLI "Enable building project with CLI"
 )
 
-option(ENABLE_TESTS "Enable testing" ON)
+option(ENABLE_TESTS "Enable testing" OFF)
 add_feature_info(
     ENABLE_TESTS ENABLE_TESTS "Build project with tests"
 )
