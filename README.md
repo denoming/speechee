@@ -90,3 +90,7 @@ curl -X GET http://<ip-address>:8080/synthesize-ssml
 ```
 
 Note: Change `<ip-address>` to particular IP address of server where `speechee` service is running.
+
+## License
+
+See the [LICENSE](LICENSE.md) file for license rights and limitations (MIT).
