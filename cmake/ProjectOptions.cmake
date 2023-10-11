@@ -6,6 +6,9 @@ add_feature_info(
 )
 
 option(ENABLE_CLI "Enable CLI building" OFF)
+if(ENABLE_CLI)
+    list(APPEND VCPKG_MANIFEST_FEATURES "cli")
+endif()
 add_feature_info(
     ENABLE_CLI ENABLE_CLI "Enable building project with CLI"
 )

@@ -13,7 +13,7 @@ target_sources(${TARGET}
 target_link_libraries(${TARGET}
     PRIVATE Boost::headers
             Boost::program_options
-    PRIVATE Speechee::Client
+            Speechee::Tts
 )
 
 target_compile_features(${TARGET} PRIVATE cxx_std_23)

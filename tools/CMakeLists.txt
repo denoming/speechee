@@ -1,4 +1,4 @@
-if(ENABLE_CLI AND ENABLE_DBUS_SUPPORT)
+if(ENABLE_CLI)
     add_subdirectory(cli)
 endif()
 if(ENABLE_DBUS_SUPPORT)

@@ -46,7 +46,7 @@ run_image() {
   --workdir="${PROJECT_DIR}" \
   --env SPEECHEE_CONFIG="$HOME/.local/share/speechee/speechee.cfg" \
   --env PULSE_SERVER="unix:${XDG_RUNTIME_DIR}/pulse/native" \
-  --env GOOGLE_APPLICATION_CREDENTIALS="$HOME/.local/share/speechee/google-cloud-credentials.json" \
+  --env GOOGLE_APPLICATION_CREDENTIALS="$HOME/.local/share/speechee/speechee-cloud-access.json" \
   --entrypoint="/usr/sbin/entrypoint.sh" \
   "${DOCKER_IMAGE_NAME}")
 

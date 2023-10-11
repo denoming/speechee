@@ -1,6 +1,6 @@
 {
   "name": "speechee",
-  "version": "0.2.1",
+  "version-semver": "0.2.1",
   "builtin-baseline": "9d47b24eacbd1cd94f139457ef6cd35e5d92cc84",
   "dependencies": [
     "jarvisto",
@@ -15,6 +15,7 @@
     "glibmm",
     {
       "name": "google-cloud-cpp",
+      "default-features": false,
       "version>=": "2.13.0",
       "features": [
         "texttospeech"
