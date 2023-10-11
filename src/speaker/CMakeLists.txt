@@ -17,8 +17,8 @@ target_link_libraries(${TARGET}
             PkgConfig::GLibmm
             PkgConfig::Gst
             PkgConfig::GstApp
+            PkgConfig::Mosquitto
             Speechee::Tts
-            Mosquitto::Mosquitto
 )
 
 target_sources(${TARGET}

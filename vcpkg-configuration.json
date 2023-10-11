@@ -2,9 +2,9 @@
   "registries": [
     {
       "kind": "git",
-      "baseline": "768d887b0e6cb8274c8b72bfc8bf6209d0c84ae8",
+      "baseline": "306b1f124807556182e24101adfc4117d1079ab6",
       "repository": "git@github.com:karz0n/vcpkg-registry.git",
-      "packages": [ "automotive-dlt", "jarvisto" ]
+      "packages": [ "automotive-dlt", "jarvisto", "mosquitto" ]
     }
   ]
 }
