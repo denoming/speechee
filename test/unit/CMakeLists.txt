@@ -7,6 +7,7 @@ target_sources(${TARGET}
             src/PlayerTest.cpp
             src/SpeakerTest.cpp
             src/AvailabilityObserverTest.cpp
+            src/GeneralCofigTest.cpp
 )
 
 target_link_libraries(${TARGET}

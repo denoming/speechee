@@ -16,10 +16,13 @@
     {
       "name": "google-cloud-cpp",
       "version>=": "2.13.0",
-      "features": ["texttospeech"]
+      "features": [
+        "texttospeech"
+      ]
     },
     "gstreamer",
     "mosquitto",
-    "libsigcpp"
+    "libsigcpp",
+    "libconfig"
   ]
 }

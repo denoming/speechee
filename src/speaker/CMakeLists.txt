@@ -19,6 +19,8 @@ target_link_libraries(${TARGET}
             PkgConfig::GstApp
             PkgConfig::Mosquitto
             Speechee::Tts
+            libconfig::config
+            libconfig::config++
 )
 
 target_sources(${TARGET}
@@ -34,6 +36,8 @@ target_sources(${TARGET}
             src/AvailabilityObserver.cpp
             src/AvailabilityPublisher.cpp
             src/MqttPublisher.cpp
+            src/ConfigReader.cpp
+            src/GeneralConfig.cpp
 )
 
 if(ENABLE_DBUS_SUPPORT)

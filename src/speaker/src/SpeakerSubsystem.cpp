@@ -2,6 +2,7 @@
 
 #include "speaker/AvailabilityObserver.hpp"
 #include "speaker/AvailabilityPublisher.hpp"
+#include "speaker/GeneralConfig.hpp"
 #include "speaker/MqttPublisher.hpp"
 #include "speaker/Player.hpp"
 #include "speaker/Speaker.hpp"
@@ -24,15 +25,17 @@ namespace jar {
 
 class SpeakerSubsystem::Impl {
 public:
-    inline static const std::string kMqttUser{"denys"};
-    inline static const std::string kMqttPassword{"123456"};
-    inline static const std::string kMqttServer{"192.168.1.43"};
-
     void
     initialize(Application& /*application*/)
     {
+        _config = std::make_unique<GeneralConfig>();
+        if (not _config->load()) {
+            LOGE("Unable to load config file");
+        }
+
         _client = std::make_unique<TextToSpeechClient>();
-        _synthesizePool = std::make_unique<SpeechSynthesizePool>(*_client, 2);
+        _synthesizePool
+            = std::make_unique<SpeechSynthesizePool>(*_client, _config->synthesisThreads());
         _player = std::make_unique<Player>();
         _speaker = std::make_unique<Speaker>(*_synthesizePool, *_player);
         _observer = std::make_unique<AvailabilityObserver>("speechee");
@@ -42,9 +45,9 @@ public:
         _dbusService = std::make_unique<DbusSpeakerService>(*_speaker);
 #endif
 #ifdef ENABLE_HTTP_SUPPORT
-        static const std::size_t kHttpConcurrency{2U};
-        static const std::uint16_t kHttpPort{8080U};
-        _httpService = std::make_unique<HttpSpeakerService>(kHttpConcurrency, kHttpPort, *_speaker);
+        BOOST_ASSERT(_config);
+        _httpService = std::make_unique<HttpSpeakerService>(
+            _config->httpServiceThreads(), _config->httpServicePort(), *_speaker);
 #endif
     }
 
@@ -52,8 +55,9 @@ public:
     setUp(Application& /*application*/)
     {
         BOOST_ASSERT(_mqtt);
-        _mqtt->credentials(kMqttUser, kMqttPassword);
-        _mqtt->connect(kMqttServer);
+        BOOST_ASSERT(_config);
+        _mqtt->credentials(_config->mqttUser(), _config->mqttPassword());
+        _mqtt->connect(_config->mqttServer());
 
         BOOST_ASSERT(_player);
         if (!_player->initialize()) {
@@ -126,9 +130,11 @@ public:
         _player.reset();
         _synthesizePool.reset();
         _client.reset();
+        _config.reset();
     }
 
 private:
+    std::unique_ptr<GeneralConfig> _config;
     std::unique_ptr<Speaker> _speaker;
     std::unique_ptr<SpeechSynthesizePool> _synthesizePool;
     std::unique_ptr<TextToSpeechClient> _client;
