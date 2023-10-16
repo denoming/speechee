@@ -1,7 +1,5 @@
 #pragma once
 
-#include "jarvisto/Export.hpp"
-
 #include <filesystem>
 #include <string_view>
 
@@ -9,7 +7,7 @@
 
 namespace jar {
 
-class JARVISTO_EXPORT ConfigReader {
+class ConfigReader {
 public:
     ConfigReader() = default;
 
