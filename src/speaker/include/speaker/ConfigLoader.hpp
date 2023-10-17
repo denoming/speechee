@@ -7,17 +7,20 @@
 
 namespace jar {
 
-class ConfigReader {
+class ConfigLoader {
 public:
-    ConfigReader() = default;
+    ConfigLoader() = default;
 
-    virtual ~ConfigReader() = default;
-
-    [[nodiscard]] bool
-    readString(std::string_view str);
+    virtual ~ConfigLoader() = default;
 
     [[nodiscard]] bool
-    readFile(const std::filesystem::path& path);
+    load();
+
+    [[nodiscard]] bool
+    load(std::string_view str);
+
+    [[nodiscard]] bool
+    load(std::filesystem::path file);
 
 protected:
     virtual bool

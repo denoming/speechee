@@ -7,30 +7,6 @@ namespace fs = std::filesystem;
 
 namespace jar {
 
-bool
-GeneralConfig::load()
-{
-    if (auto filePathOpt = getEnvVar("SPEECHEE_CONFIG"); filePathOpt) {
-        fs::path filePath = *filePathOpt;
-        return load(filePath);
-    } else {
-        LOGE("Set a path to configuration file in 'SPEECHEE_CONFIG' environment variable");
-        return false;
-    }
-}
-
-bool
-GeneralConfig::load(const std::filesystem::path& path)
-{
-    return readFile(path);
-}
-
-bool
-GeneralConfig::load(std::string_view str)
-{
-    return readString(str);
-}
-
 size_t
 GeneralConfig::synthesisThreads() const
 {

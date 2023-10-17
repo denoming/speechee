@@ -36,7 +36,7 @@ target_sources(${TARGET}
             src/AvailabilityObserver.cpp
             src/AvailabilityPublisher.cpp
             src/MqttPublisher.cpp
-            src/ConfigReader.cpp
+            src/ConfigLoader.cpp
             src/GeneralConfig.cpp
 )
 

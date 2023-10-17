@@ -1,13 +1,13 @@
 #pragma once
 
-#include "speaker/ConfigReader.hpp"
+#include "speaker/ConfigLoader.hpp"
 
 #include <string>
 #include <filesystem>
 
 namespace jar {
 
-class GeneralConfig final : private ConfigReader {
+class GeneralConfig final : public ConfigLoader {
 public:
     static inline uint32_t kSynthesisThreads = 2;
     static inline uint32_t kHttpServicePort = 8080;
@@ -15,16 +15,7 @@ public:
 
     GeneralConfig() = default;
 
-    [[nodiscard]] bool
-    load();
-
-    [[nodiscard]] bool
-    load(const std::filesystem::path& path);
-
-    [[nodiscard]] bool
-    load(std::string_view str);
-
-    [[nodiscard]] size_t
+     [[nodiscard]] size_t
     synthesisThreads() const;
 
     [[nodiscard]] const std::string&

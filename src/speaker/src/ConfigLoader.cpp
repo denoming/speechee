@@ -1,13 +1,27 @@
-#include "speaker/ConfigReader.hpp"
+#include "speaker/ConfigLoader.hpp"
 
 #include <jarvisto/Logger.hpp>
+#include <jarvisto/Utils.hpp>
 
 namespace fs = std::filesystem;
 
 namespace jar {
 
 bool
-ConfigReader::readString(std::string_view str)
+ConfigLoader::load()
+{
+    bool rv{false};
+    if (const auto filePathOpt = getEnvVar("SPEECHEE_CONFIG"); filePathOpt) {
+        fs::path filePath{*filePathOpt};
+        rv = load(filePath);
+    } else {
+        LOGE("Set the path to config file using SPEECHEE_CONFIG env variable");
+    }
+    return rv;
+}
+
+bool
+ConfigLoader::load(std::string_view str)
 {
     try {
         libconfig::Config cfg;
@@ -20,7 +34,7 @@ ConfigReader::readString(std::string_view str)
 }
 
 bool
-ConfigReader::readFile(const std::filesystem::path& file)
+ConfigLoader::load(std::filesystem::path file)
 {
     try {
         libconfig::Config cfg;
