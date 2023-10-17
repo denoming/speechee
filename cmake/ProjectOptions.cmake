@@ -1,6 +1,9 @@
 include(FeatureSummary)
 
 option(ENABLE_DLT "Enable DLT logging" OFF)
+if(ENABLE_CLI)
+    list(APPEND VCPKG_MANIFEST_FEATURES "dlt")
+endif()
 add_feature_info(
     ENABLE_DLT ENABLE_DLT "Build project with DLT logging"
 )
@@ -14,6 +17,9 @@ add_feature_info(
 )
 
 option(ENABLE_TESTS "Enable testing" OFF)
+if(ENABLE_TESTS)
+    list(APPEND VCPKG_MANIFEST_FEATURES "tests")
+endif()
 add_feature_info(
     ENABLE_TESTS ENABLE_TESTS "Build project with tests"
 )
@@ -24,6 +30,9 @@ add_feature_info(
 )
 
 option(ENABLE_HTTP_SUPPORT "Enable HTTP support" ON)
+if(ENABLE_CLI)
+    list(APPEND VCPKG_MANIFEST_FEATURES "http")
+endif()
 add_feature_info(
     ENABLE_CLI ENABLE_CLI "Enable HTTP support (service)"
 )

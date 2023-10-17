@@ -25,5 +25,54 @@
     "mosquitto",
     "libsigcpp",
     "libconfig"
-  ]
+  ],
+  "features": {
+    "dlt": {
+      "description": "DLT supporting",
+      "dependencies": [
+        "automotive-dlt"
+      ]
+    },
+    "cli": {
+      "description": "CLI supporting",
+      "dependencies": [
+        {
+          "name": "boost-program-options",
+          "version>=": "1.81.0"
+        },
+        {
+          "name": "libsndfile",
+          "version>=": "1.2.0",
+          "default-features": false
+        }
+      ]
+    },
+    "http": {
+      "description": "HTTP API supporting",
+      "dependencies": [
+        {
+          "name": "boost-asio",
+          "version>=": "1.81.0",
+          "features": [
+            "ssl"
+          ]
+        },
+        {
+          "name": "boost-beast",
+          "version>=": "1.81.0"
+        }
+      ]
+    },
+    "tests": {
+      "description": "Tests supporting",
+      "dependencies": [
+        "gtest",
+        {
+          "name": "libsndfile",
+          "version>=": "1.2.0",
+          "default-features": false
+        }
+      ]
+    }
+  }
 }
