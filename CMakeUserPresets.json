@@ -1,0 +1,23 @@
+{
+  "version": 6,
+  "configurePresets": [
+    {
+      "name": "debug-vcpkg",
+      "inherits": ["dc-debug-vcpkg-dynamic"],
+      "displayName": "Debug - Vcpkg",
+      "cacheVariables": {
+        "ENABLE_CLI": true,
+        "ENABLE_TESTS": true
+      }
+    },
+    {
+      "name": "release-vcpkg",
+      "inherits": ["dc-release-vcpkg-dynamic"],
+      "displayName": "Release - Vcpkg",
+      "cacheVariables": {
+        "ENABLE_CLI": true,
+        "ENABLE_TESTS": true
+      }
+    }
+  ]
+}
