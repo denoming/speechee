@@ -1,6 +1,10 @@
 {
   "name": "speechee",
   "version-semver": "0.2.1",
+  "maintainers": [
+    "Denys Asauliak <d.asauliak@gmail.com>"
+  ],
+  "supports": "linux and !windows",
   "dependencies": [
     "jarvisto",
     {
