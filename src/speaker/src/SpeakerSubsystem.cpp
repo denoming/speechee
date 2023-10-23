@@ -3,7 +3,6 @@
 #include "speaker/AvailabilityObserver.hpp"
 #include "speaker/AvailabilityPublisher.hpp"
 #include "speaker/GeneralConfig.hpp"
-#include "speaker/MqttPublisher.hpp"
 #include "speaker/Player.hpp"
 #include "speaker/Speaker.hpp"
 #include "speaker/SpeechSynthesizePool.hpp"
@@ -18,6 +17,7 @@
 #endif
 
 #include <jarvisto/Logger.hpp>
+#include <jarvisto/MqttBasicClient.hpp>
 
 #include <boost/assert.hpp>
 
@@ -39,8 +39,8 @@ public:
         _player = std::make_unique<Player>();
         _speaker = std::make_unique<Speaker>(*_synthesizePool, *_player);
         _observer = std::make_unique<AvailabilityObserver>("speechee");
-        _mqtt = std::make_unique<MqttPublisher>();
-        _publisher = std::make_unique<AvailabilityPublisher>(*_mqtt, *_observer);
+        _mqttClient = std::make_unique<MqttBasicClient>();
+        _publisher = std::make_unique<AvailabilityPublisher>(*_mqttClient, *_observer);
 #ifdef ENABLE_DBUS_SUPPORT
         _dbusService = std::make_unique<DbusSpeakerService>(*_speaker);
 #endif
@@ -54,10 +54,17 @@ public:
     void
     setUp(Application& /*application*/)
     {
-        BOOST_ASSERT(_mqtt);
+        BOOST_ASSERT(_mqttClient);
         BOOST_ASSERT(_config);
-        _mqtt->credentials(_config->mqttUser(), _config->mqttPassword());
-        _mqtt->connect(_config->mqttServer());
+        auto ec = _mqttClient->credentials(_config->mqttUser(), _config->mqttPassword());
+        if (ec) {
+            LOGE("Unable to set MQTT credentials: {}", ec.message());
+        } else {
+            ec = _mqttClient->connectAsync(_config->mqttServer());
+            if (ec) {
+                LOGE("Unable to initiate connection to MQTT broker: {}", ec.message());
+            }
+        }
 
         BOOST_ASSERT(_player);
         if (!_player->initialize()) {
@@ -109,15 +116,15 @@ public:
             _player->finalize();
         }
 
-        if (_mqtt) {
-            _mqtt->disconnect();
+        if (_mqttClient) {
+            std::ignore = _mqttClient->disconnect();
         }
     }
 
     void
     finalize()
     {
-        _mqtt.reset();
+        _mqttClient.reset();
         _publisher.reset();
         _observer.reset();
 #ifdef ENABLE_DBUS_SUPPORT
@@ -140,7 +147,7 @@ private:
     std::unique_ptr<TextToSpeechClient> _client;
     std::unique_ptr<AvailabilityObserver> _observer;
     std::unique_ptr<Player> _player;
-    std::unique_ptr<MqttPublisher> _mqtt;
+    std::unique_ptr<MqttBasicClient> _mqttClient;
     std::unique_ptr<AvailabilityPublisher> _publisher;
 #ifdef ENABLE_DBUS_SUPPORT
     std::unique_ptr<DbusSpeakerService> _dbusService;

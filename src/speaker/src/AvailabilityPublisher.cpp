@@ -1,10 +1,12 @@
 #include "speaker/AvailabilityPublisher.hpp"
 
+#include "speaker/AvailabilityObserver.hpp"
 #include "speaker/Formatters.hpp"
 #include "speechee/Options.hpp"
 
 #include <fmt/format.h>
 #include <jarvisto/Logger.hpp>
+#include <jarvisto/MqttBasicClient.hpp>
 #include <sigc++/adaptors/track_obj.h>
 
 #ifdef ENABLE_INTEGRATION
@@ -44,19 +46,21 @@ getIntegrationMessage()
 
 namespace jar {
 
-AvailabilityPublisher::AvailabilityPublisher(MqttPublisher& publisher,
+AvailabilityPublisher::AvailabilityPublisher(MqttBasicClient& client,
                                              AvailabilityObserver& observer)
-    : _publisher{publisher}
+    : _client{client}
     , _name{observer.name()}
     , _state{observer.state()}
 {
 
     observer.onStateUpdate(
         sigc::track_obj([this](auto&& name, auto&& state) { onStateUpdate(name, state); }, this));
-    publisher.onConnect(sigc::track_obj(
-        [this](auto&& success, auto&& code) { onPublisherConnect(success, code); }, this));
 
-    if (publisher.connected()) {
+    std::ignore = _client.onConnect(sigc::track_obj(
+        [this](const MqttReturnCode code) { onPublisherConnect(code == MqttReturnCode::Accepted); },
+        this));
+
+    if (_client.hasConnection()) {
         publish();
     }
 }
@@ -66,12 +70,14 @@ AvailabilityPublisher::publish()
 {
 #ifdef ENABLE_INTEGRATION
     /* Publish integration MQTT discovery message */
-    _publisher.publish(getIntegrationTopic(), getIntegrationMessage());
+    if (auto rv = _client.publish(getIntegrationTopic(), getIntegrationMessage()); not rv) {
+        LOGE("Unable to publish integration discovery message: {}", rv.error().message());
+    }
 #endif
 
     static const std::string kPublishTopic = fmt::format("{}/speaker/state", _name);
-    if (!_publisher.publish(kPublishTopic, fmt::to_string(_state))) {
-        LOGE("Unable to publish <{}> state", _state);
+    if (auto rv = _client.publish(kPublishTopic, fmt::to_string(_state)); not rv) {
+        LOGE("Unable to publish <{}> state: {}", _state, rv.error().message());
     }
 }
 
@@ -82,15 +88,17 @@ AvailabilityPublisher::onStateUpdate(const std::string& name, const Availability
 
     _state = state;
 
-    publish();
+    if (_client.hasConnection()) {
+        publish();
+    }
 }
 
 void
-AvailabilityPublisher::onPublisherConnect(const bool success, const MqttConnectReturnCode code)
+AvailabilityPublisher::onPublisherConnect(const bool hasConnection)
 {
-    LOGD("Connection state update: success<{}>, code<{}>", success, code);
+    LOGD("Connection state update: hasConnection<{}>", hasConnection);
 
-    if (success) {
+    if (hasConnection) {
         publish();
     }
 }

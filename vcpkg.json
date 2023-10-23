@@ -6,7 +6,10 @@
   ],
   "supports": "linux and !windows",
   "dependencies": [
-    "jarvisto",
+    {
+      "name": "jarvisto",
+      "version>=": "0.3.2"
+    },
     {
       "name": "boost-core",
       "version>=": "1.81.0"
