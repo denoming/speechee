@@ -17,8 +17,8 @@ target_link_libraries(${TARGET}
             PkgConfig::GLibmm
             PkgConfig::Gst
             PkgConfig::GstApp
+            PkgConfig::LibConfig
             Speechee::Tts
-            libconfig::config++
 )
 
 target_sources(${TARGET}

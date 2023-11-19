@@ -8,7 +8,7 @@
   "dependencies": [
     {
       "name": "jarvisto",
-      "version>=": "0.3.2"
+      "version>=": "0.3.3#1"
     },
     {
       "name": "boost-core",
@@ -29,7 +29,10 @@
     },
     "gstreamer",
     "libsigcpp",
-    "libconfig"
+    {
+      "name": "libconfig",
+      "version>=": "1.7.3#1"
+    }
   ],
   "features": {
     "cli": {
