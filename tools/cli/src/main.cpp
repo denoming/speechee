@@ -51,6 +51,22 @@ synthesizeSsml(const std::string& /*ssml*/, const std::string& /*lang*/ = "en-US
     std::cout << "API Not supported yet" << std::endl;
 }
 
+static void
+synthesizeSsml(const std::filesystem::path& filePath,
+               const std::string& ssml,
+               const std::string& lang = "en-US")
+{
+    std::error_code error;
+    jar::TextToSpeechClient client;
+    std::string audio = client.synthesizeSsml(ssml, lang, error);
+    if (error) {
+        std::cerr << "Unable to synthesize ssml: " << error.message() << std::endl;
+    } else {
+        std::cout << "Saving to '" << filePath.string() << "' file" << std::endl;
+        saveToFile(filePath, audio);
+    }
+}
+
 int
 main(int argn, char* argv[])
 {
@@ -90,9 +106,9 @@ main(int argn, char* argv[])
 
     if (vm.contains("ssml")) {
         if (vm.contains("file")) {
-            synthesizeText(file, ssml, lang);
+            synthesizeSsml(file, ssml, lang);
         } else {
-            synthesizeText(ssml, lang);
+            synthesizeSsml(ssml, lang);
         }
         return EXIT_SUCCESS;
     }
