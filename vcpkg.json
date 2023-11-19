@@ -28,7 +28,6 @@
       ]
     },
     "gstreamer",
-    "mosquitto",
     "libsigcpp",
     "libconfig"
   ],
