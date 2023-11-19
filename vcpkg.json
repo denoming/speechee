@@ -32,12 +32,6 @@
     "libconfig"
   ],
   "features": {
-    "dlt": {
-      "description": "DLT supporting",
-      "dependencies": [
-        "automotive-dlt"
-      ]
-    },
     "cli": {
       "description": "CLI supporting",
       "dependencies": [
