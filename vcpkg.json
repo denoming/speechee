@@ -41,11 +41,6 @@
         {
           "name": "boost-program-options",
           "version>=": "1.81.0"
-        },
-        {
-          "name": "libsndfile",
-          "version>=": "1.2.0",
-          "default-features": false
         }
       ]
     },
@@ -62,17 +57,6 @@
         {
           "name": "boost-beast",
           "version>=": "1.81.0"
-        }
-      ]
-    },
-    "tests": {
-      "description": "Tests supporting",
-      "dependencies": [
-        "gtest",
-        {
-          "name": "libsndfile",
-          "version>=": "1.2.0",
-          "default-features": false
         }
       ]
     }
