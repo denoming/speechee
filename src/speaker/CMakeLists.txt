@@ -51,6 +51,7 @@ if(ENABLE_HTTP_SUPPORT)
     target_sources(${TARGET}
         PRIVATE src/HttpSpeakerService.cpp
     )
+    target_compile_definitions(${TARGET} PRIVATE BOOST_ASIO_NO_DEPRECATED=1)
 endif()
 
 target_compile_features(${TARGET} PUBLIC cxx_std_23)

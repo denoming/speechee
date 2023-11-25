@@ -26,7 +26,7 @@ install(
     COMPONENT SpeecheeRuntime
 )
 
-if(ENABLE_DBUS_SUPPORT)
+if(ENABLE_DBUS_SUPPORT OR ENABLE_HTTP_SUPPORT)
     add_subdirectory(client)
 endif()
 add_subdirectory(speaker)

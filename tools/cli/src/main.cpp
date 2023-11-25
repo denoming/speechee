@@ -1,5 +1,7 @@
 #include "tts/TextToSpeechClient.hpp"
 
+#include <org/denoming/speechee/HttpSpeakerClient.hpp>
+
 #include <boost/program_options.hpp>
 
 #include <filesystem>
@@ -9,6 +11,8 @@
 
 namespace fs = std::filesystem;
 namespace po = boost::program_options;
+
+using namespace jar;
 
 static void
 saveToFile(const fs::path& filePath, std::string_view audioData)
@@ -24,9 +28,14 @@ saveToFile(const fs::path& filePath, std::string_view audioData)
 }
 
 static void
-synthesizeText(const std::string& /*text*/, const std::string& /*lang*/ = "en-US")
+synthesizeText(const std::string& text, const std::string& lang = "en-US")
 {
-    std::cout << "API Not supported yet" << std::endl;
+    try {
+        HttpSpeakerClient client;
+        client.synthesizeText(text, lang);
+    } catch (const std::exception& e) {
+        std::cout << "Unable to synthesize text: " << e.what() << std::endl;
+    }
 }
 
 static void
@@ -34,11 +43,10 @@ synthesizeText(const std::filesystem::path& filePath,
                const std::string& text,
                const std::string& lang = "en-US")
 {
-    std::error_code error;
     jar::TextToSpeechClient client;
-    std::string audio = client.synthesizeText(text, lang, error);
-    if (error) {
-        std::cerr << "Unable to synthesize text: " << error.message() << std::endl;
+    std::error_code ec;
+    if (std::string audio = client.synthesizeText(text, lang, ec); ec) {
+        std::cerr << "Unable to synthesize text: " << ec.message() << std::endl;
     } else {
         std::cout << "Saving to '" << filePath.string() << "' file" << std::endl;
         saveToFile(filePath, audio);
@@ -46,9 +54,14 @@ synthesizeText(const std::filesystem::path& filePath,
 }
 
 static void
-synthesizeSsml(const std::string& /*ssml*/, const std::string& /*lang*/ = "en-US")
+synthesizeSsml(const std::string& ssml, const std::string& lang = "en-US")
 {
-    std::cout << "API Not supported yet" << std::endl;
+    try {
+        HttpSpeakerClient client;
+        client.synthesizeText(ssml, lang);
+    } catch (const std::exception& e) {
+        std::cout << "Unable to synthesize ssml: " << e.what() << std::endl;
+    }
 }
 
 static void
@@ -56,11 +69,10 @@ synthesizeSsml(const std::filesystem::path& filePath,
                const std::string& ssml,
                const std::string& lang = "en-US")
 {
-    std::error_code error;
     jar::TextToSpeechClient client;
-    std::string audio = client.synthesizeSsml(ssml, lang, error);
-    if (error) {
-        std::cerr << "Unable to synthesize ssml: " << error.message() << std::endl;
+    std::error_code ec;
+    if (std::string audio = client.synthesizeSsml(ssml, lang, ec); ec) {
+        std::cerr << "Unable to synthesize ssml: " << ec.message() << std::endl;
     } else {
         std::cout << "Saving to '" << filePath.string() << "' file" << std::endl;
         saveToFile(filePath, audio);
@@ -79,10 +91,10 @@ main(int argn, char* argv[])
     // clang-format off
     d.add_options()
         ("help,h", "Display help")
-        ("text,t", po::value<std::string>(&text), "Synthesize text")
-        ("ssml,s", po::value<std::string>(&ssml), "Synthesize SSML")
-        ("lang,l", po::value<std::string>(&lang)->default_value("en-US"), "Specify language")
-        ("file,f", po::value<std::string>(&file), "Save to file")
+        ("text,t", po::value<std::string>(&text), "Synthesize given text")
+        ("ssml,s", po::value<std::string>(&ssml), "Synthesize given SSML markup")
+        ("lang,l", po::value<std::string>(&lang)->default_value("en-US"), "Specifying language")
+        ("file,f", po::value<std::string>(&file), "Saving to file")
     ;
     // clang-format on
 

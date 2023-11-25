@@ -1,6 +1,6 @@
-#include "org/denoming/speechee/SpeakerClient.hpp"
+#include "org/denoming/speechee/DbusSpeakerClient.hpp"
 
-#include "client/SpeakerProxy.hpp"
+#include "client/DbusSpeakerProxy.hpp"
 #include "dbus/Config.hpp"
 
 #include <boost/assert.hpp>
@@ -9,10 +9,10 @@
 
 namespace jar {
 
-class SpeakerClient::Impl final : public sdbus::ProxyInterfaces<SpeakerProxy> {
+class DbusSpeakerClient::Impl final : public sdbus::ProxyInterfaces<DbusSpeakerProxy> {
 public:
     Impl()
-        : sdbus::ProxyInterfaces<SpeakerProxy>(dbus::kServiceName, dbus::kObjectPath)
+        : sdbus::ProxyInterfaces<DbusSpeakerProxy>(dbus::kServiceName, dbus::kObjectPath)
     {
         registerProxy();
     }
@@ -43,22 +43,22 @@ public:
     }
 };
 
-SpeakerClient::SpeakerClient()
+DbusSpeakerClient::DbusSpeakerClient()
     : _impl{std::make_unique<Impl>()}
 {
 }
 
-SpeakerClient::~SpeakerClient() = default;
+DbusSpeakerClient::~DbusSpeakerClient() = default;
 
 void
-SpeakerClient::synthesizeText(const std::string& text, const std::string& lang)
+DbusSpeakerClient::synthesizeText(const std::string& text, const std::string& lang)
 {
     BOOST_ASSERT(_impl);
     _impl->synthesizeText(text, lang);
 }
 
 void
-SpeakerClient::synthesizeSsml(const std::string& ssml, const std::string& lang)
+DbusSpeakerClient::synthesizeSsml(const std::string& ssml, const std::string& lang)
 {
     BOOST_ASSERT(_impl);
     _impl->synthesizeSsml(ssml, lang);

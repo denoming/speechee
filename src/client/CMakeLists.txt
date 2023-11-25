@@ -26,16 +26,23 @@ target_include_directories(${TARGET}
     PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
 )
 
-target_sources(${TARGET}
-    PRIVATE
-        src/SpeakerProxy.cpp
-        src/SpeakerClient.cpp
-)
+if(ENABLE_HTTP_SUPPORT)
+    target_sources(${TARGET}
+        PRIVATE
+            src/HttpSpeakerClient.cpp
+    )
+    target_link_libraries(${TARGET} PRIVATE Boost::headers Boost::json)
+    target_compile_definitions(${TARGET} PRIVATE BOOST_ASIO_NO_DEPRECATED=1)
+endif()
 
-target_link_libraries(${TARGET}
+if(ENABLE_DBUS_SUPPORT)
+    target_sources(${TARGET}
     PRIVATE
-        Speechee::Dbus
-)
+        src/DbusSpeakerProxy.cpp
+        src/DbusSpeakerClient.cpp
+    )
+    target_link_libraries(${TARGET} PRIVATE Speechee::Dbus)
+endif()
 
 target_compile_features(${TARGET} PUBLIC cxx_std_23)
 

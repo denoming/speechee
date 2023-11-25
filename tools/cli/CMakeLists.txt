@@ -13,7 +13,13 @@ target_sources(${TARGET}
 target_link_libraries(${TARGET}
     PRIVATE Boost::headers
             Boost::program_options
+            Jarvisto::Jarvisto
             Speechee::Tts
+            Speechee::Client
+)
+
+target_include_directories(${TARGET}
+    PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>
 )
 
 target_compile_features(${TARGET} PRIVATE cxx_std_23)

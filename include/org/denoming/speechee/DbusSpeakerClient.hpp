@@ -7,11 +7,11 @@
 
 namespace jar {
 
-class SPEECHEE_EXPORT SpeakerClient final : public ISpeakerClient {
+class SPEECHEE_EXPORT DbusSpeakerClient final : public ISpeakerClient {
 public:
-    SpeakerClient();
+    DbusSpeakerClient();
 
-    ~SpeakerClient() final;
+    ~DbusSpeakerClient() final;
 
     void
     synthesizeText(const std::string& text, const std::string& lang) final;

@@ -134,14 +134,14 @@ private:
     doClose()
     {
         sys::error_code ec;
-        _stream.socket().shutdown(tcp::socket::shutdown_send, ec);
+        _stream.socket().shutdown(tcp::socket::shutdown_both, ec);
     }
 
     http::message_generator
     doProcess(http::request<http::string_body>&& req)
     {
         const auto makeResponse = [version = req.version()](http::status status) {
-            http::response<http::string_body> res{status, version};
+            http::response<http::empty_body> res{status, version};
             res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
             return res;
         };
@@ -151,7 +151,7 @@ private:
             return makeResponse(http::status::bad_request);
         }
 
-        http::response<http::string_body> res;
+        http::response<http::empty_body> res;
         if (req.target() == kSynthesizeTextTarget) {
             if (auto msg = getMessage(req.body()); msg) {
                 const auto& [value, lang] = *msg;
