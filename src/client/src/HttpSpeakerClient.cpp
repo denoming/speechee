@@ -96,6 +96,7 @@ private:
         req.set(http::field::content_type, kContent);
         req.body() = getTextPayload(text, lang);
         req.prepare_payload();
+        return req;
     }
 
     http::request<http::string_body>
@@ -107,6 +108,7 @@ private:
         req.set(http::field::content_type, kContent);
         req.body() = getSsmlPayload(ssml, lang);
         req.prepare_payload();
+        return req;
     }
 
     static void
