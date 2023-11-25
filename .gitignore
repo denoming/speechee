@@ -1,47 +1,4 @@
-# CMake
-*build*
-
-# C++ objects and libs
-*.slo
-*.lo
-*.o
-*.a
-*.la
-*.lai
-*.so
-*.dll
-*.dylib
-
-# Qt-es
-object_script.*.Release
-object_script.*.Debug
-*_plugin_import.cpp
-/.qmake.cache
-/.qmake.stash
-*.pro.user
-*.pro.user.*
-*.qbs.user
-*.qbs.user.*
-*.moc
-moc_*.cpp
-moc_*.h
-qrc_*.cpp
-ui_*.h
-*.qmlc
-*.jsc
-
-# Qt unit tests
-target_wrapper.*
-
-# QtCreator
-*.autosave
-
-# QtCreator Qml
-*.qmlproject.user
-*.qmlproject.user.*
-
-# QtCreator CMake
-CMakeLists.txt.user*
+### CLion IDE
 
 # CLion user-specific stuff
 .idea/**/workspace.xml
@@ -51,6 +8,7 @@ CMakeLists.txt.user*
 .idea/**/shelf
 .idea/**/.gitignore
 .idea/**/codeStyles/
+.idea/**/inspectionProfiles/
 .idea/**/*.iml
 .idea/**/misc.xml
 .idea/**/modules.xml
@@ -70,3 +28,12 @@ CMakeLists.txt.user*
 
 # CLion file-based project format
 *.iws
+
+### Other stuff
+
+# Python virtual environment
+.venv
+
+# CMake
+build*
+CMakeUserPresets.json
