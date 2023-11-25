@@ -18,7 +18,7 @@ bool
 initializeGst()
 {
     GError* error{nullptr};
-    if (gst_init_check(NULL, NULL, &error) != TRUE) {
+    if (gst_init_check(nullptr, nullptr, &error) != TRUE) {
         BOOST_ASSERT(error != nullptr);
         LOGE("Initialization failed: code: <{}>, domain: <{}>, message: <{}>",
              error->code,
@@ -27,14 +27,6 @@ initializeGst()
         return false;
     }
     return true;
-}
-
-void
-finalizeGst()
-{
-    if (gst_is_initialized() == TRUE) {
-        gst_deinit();
-    }
 }
 
 } // namespace
@@ -53,23 +45,21 @@ public:
     bool
     initialize()
     {
-        LOGI("Initialize player");
-
         if (state() != PlayState::Null) {
             LOGE("Inconsistent state of player");
             return false;
         }
 
         LOGD("Initialize gstreamer");
-        if (!initializeGst()) {
-            LOGE("Failed to initialize gstreamer");
+        if (not initializeGst()) {
+            LOGE("Unable to initialize gstreamer");
             finalize();
             return false;
         }
 
         LOGD("Create gstreamer pipeline");
-        if (!createPipeline()) {
-            LOGE("Failed to create pipeline");
+        if (not createPipeline()) {
+            LOGE("Unable to create pipeline");
             finalize();
             return false;
         }
@@ -85,16 +75,9 @@ public:
     void
     finalize()
     {
-        LOGI("Finalize player");
-
         setState(PlayState::Null);
-
-        LOGD("Stop pipeline main loop");
         stopLoop();
-        LOGD("Destroy gstreamer pipeline");
         destroyPipeline();
-        LOGD("Finalize gstreamer");
-        finalizeGst();
     }
 
     PlayState
@@ -109,18 +92,18 @@ public:
         LOGI("Play audio content: size<{}>", audio.size());
 
         if (state() != PlayState::Idle) {
-            LOGE("Inconsistent state of player");
+            LOGE("Player is not ready to play");
             return false;
         }
 
         LOGD("Start pipeline");
-        if (!startPipeline()) {
-            LOGE("Failed to apply playing state towards player pipeline");
+        if (not startPipeline()) {
+            LOGE("Unable to apply playing state");
             setState(PlayState::Error);
             return false;
         }
 
-        BOOST_ASSERT(!_bufferList);
+        BOOST_ASSERT(not _bufferList);
         _bufferList = std::make_unique<AudioBufferList>(audio);
 
         setState(PlayState::Busy);
@@ -152,7 +135,7 @@ private:
     void
     startLoop()
     {
-        BOOST_ASSERT(!_mainLoop);
+        BOOST_ASSERT(not _mainLoop);
         _mainLoop = std::make_unique<PlayerLoop>();
     }
 
@@ -165,25 +148,25 @@ private:
     bool
     createPipeline()
     {
-        auto* src = gst_element_factory_make("appsrc", "src");
-        auto* parser = gst_element_factory_make("wavparse", nullptr);
-        auto* converter = gst_element_factory_make("audioconvert", nullptr);
-        auto* sink = gst_element_factory_make("autoaudiosink", nullptr);
-        if (!src || !parser || !converter || !sink) {
-            LOGE("Failed to create pipeline elements");
+        auto* const src = gst_element_factory_make("appsrc", "src");
+        auto* const parser = gst_element_factory_make("wavparse", nullptr);
+        auto* const converter = gst_element_factory_make("audioconvert", nullptr);
+        auto* const sink = gst_element_factory_make("autoaudiosink", nullptr);
+        if (not src or not parser or not converter or not sink) {
+            LOGE("Unable to create pipeline elements");
             return false;
         }
 
         if (_pipeline = gst_pipeline_new("player"); _pipeline != nullptr) {
-            gst_bin_add_many(GST_BIN(_pipeline), src, parser, converter, sink, NULL);
+            gst_bin_add_many(GST_BIN_CAST(_pipeline), src, parser, converter, sink, nullptr);
         } else {
-            LOGE("Failed to create pipeline");
+            LOGE("Unable to create pipeline");
             return false;
         }
 
-        if (gst_element_link_many(src, parser, converter, sink, NULL) != TRUE) {
+        if (gst_element_link_many(src, parser, converter, sink, nullptr) != TRUE) {
+            LOGE("Unable to link pipeline elements");
             finalize();
-            LOGE("Failed to link pipeline elements");
             return false;
         }
 
@@ -201,17 +184,15 @@ private:
     void
     destroyPipeline()
     {
-        if (!_pipeline) {
-            return;
+        if (_pipeline != nullptr) {
+            auto* bus = gst_element_get_bus(_pipeline);
+            BOOST_ASSERT(bus != nullptr);
+            gst_bus_remove_watch(bus);
+
+            gst_element_set_state(_pipeline, GST_STATE_NULL);
+            gst_object_unref(_pipeline);
+            _pipeline = nullptr;
         }
-
-        auto* bus = gst_element_get_bus(_pipeline);
-        BOOST_ASSERT(bus != nullptr);
-        gst_bus_remove_watch(bus);
-
-        gst_element_set_state(_pipeline, GST_STATE_NULL);
-        gst_object_unref(_pipeline);
-        _pipeline = nullptr;
     }
 
     bool
@@ -231,7 +212,7 @@ private:
     bool
     feedPipeline()
     {
-        if (!_dataRequired) {
+        if (not _dataRequired) {
             return true;
         }
 
@@ -245,14 +226,14 @@ private:
             if (_bufferList->empty()) {
                 LOGD("Buffer is empty");
                 return false;
-            } else {
-                auto* buffer = _bufferList->pop();
-                GstFlowReturn ret{GST_FLOW_OK};
-                g_signal_emit_by_name(src, "push-buffer", buffer, &ret);
-                gst_buffer_unref(buffer);
-                if (ret != GstFlowReturn::GST_FLOW_OK) {
-                    LOGE("Failed to push buffer");
-                }
+            }
+
+            auto* buffer = _bufferList->pop();
+            GstFlowReturn ret{GST_FLOW_OK};
+            g_signal_emit_by_name(src, "push-buffer", buffer, &ret);
+            gst_buffer_unref(buffer);
+            if (ret != GstFlowReturn::GST_FLOW_OK) {
+                LOGE("Unable to push buffer");
             }
         } else {
             LOGD("Buffer is invalid");
@@ -272,8 +253,8 @@ private:
 
         _bufferList.reset();
 
-        if (!stopPipeline()) {
-            LOGE("Failed to stop pipeline");
+        if (not stopPipeline()) {
+            LOGE("Unable to stop pipeline");
         }
 
         setState(PlayState::Error);
@@ -286,8 +267,8 @@ private:
 
         _bufferList.reset();
 
-        if (!stopPipeline()) {
-            LOGE("Failed to stop pipeline");
+        if (not stopPipeline()) {
+            LOGE("Unable to stop pipeline");
             setState(PlayState::Error);
         }
 
@@ -322,6 +303,10 @@ private:
     {
         auto* self = static_cast<Impl*>(data);
         BOOST_ASSERT(self != nullptr);
+        if (self == nullptr) {
+            LOGE("Invalid pointer");
+            return FALSE;
+        }
 
         if (GST_MESSAGE_TYPE(message) == GST_MESSAGE_ERROR) {
             gchar* debug{nullptr};
@@ -354,7 +339,11 @@ private:
     {
         auto* self = static_cast<Impl*>(data);
         BOOST_ASSERT(self != nullptr);
-        self->onPipelineEnoughData(appsrc);
+        if (self == nullptr) {
+            LOGE("Invalid pointer");
+        } else {
+            self->onPipelineEnoughData(appsrc);
+        }
     }
 
     static void
@@ -362,7 +351,11 @@ private:
     {
         auto* self = static_cast<Impl*>(data);
         BOOST_ASSERT(self != nullptr);
-        self->onPipelineNeedData(appsrc, length);
+        if (self == nullptr) {
+            LOGE("Invalid pointer");
+        } else {
+            self->onPipelineNeedData(appsrc, length);
+        }
     }
 
 private:
@@ -384,30 +377,35 @@ Player::~Player() = default;
 PlayState
 Player::state() const
 {
+    BOOST_ASSERT(_impl);
     return _impl->state();
 }
 
 bool
 Player::initialize()
 {
+    BOOST_ASSERT(_impl);
     return _impl->initialize();
 }
 
 void
 Player::finalize()
 {
+    BOOST_ASSERT(_impl);
     _impl->finalize();
 }
 
 bool
 Player::play(std::string_view audio)
 {
+    BOOST_ASSERT(_impl);
     return _impl->play(audio);
 }
 
 sigc::connection
 Player::onStateUpdate(OnStateUpdateSignal::slot_type&& slot)
 {
+    BOOST_ASSERT(_impl);
     return _impl->onStateUpdate().connect(std::move(slot));
 }
 
