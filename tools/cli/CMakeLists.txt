@@ -13,7 +13,6 @@ target_sources(${TARGET}
 target_link_libraries(${TARGET}
     PRIVATE Boost::headers
             Boost::program_options
-            Jarvisto::Jarvisto
             Speechee::Tts
             Speechee::Client
 )
