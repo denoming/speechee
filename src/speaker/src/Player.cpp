@@ -149,11 +149,26 @@ private:
     createPipeline()
     {
         auto* const src = gst_element_factory_make("appsrc", "src");
+        if (src == nullptr) {
+            LOGE("Unable to create 'appsrc' element");
+            return false;
+        }
+
         auto* const parser = gst_element_factory_make("wavparse", nullptr);
+        if (parser == nullptr) {
+            LOGE("Unable to create 'wavparse' element");
+            return false;
+        }
+
         auto* const converter = gst_element_factory_make("audioconvert", nullptr);
+        if (converter == nullptr) {
+            LOGE("Unable to create 'audioconvert' element");
+            return false;
+        }
+
         auto* const sink = gst_element_factory_make("autoaudiosink", nullptr);
-        if (not src or not parser or not converter or not sink) {
-            LOGE("Unable to create pipeline elements");
+        if (sink == nullptr) {
+            LOGE("Unable to create 'autoaudiosink' element");
             return false;
         }
 
