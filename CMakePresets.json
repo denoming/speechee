@@ -9,5 +9,65 @@
     "cmake/presets/LegacyPresets.json",
     "cmake/presets/VcpkgPresets.json",
     "cmake/presets/JarvisPresets.json"
+  ],
+  "configurePresets": [
+    {
+      "name": "debug",
+      "inherits": ["dc-debug-vcpkg-dynamic"],
+      "binaryDir": "build-debug",
+      "displayName": "Debug",
+      "cacheVariables": {
+        "ENABLE_CLI": true,
+        "ENABLE_TESTS": true
+      }
+    },
+    {
+      "name": "release",
+      "inherits": ["dc-release-vcpkg-dynamic"],
+      "binaryDir": "build-release",
+      "displayName": "Release",
+      "cacheVariables": {
+        "ENABLE_CLI": true,
+        "ENABLE_TESTS": true
+      }
+    },
+    {
+      "name": "debug-docker",
+      "inherits": ["debug"],
+      "binaryDir": "build-debug-docker",
+      "displayName": "Debug [Docker]"
+    },
+    {
+      "name": "release-docker",
+      "inherits": ["release"],
+      "binaryDir": "build-release-docker",
+      "displayName": "Release [Docker]"
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "build-debug",
+      "displayName": "Build [Debug]",
+      "configurePreset": "debug",
+      "jobs": 0
+    },
+    {
+      "name": "build-release",
+      "displayName": "Build [Release]",
+      "configurePreset": "release",
+      "jobs": 0
+    },
+    {
+      "name": "build-debug-docker",
+      "displayName": "Build [Debug]",
+      "configurePreset": "debug-docker",
+      "jobs": 0
+    },
+    {
+      "name": "build-release-docker",
+      "displayName": "Build [Release]",
+      "configurePreset": "release-docker",
+      "jobs": 0
+    }
   ]
 }

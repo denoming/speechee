@@ -27,7 +27,14 @@
         "texttospeech"
       ]
     },
-    "gstreamer",
+    {
+      "name": "gstreamer",
+      "default-features": false,
+      "features": [
+        "plugins-base",
+        "plugins-good"
+      ]
+    },
     "libsigcpp",
     {
       "name": "libconfig",
@@ -70,6 +77,12 @@
           "name": "boost-beast",
           "version>=": "1.81.0"
         }
+      ]
+    },
+    "tests": {
+      "description": "Tests supporting",
+      "dependencies": [
+        "gtest"
       ]
     }
   }

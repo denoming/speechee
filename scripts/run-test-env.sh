@@ -2,13 +2,16 @@
 
 set -e
 
-DOCKER_IMAGE_NAME=my/jarvis-dev-image:speechee
+DOCKER_IMAGE_NAME=my/speechee
 
 USER_NAME=${USER}
 USER_UID=$(id -u)
 USER_GID=$(id -g)
+SERVICE_PORT=2350
 
 PROJECT_DIR=$(dirname "$(dirname "$(realpath -s $0)")")
+CONFIG_DIR="$HOME/.local/share/speechee"
+BUILD_DIR="${PROJECT_DIR}/build-debug-docker"
 
 command -v docker > /dev/null
 if [ $? != 0 ]; then
@@ -35,18 +38,26 @@ build_image() {
 
 run_image() {
   RUN_CMD=(docker run -it \
+  --device /dev/snd \
   --hostname "${USER_NAME}" \
-  -p 8080:8080 \
+  -p "${SERVICE_PORT}:${SERVICE_PORT}" \
   --rm \
   --user="${USER_UID}:${USER_GID}" \
+  --volume="${HOME}/.ssh:${HOME}/.ssh" \
   --volume="${PROJECT_DIR}:${PROJECT_DIR}" \
   --volume="${XDG_RUNTIME_DIR}/pulse:${XDG_RUNTIME_DIR}/pulse" \
-  --volume="$HOME/.local/share/speechee:$HOME/.local/share/speechee" \
+  --volume="${CONFIG_DIR}:${CONFIG_DIR}" \
   --network=bridge \
   --workdir="${PROJECT_DIR}" \
-  --env SPEECHEE_CONFIG="$HOME/.local/share/speechee/speechee.cfg" \
+  # Path to config file
+  --env SPEECHEE_CONFIG="${CONFIG_DIR}/speechee.cfg" \
+  # Path to Google TTS cloud access configuration
+  --env GOOGLE_APPLICATION_CREDENTIALS="${CONFIG_DIR}/speechee-cloud-access.json" \
+  # Specify path to pulse socket file
   --env PULSE_SERVER="unix:${XDG_RUNTIME_DIR}/pulse/native" \
-  --env GOOGLE_APPLICATION_CREDENTIALS="$HOME/.local/share/speechee/speechee-cloud-access.json" \
+  # Configure paths for gstreamer plugin scanner
+  --env GST_PLUGIN_SCANNER="${BUILD_DIR}/vcpkg_installed/x64-linux-dynamic/tools/gstreamer/gst-plugin-scanner" \
+  --env GST_PLUGIN_PATH="${BUILD_DIR}/vcpkg_installed/x64-linux-dynamic/debug/plugins/gstreamer" \
   --entrypoint="/usr/sbin/entrypoint.sh" \
   "${DOCKER_IMAGE_NAME}")
 
