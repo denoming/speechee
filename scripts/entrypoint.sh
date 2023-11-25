@@ -10,4 +10,4 @@ else
     echo "dbus-daemon already running"
 fi
 
-exec bash
+exec bash --rcfile "$HOME/.profile"
