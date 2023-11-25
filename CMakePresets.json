@@ -69,5 +69,17 @@
       "configurePreset": "release-docker",
       "jobs": 0
     }
+  ],
+  "testPresets": [
+    {
+      "name": "unit-tests",
+      "configurePreset": "debug-docker",
+      "displayName": "Unit Tests",
+      "filter": {
+        "include": {
+          "label": "Unit"
+        }
+      }
+    }
   ]
 }
