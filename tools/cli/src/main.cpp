@@ -64,7 +64,7 @@ synthesizeSsml(const std::string& ssml,
 {
     try {
         HttpSpeakerClient client{host, port};
-        client.synthesizeText(ssml, lang);
+        client.synthesizeSsml(ssml, lang);
     } catch (const std::exception& e) {
         std::cout << "Unable to synthesize ssml: " << e.what() << std::endl;
     }
