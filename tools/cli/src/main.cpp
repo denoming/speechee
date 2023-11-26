@@ -28,10 +28,13 @@ saveToFile(const fs::path& filePath, std::string_view audioData)
 }
 
 static void
-synthesizeText(const std::string& text, const std::string& lang = "en-US")
+synthesizeText(const std::string& text,
+               const std::string& lang = "en-US",
+               const std::string& host = HttpSpeakerClient::kDefaultHost,
+               const std::string& port = HttpSpeakerClient::kDefaultPort)
 {
     try {
-        HttpSpeakerClient client;
+        HttpSpeakerClient client{host, port};
         client.synthesizeText(text, lang);
     } catch (const std::exception& e) {
         std::cout << "Unable to synthesize text: " << e.what() << std::endl;
@@ -54,10 +57,13 @@ synthesizeText(const std::filesystem::path& filePath,
 }
 
 static void
-synthesizeSsml(const std::string& ssml, const std::string& lang = "en-US")
+synthesizeSsml(const std::string& ssml,
+               const std::string& lang = "en-US",
+               const std::string& host = HttpSpeakerClient::kDefaultHost,
+               const std::string& port = HttpSpeakerClient::kDefaultPort)
 {
     try {
-        HttpSpeakerClient client;
+        HttpSpeakerClient client{host, port};
         client.synthesizeText(ssml, lang);
     } catch (const std::exception& e) {
         std::cout << "Unable to synthesize ssml: " << e.what() << std::endl;
@@ -82,6 +88,8 @@ synthesizeSsml(const std::filesystem::path& filePath,
 int
 main(int argn, char* argv[])
 {
+    std::string host;
+    std::string port;
     std::string text;
     std::string ssml;
     std::string lang;
@@ -91,6 +99,10 @@ main(int argn, char* argv[])
     // clang-format off
     d.add_options()
         ("help,h", "Display help")
+        ("host,h", po::value<std::string>(&host)->default_value(HttpSpeakerClient::kDefaultHost),
+                   "Service host name")
+        ("port,p", po::value<std::string>(&port)->default_value(HttpSpeakerClient::kDefaultPort),
+                   "Service port")
         ("text,t", po::value<std::string>(&text), "Synthesize given text")
         ("ssml,s", po::value<std::string>(&ssml), "Synthesize given SSML markup")
         ("lang,l", po::value<std::string>(&lang)->default_value("en-US"), "Specifying language")
@@ -111,7 +123,7 @@ main(int argn, char* argv[])
         if (vm.contains("file")) {
             synthesizeText(file, text, lang);
         } else {
-            synthesizeText(text, lang);
+            synthesizeText(text, lang, host, port);
         }
         return EXIT_SUCCESS;
     }
@@ -120,7 +132,7 @@ main(int argn, char* argv[])
         if (vm.contains("file")) {
             synthesizeSsml(file, ssml, lang);
         } else {
-            synthesizeSsml(ssml, lang);
+            synthesizeSsml(ssml, lang, host, port);
         }
         return EXIT_SUCCESS;
     }
