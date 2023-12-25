@@ -1,14 +1,14 @@
 {
   "default-registry": {
     "kind": "git",
-    "baseline": "a42af01b72c28a8e1d7b48107b33e4f286a55ef6",
+    "baseline": "c8696863d371ab7f46e213d8f5ca923c4aef2a00",
     "repository": "https://github.com/microsoft/vcpkg"
   },
   "registries": [
     {
       "kind": "git",
-      "baseline": "9e30f9dd661c61d2a77975f79708c76fde2a4571",
-      "repository": "git@github.com:karz0n/vcpkg-registry.git",
+      "baseline": "5f79bf46f9dc2ec4383cc795cbc18292d339d1a4",
+      "repository": "git@github.com:denoming/vcpkg-registry.git",
       "packages": [ "automotive-dlt", "jarvisto", "libconfig", "mosquitto" ]
     }
   ]

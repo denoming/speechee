@@ -6,10 +6,7 @@
   ],
   "supports": "linux and !windows",
   "dependencies": [
-    {
-      "name": "jarvisto",
-      "version>=": "0.3.3#1"
-    },
+    "jarvisto",
     {
       "name": "boost-core",
       "version>=": "1.81.0"
@@ -45,10 +42,7 @@
     "cli": {
       "description": "CLI supporting",
       "dependencies": [
-        {
-          "name": "jarvisto",
-          "version>=": "0.3.3#1"
-        },
+        "jarvisto",
         {
           "name": "boost-core",
           "version>=": "1.81.0"
