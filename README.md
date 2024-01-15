@@ -63,9 +63,8 @@ Example:
 ```shell
 $ export SPEECHEE_CONFIG=$HOME/.local/share/speechee/speechee.cfg
 $ export GOOGLE_APPLICATION_CREDENTIALS=$HOME/.local/share/speechee/speechee-cloud-access.json
-$ export GST_PLUGIN_SCANNER=$PWD/build-debug-docker/vcpkg_installed/x64-linux-dynamic/tools/gstreamer/gst-plugin-scanner
-$ export GST_PLUGIN_PATH=$PWD/build-debug-docker/vcpkg_installed/x64-linux-dynamic/debug/plugins/gstreamer
-```
+$ export GST_PLUGIN_SCANNER=$PWD/build-debug/vcpkg_installed/x64-linux-dynamic/tools/gstreamer/gst-plugin-scanner
+$ export GST_PLUGIN_PATH=$PWD/build-debug/vcpkg_installed/x64-linux-dynamic/debug/plugins/gstreamer
 
 After above environment variables are set the service can be run:
 ```shell
