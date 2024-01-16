@@ -11,7 +11,7 @@ The main features of this service are following:
 The integration with HomeAssistant as custom component is provided additionally. Using this integration you will
 be able to use synthesizing feature in your automation.
 
-## Building
+## Build
 
 ### By vcpkg (locally)
 
@@ -41,7 +41,18 @@ $ cmake --preset release-docker
 $ cmake --build --preset build-release-docker
 ```
 
-## Installing
+## Test
+
+### By vcpkg (in docker)
+
+```shell
+$ bash scripts/run-test-env.sh
+$ cmake --preset debug-docker
+$ cmake --build --preset build-debug-docker
+$ ctest --preset unit-tests
+```
+
+## Install
 
 ```shell
 $ cmake --install <build-dir> --prefix <destination-path>/speechee
@@ -49,7 +60,7 @@ $ cmake --install <build-dir> --prefix <destination-path>/speechee
 
 Note: The project should be built previously.
 
-## Running
+## Run
 
 ### Locally
 
@@ -86,7 +97,7 @@ Start listening on <2350> port
 
 Note: The service should be built previously.
 
-## Using
+## Use
 
 ### By CLI
 
