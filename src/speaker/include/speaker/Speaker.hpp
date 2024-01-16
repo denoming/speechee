@@ -46,7 +46,7 @@ private:
     findRequest(std::uint64_t id);
 
     void
-    onSynthesizeDone(std::uint64_t id, std::string audio, std::error_code errorCode);
+    onSynthesizeDone(std::uint64_t id, std::string audio, std::exception_ptr exception);
 
     void
     onPlayerStateUpdate(PlayState state);

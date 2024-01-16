@@ -30,8 +30,8 @@ void
 Speaker::synthesizeText(std::string_view text, std::string_view lang)
 {
     _synthesizePool.synthesizeText(
-        text, lang, [this, id = createRequest()](std::string audio, std::error_code error) {
-            onSynthesizeDone(id, std::move(audio), error);
+        text, lang, [this, id = createRequest()](std::string audio, std::exception_ptr exception) {
+            onSynthesizeDone(id, std::move(audio), std::move(exception));
         });
 }
 
@@ -39,8 +39,8 @@ void
 Speaker::synthesizeSsml(std::string_view ssml, std::string_view lang)
 {
     _synthesizePool.synthesizeSsml(
-        ssml, lang, [this, id = createRequest()](std::string audio, std::error_code error) {
-            onSynthesizeDone(id, std::move(audio), error);
+        ssml, lang, [this, id = createRequest()](std::string audio, std::exception_ptr exception) {
+            onSynthesizeDone(id, std::move(audio), std::move(exception));
         });
 }
 
@@ -64,23 +64,27 @@ Speaker::findRequest(std::uint64_t id)
 }
 
 void
-Speaker::onSynthesizeDone(std::uint64_t id, std::string audio, std::error_code errorCode)
+Speaker::onSynthesizeDone(std::uint64_t id, std::string audio, std::exception_ptr exception)
 {
     std::lock_guard lock{_guard};
 
     auto [ok, requestIt] = findRequest(id);
-    if (!ok) {
+    if (not ok) {
         LOGE("Request with <{}> id not found", id);
         playNext();
         return;
     }
 
-    if (!errorCode) {
+    if (exception) {
+        _requests.erase(requestIt);
+        try {
+            rethrow_exception(std::move(exception));
+        } catch (const std::exception& e) {
+            LOGE("Unable to synthesize <{}> request: {}", id, e.what());
+        }
+    } else {
         requestIt->done = true;
         requestIt->audio = std::move(audio);
-    } else {
-        LOGE("Request <{}> has failed with <{}> error", id, errorCode.message());
-        _requests.erase(requestIt);
     }
 
     playNext();

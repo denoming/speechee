@@ -44,13 +44,12 @@ synthesizeText(const std::string& text,
 static void
 synthesizeText(const fs::path& filePath, const std::string& text, const std::string& lang)
 {
-    jar::TextToSpeechClient client;
-    std::error_code ec;
-    if (std::string audio = client.synthesizeText(text, lang, ec); ec) {
-        std::cerr << "Unable to synthesize text: " << ec.message() << std::endl;
-    } else {
-        std::cout << "Saving to '" << filePath.string() << "' file" << std::endl;
-        saveToFile(filePath, audio);
+    try {
+        jar::TextToSpeechClient client;
+        saveToFile(filePath, client.synthesizeText(text, lang));
+        std::cout << "Audio is saved to '" << filePath.string() << "' file" << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "Unable to synthesize text: " << e.what() << std::endl;
     }
 }
 
@@ -71,13 +70,12 @@ synthesizeSsml(const std::string& ssml,
 static void
 synthesizeSsml(const fs::path& filePath, const std::string& ssml, const std::string& lang)
 {
-    jar::TextToSpeechClient client;
-    std::error_code ec;
-    if (std::string audio = client.synthesizeSsml(ssml, lang, ec); ec) {
-        std::cerr << "Unable to synthesize ssml: " << ec.message() << std::endl;
-    } else {
-        std::cout << "Saving to '" << filePath.string() << "' file" << std::endl;
-        saveToFile(filePath, audio);
+    try {
+        jar::TextToSpeechClient client;
+        saveToFile(filePath, client.synthesizeSsml(ssml, lang));
+        std::cout << "Audio is saved to '" << filePath.string() << "' file" << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "Unable to synthesize ssml: " << e.what() << std::endl;
     }
 }
 

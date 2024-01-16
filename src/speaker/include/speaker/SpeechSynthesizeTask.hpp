@@ -11,7 +11,7 @@ class ITextToSpeechClient;
 
 class SpeechSynthesizeTask {
 public:
-    using OnDone = void(std::string audio, std::error_code error);
+    using OnDone = void(std::string audio, std::exception_ptr exception);
 
     explicit SpeechSynthesizeTask(ITextToSpeechClient& client,
                                   std::move_only_function<OnDone> callback);
@@ -36,7 +36,7 @@ protected:
     setResult(std::string audio);
 
     void
-    setResult(std::error_code error);
+    setResult(std::exception_ptr exception);
 
     void
     reset();
@@ -45,7 +45,7 @@ private:
     ITextToSpeechClient& _client;
     std::move_only_function<OnDone> _callback;
     std::string _audio;
-    std::error_code _error;
+    std::exception_ptr _exception;
     bool _ready;
 };
 

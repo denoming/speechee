@@ -10,6 +10,8 @@
 namespace cloud = google::cloud;
 namespace tts = cloud::texttospeech;
 
+namespace {
+
 cloud::Options
 getConnectionOptions(bool enableTracing = false)
 {
@@ -27,9 +29,11 @@ getConnectionOptions(bool enableTracing = false)
     return opts;
 }
 
+} // namespace
+
 namespace jar {
 
-class TextToSpeechClient::Impl {
+class TextToSpeechClient::Impl final : public ITextToSpeechClient {
 public:
     Impl()
         : _connection{tts::MakeTextToSpeechConnection(getConnectionOptions())}
@@ -37,26 +41,24 @@ public:
     }
 
     std::string
-    synthesizeText(const std::string& text, const std::string& languageCode, std::error_code& error)
+    synthesizeText(const std::string& text, const std::string& languageCode) final
     {
         tts::v1::SynthesisInput input;
         input.set_text(text);
-        return doSynthesize(input, languageCode, error);
+        return doSynthesize(input, languageCode);
     }
 
     std::string
-    synthesizeSsml(const std::string& ssml, const std::string& languageCode, std::error_code& error)
+    synthesizeSsml(const std::string& ssml, const std::string& languageCode) final
     {
         tts::v1::SynthesisInput input;
         input.set_ssml(ssml);
-        return doSynthesize(input, languageCode, error);
+        return doSynthesize(input, languageCode);
     }
 
 private:
     std::string
-    doSynthesize(const tts::v1::SynthesisInput& input,
-                 const std::string& languageCode,
-                 std::error_code& error)
+    doSynthesize(const tts::v1::SynthesisInput& input, const std::string& languageCode)
     {
         tts::v1::VoiceSelectionParams voice;
         voice.set_language_code(languageCode);
@@ -65,9 +67,8 @@ private:
 
         tts::TextToSpeechClient client{_connection};
         auto response = client.SynthesizeSpeech(input, voice, audio);
-        if (!response) {
-            error = std::make_error_code(std::errc::protocol_error);
-            return {};
+        if (not response) {
+            throw cloud::RuntimeStatusError{response.status()};
         }
         return std::move(*response->release_audio_content());
     }
@@ -84,21 +85,17 @@ TextToSpeechClient::TextToSpeechClient()
 TextToSpeechClient::~TextToSpeechClient() = default;
 
 std::string
-TextToSpeechClient::synthesizeText(const std::string& text,
-                                   const std::string& lang,
-                                   std::error_code& error)
+TextToSpeechClient::synthesizeText(const std::string& text, const std::string& lang)
 {
     BOOST_ASSERT(_impl);
-    return _impl->synthesizeText(text, lang, error);
+    return _impl->synthesizeText(text, lang);
 }
 
 std::string
-TextToSpeechClient::synthesizeSsml(const std::string& ssml,
-                                   const std::string& lang,
-                                   std::error_code& error)
+TextToSpeechClient::synthesizeSsml(const std::string& ssml, const std::string& lang)
 {
     BOOST_ASSERT(_impl);
-    return _impl->synthesizeSsml(ssml, lang, error);
+    return _impl->synthesizeSsml(ssml, lang);
 }
 
 } // namespace jar

@@ -8,7 +8,7 @@ namespace jar {
 
 class ISpeechSynthesizePool {
 public:
-    using OnDone = void(std::string audio, std::error_code error);
+    using OnDone = void(std::string audio, std::exception_ptr exception);
 
     virtual ~ISpeechSynthesizePool() = default;
 

@@ -46,8 +46,8 @@ TEST_F(SpeakerTest, SynthesizeText)
     EXPECT_CALL(player, play(kAudio2)); // Expect kAudio2 to be played after kAudio1
 
     /* Reverse order of callback invoking */
-    callback2(kAudio2, std::error_code{}); // kAudio2 is ready first
-    callback1(kAudio1, std::error_code{}); // kAudio1 is ready after kAudio2
+    callback2(kAudio2, std::exception_ptr{}); // kAudio2 is ready first
+    callback1(kAudio1, std::exception_ptr{}); // kAudio1 is ready after kAudio2
 
     player.triggerStateUpdate(PlayState::Idle);
 }
@@ -58,7 +58,7 @@ TEST_F(SpeakerTest, SynthesizeSsml)
     static constexpr std::string_view kLang{"en-gb"};
 
     EXPECT_CALL(pool, synthesizeSsml(kSsml, kLang, _))
-        .WillOnce([&](auto, auto, auto callback) { callback(std::string{}, std::error_code{}); })
+        .WillOnce([&](auto, auto, auto callback) { callback(std::string{}, std::exception_ptr{}); })
         .RetiresOnSaturation();
     speaker.synthesizeSsml(kSsml, kLang);
 }
@@ -75,5 +75,5 @@ TEST_F(SpeakerTest, SynthesizeError)
 
     speaker.synthesizeText(kText, kLang);
 
-    callback("", std::make_error_code(std::errc::invalid_argument));
+    callback("", std::make_exception_ptr(std::invalid_argument("Invalid")));
 }

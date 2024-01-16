@@ -27,7 +27,7 @@ void
 SpeechSynthesizeTask::submit()
 {
     if (ready()) {
-        _callback(std::move(_audio), _error);
+        _callback(std::move(_audio), std::move(_exception));
         reset();
     } else {
         throw std::logic_error{"Attempt to submit not ready task"};
@@ -48,9 +48,9 @@ SpeechSynthesizeTask::setResult(std::string audio)
 }
 
 void
-SpeechSynthesizeTask::setResult(std::error_code error)
+SpeechSynthesizeTask::setResult(std::exception_ptr exception)
 {
-    _error = error;
+    _exception = std::move(exception);
     _ready = true;
 }
 
@@ -58,7 +58,7 @@ void
 SpeechSynthesizeTask::reset()
 {
     _ready = false;
-    _error = {};
+    _exception = nullptr;
 }
 
 } // namespace jar
@@ -78,12 +78,10 @@ TextSpeechSynthesizeTask::TextSpeechSynthesizeTask(ITextToSpeechClient& client,
 void
 TextSpeechSynthesizeTask::perform()
 {
-    std::error_code error;
-    auto content = client().synthesizeText(_text, _lang, error);
-    if (error) {
-        setResult(error);
-    } else {
-        setResult(std::move(content));
+    try {
+        setResult(client().synthesizeText(_text, _lang));
+    } catch (...) {
+        setResult(std::current_exception());
     }
 }
 
@@ -104,12 +102,10 @@ SsmlSpeechSynthesizeTask::SsmlSpeechSynthesizeTask(ITextToSpeechClient& client,
 void
 SsmlSpeechSynthesizeTask::perform()
 {
-    std::error_code error;
-    auto content = client().synthesizeSsml(_ssml, _lang, error);
-    if (error) {
-        setResult(error);
-    } else {
-        setResult(std::move(content));
+    try {
+        setResult(client().synthesizeSsml(_ssml, _lang));
+    } catch (...) {
+        setResult(std::current_exception());
     }
 }
 
