@@ -11,8 +11,8 @@ ENV PULSE_SERVER=$PULSE_SERVER
 USER root
 
 RUN apt update && \
-    apt install -y build-essential sudo vim git cmake ninja-build gdb curl tar zip unzip sudo \
-                   dbus flex bison nasm texinfo \
+    apt install -y build-essential autoconf automake autopoint sudo vim git cmake ninja-build gdb curl tar zip \
+                   unzip sudo dbus flex bison nasm texinfo \
                    libpulse-dev
 
 # Create default user
@@ -32,6 +32,8 @@ COPY config/dbus/org.denoming.speechee.conf /etc/dbus-1/system.d
 COPY scripts/entrypoint.sh /usr/sbin
 
 USER $UNAME
+
+RUN pip install Jinja2
 
 RUN git clone https://github.com/Microsoft/vcpkg.git $HOME/.vcpkg && \
     bash $HOME/.vcpkg/bootstrap-vcpkg.sh && \
