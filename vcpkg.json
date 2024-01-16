@@ -19,7 +19,7 @@
     {
       "name": "google-cloud-cpp",
       "default-features": false,
-      "version>=": "2.13.0",
+      "version>=": "2.19.0",
       "features": [
         "texttospeech"
       ]
