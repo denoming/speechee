@@ -10,12 +10,12 @@ class MockTextToSpeechClient : public ITextToSpeechClient {
 public:
     MOCK_METHOD(std::string,
                 synthesizeText,
-                (const std::string& text, const std::string& lang),
+                (const std::string& text, const Voice& voice, const AudioConfig& audioConfig),
                 (override));
 
     MOCK_METHOD(std::string,
                 synthesizeSsml,
-                (const std::string& ssml, const std::string& lang),
+                (const std::string& ssml, const Voice& voice, const AudioConfig& audioConfig),
                 (override));
 };
 

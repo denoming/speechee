@@ -30,7 +30,7 @@ TEST_F(SpeechSynthesizePoolTest, SynthesizeText)
     std::string lang{"uk-UA"};
     std::string cont{"audio"};
 
-    EXPECT_CALL(client, synthesizeText(text, lang)).WillOnce(Return(cont));
+    EXPECT_CALL(client, synthesizeText(text, _, _)).WillOnce(Return(cont));
 
     MockFunction<SpeechSynthesizePool::OnDone> callback;
     EXPECT_CALL(callback, Call(cont, std::exception_ptr{}));
@@ -50,7 +50,7 @@ TEST_F(SpeechSynthesizePoolTest, SynthesizeSsml)
     std::string lang{"uk-UA"};
     std::string cont{"audio"};
 
-    EXPECT_CALL(client, synthesizeSsml(ssml, lang)).WillOnce(Return(cont));
+    EXPECT_CALL(client, synthesizeSsml(ssml, _, _)).WillOnce(Return(cont));
 
     MockFunction<SpeechSynthesizePool::OnDone> callback;
     EXPECT_CALL(callback, Call(cont, std::exception_ptr{}));

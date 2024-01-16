@@ -46,7 +46,7 @@ synthesizeText(const fs::path& filePath, const std::string& text, const std::str
 {
     try {
         jar::TextToSpeechClient client;
-        saveToFile(filePath, client.synthesizeText(text, lang));
+        saveToFile(filePath, client.synthesizeText(text, {.languageCode = lang}, {}));
         std::cout << "Audio is saved to '" << filePath.string() << "' file" << std::endl;
     } catch (const std::exception& e) {
         std::cerr << "Unable to synthesize text: " << e.what() << std::endl;
@@ -72,7 +72,7 @@ synthesizeSsml(const fs::path& filePath, const std::string& ssml, const std::str
 {
     try {
         jar::TextToSpeechClient client;
-        saveToFile(filePath, client.synthesizeSsml(ssml, lang));
+        saveToFile(filePath, client.synthesizeSsml(ssml, {.languageCode = lang}, {}));
         std::cout << "Audio is saved to '" << filePath.string() << "' file" << std::endl;
     } catch (const std::exception& e) {
         std::cerr << "Unable to synthesize ssml: " << e.what() << std::endl;

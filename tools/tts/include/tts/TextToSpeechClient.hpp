@@ -13,10 +13,20 @@ public:
     ~TextToSpeechClient() final;
 
     std::string
-    synthesizeText(const std::string& text, const std::string& lang) final;
+    synthesizeText(const std::string& text);
 
     std::string
-    synthesizeSsml(const std::string& text, const std::string& lang) final;
+    synthesizeText(const std::string& text,
+                   const Voice& voice,
+                   const AudioConfig& audioConfig) final;
+
+    std::string
+    synthesizeSsml(const std::string& ssml);
+
+    std::string
+    synthesizeSsml(const std::string& ssml,
+                   const Voice& voice,
+                   const AudioConfig& audioConfig) final;
 
 private:
     class Impl;

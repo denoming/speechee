@@ -79,7 +79,7 @@ void
 TextSpeechSynthesizeTask::perform()
 {
     try {
-        setResult(client().synthesizeText(_text, _lang));
+        setResult(client().synthesizeText(_text, {.languageCode = _lang}, {}));
     } catch (...) {
         setResult(std::current_exception());
     }
@@ -103,7 +103,7 @@ void
 SsmlSpeechSynthesizeTask::perform()
 {
     try {
-        setResult(client().synthesizeSsml(_ssml, _lang));
+        setResult(client().synthesizeSsml(_ssml, {.languageCode = _lang}, {}));
     } catch (...) {
         setResult(std::current_exception());
     }
