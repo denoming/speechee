@@ -30,9 +30,6 @@ target_sources(${TARGET}
             src/PlayerLoop.cpp
             src/Speaker.cpp
             src/SpeakerSubsystem.cpp
-            src/AvailabilitySubject.cpp
-            src/AvailabilityObserver.cpp
-            src/AvailabilityPublisher.cpp
             src/ConfigLoader.cpp
             src/GeneralConfig.cpp
 )

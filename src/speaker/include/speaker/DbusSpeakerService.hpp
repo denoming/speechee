@@ -1,6 +1,6 @@
 #pragma once
 
-#include "speaker/AvailabilitySubject.hpp"
+#include <jarvisto/AvailabilitySubject.hpp>
 
 #include <memory>
 

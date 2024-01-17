@@ -1,7 +1,5 @@
 #include "speaker/SpeakerSubsystem.hpp"
 
-#include "speaker/AvailabilityObserver.hpp"
-#include "speaker/AvailabilityPublisher.hpp"
 #include "speaker/GeneralConfig.hpp"
 #include "speaker/Player.hpp"
 #include "speaker/Speaker.hpp"
@@ -16,6 +14,8 @@
 #include "speaker/HttpSpeakerService.hpp"
 #endif
 
+#include <jarvisto/AvailabilityObserver.hpp>
+#include <jarvisto/AvailabilityPublisher.hpp>
 #include <jarvisto/Logger.hpp>
 #include <jarvisto/MqttBasicClient.hpp>
 
@@ -40,7 +40,7 @@ public:
         _speaker = std::make_unique<Speaker>(*_synthesizePool, *_player);
         _observer = std::make_unique<AvailabilityObserver>("speechee");
         _mqttClient = std::make_unique<MqttBasicClient>();
-        _publisher = std::make_unique<AvailabilityPublisher>(*_mqttClient, *_observer);
+        _publisher = std::make_unique<AvailabilityPublisher>("speechee", *_mqttClient, *_observer);
 #ifdef ENABLE_DBUS_SUPPORT
         _dbusService = std::make_unique<DbusSpeakerService>(*_speaker);
 #endif

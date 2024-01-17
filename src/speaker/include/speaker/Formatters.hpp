@@ -29,22 +29,3 @@ struct fmt::formatter<jar::PlayState> : fmt::formatter<std::string_view> {
         return formatter<string_view>::format(output, context);
     }
 };
-
-template<>
-struct fmt::formatter<jar::AvailabilityState> : fmt::formatter<std::string_view> {
-    template<typename FormatContext>
-    auto
-    format(jar::AvailabilityState state, FormatContext& context) const
-    {
-        std::string_view output{"Unknown"};
-        switch (state) {
-        case jar::AvailabilityState::Online:
-            output = "Online";
-            break;
-        case jar::AvailabilityState::Offline:
-            output = "Offline";
-            break;
-        }
-        return formatter<string_view>::format(output, context);
-    }
-};
