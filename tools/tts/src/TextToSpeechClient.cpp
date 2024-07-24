@@ -15,14 +15,9 @@ namespace jar {
 namespace {
 
 cloud::Options
-getConnectionOptions(bool enableTracing = false)
+getConnectionOptions()
 {
     cloud::Options opts;
-
-    if (enableTracing) {
-        opts.lookup<cloud::TracingComponentsOption>().insert("rpc");
-        opts.lookup<cloud::TracingComponentsOption>().insert("rpc-streams");
-    }
 
     opts.set<cloud::GrpcCredentialOption>(grpc::GoogleDefaultCredentials());
     opts.set<cloud::GrpcNumChannelsOption>(128);
