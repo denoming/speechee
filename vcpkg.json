@@ -7,54 +7,27 @@
   "supports": "linux and !windows",
   "dependencies": [
     "jarvisto",
-    {
-      "name": "boost-core",
-      "version>=": "1.81.0"
-    },
-    {
-      "name": "boost-json",
-      "version>=": "1.81.0"
-    },
     "glibmm",
+    "boost-core",
+    "boost-json",
     {
       "name": "google-cloud-cpp",
       "default-features": false,
-      "version>=": "2.19.0",
       "features": [
         "texttospeech"
       ]
     },
-    {
-      "name": "gstreamer",
-      "default-features": false,
-      "features": [
-        "plugins-base",
-        "plugins-good"
-      ]
-    },
     "libsigcpp",
-    {
-      "name": "libconfig",
-      "version>=": "1.7.3#1"
-    }
+    "libconfig"
   ],
   "features": {
     "cli": {
       "description": "CLI supporting",
       "dependencies": [
         "jarvisto",
-        {
-          "name": "boost-core",
-          "version>=": "1.81.0"
-        },
-        {
-          "name": "boost-program-options",
-          "version>=": "1.81.0"
-        },
-        {
-          "name": "boost-json",
-          "version>=": "1.81.0"
-        }
+        "boost-core",
+        "boost-program-options",
+        "boost-json"
       ]
     },
     "http": {
@@ -62,15 +35,11 @@
       "dependencies": [
         {
           "name": "boost-asio",
-          "version>=": "1.81.0",
           "features": [
             "ssl"
           ]
         },
-        {
-          "name": "boost-beast",
-          "version>=": "1.81.0"
-        }
+        "boost-beast"
       ]
     },
     "tests": {
