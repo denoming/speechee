@@ -13,7 +13,7 @@
   "configurePresets": [
     {
       "name": "debug",
-      "inherits": ["dc-debug-vcpkg-dynamic"],
+      "inherits": ["dc-debug-vcpkg"],
       "binaryDir": "build-debug",
       "displayName": "Debug",
       "cacheVariables": {
@@ -23,7 +23,7 @@
     },
     {
       "name": "release",
-      "inherits": ["dc-release-vcpkg-dynamic"],
+      "inherits": ["dc-release-vcpkg"],
       "binaryDir": "build-release",
       "displayName": "Release",
       "cacheVariables": {
