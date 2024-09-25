@@ -10,19 +10,17 @@ namespace jar {
 
 class AudioBufferList {
 public:
-    explicit AudioBufferList(std::size_t initialSize = 16);
-
-    explicit AudioBufferList(std::string_view audio);
+    explicit AudioBufferList(size_t maxChunkSize, size_t initialSize = 16);
 
     ~AudioBufferList();
 
     void
-    push(std::string_view audio);
+    push(std::string_view audio) const;
 
     [[nodiscard]] GstBuffer*
     pop() const;
 
-    [[nodiscard]] std::size_t
+    [[nodiscard]] size_t
     size() const;
 
     [[nodiscard]] bool
@@ -30,11 +28,12 @@ public:
 
 private:
     void
-    push(const char* ptr, std::size_t len);
+    push(const char* ptr, size_t len) const;
 
 private:
     mutable std::mutex _guard;
-    GstBufferList* _bufferList;
+    size_t _maxChunkSize{};
+    GstBufferList* _bufferList{};
 };
 
 } // namespace jar

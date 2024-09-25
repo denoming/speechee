@@ -3,7 +3,6 @@
 #include "speaker/IPlayer.hpp"
 
 #include <memory>
-#include <string>
 
 namespace jar {
 
@@ -11,22 +10,22 @@ class Player final : public IPlayer {
 public:
     Player();
 
-    ~Player() final;
+    ~Player() override;
 
     [[nodiscard]] PlayState
-    state() const final;
+    state() const override;
 
     [[nodiscard]] bool
-    initialize() final;
+    start() override;
 
     void
-    finalize() final;
+    stop() override;
 
     bool
-    play(std::string_view audio) final;
+    play(std::string_view audio) override;
 
     [[nodiscard]] sigc::connection
-    onStateUpdate(OnStateUpdateSignal::slot_type&&) final;
+    onStateUpdate(OnStateUpdateSignal::slot_type&&) override;
 
 private:
     class Impl;

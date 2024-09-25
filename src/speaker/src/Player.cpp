@@ -7,65 +7,46 @@
 #include <jarvisto/Logger.hpp>
 
 #include <boost/assert.hpp>
+
+#include <gst/app/gstappsrc.h>
 #include <gst/gst.h>
 #include <gst/gstelement.h>
 
 #include <atomic>
 
-namespace {
-
-bool
-initializeGst()
-{
-    GError* error{nullptr};
-    if (gst_init_check(nullptr, nullptr, &error) != TRUE) {
-        BOOST_ASSERT(error != nullptr);
-        LOGE("Initialization failed: code: <{}>, domain: <{}>, message: <{}>",
-             error->code,
-             error->domain,
-             error->message);
-        return false;
-    }
-    return true;
-}
-
-} // namespace
+static constexpr guint64 kInputQueueMaxSize{1 * 1000 * 1000 /* 1 Mb */};
 
 namespace jar {
 
 class Player::Impl {
 public:
-    Impl()
-        : _pipeline{nullptr}
-        , _dataRequired{false}
-        , _state{PlayState::Null}
-    {
-    }
+    Impl() = default;
 
-    bool
-    initialize()
+    [[nodiscard]] bool
+    start()
     {
         if (state() != PlayState::Null) {
             LOGE("Inconsistent state of player");
             return false;
         }
 
-        LOGD("Initialize gstreamer");
-        if (not initializeGst()) {
-            LOGE("Unable to initialize gstreamer");
-            finalize();
+        if (not startLoop()) {
+            LOGE("Unable to start main loop");
             return false;
         }
 
-        LOGD("Create gstreamer pipeline");
         if (not createPipeline()) {
+            stopLoop();
             LOGE("Unable to create pipeline");
-            finalize();
             return false;
         }
 
-        LOGD("Start pipeline main loop");
-        startLoop();
+        if (not startPipeline()) {
+            destroyPipeline();
+            stopLoop();
+            LOGE("Unable to start pipeline");
+            return false;
+        }
 
         setState(PlayState::Idle);
 
@@ -73,43 +54,41 @@ public:
     }
 
     void
-    finalize()
+    stop()
     {
+        if (not stopPipeline()) {
+            LOGE("Unable to stop pipeline");
+        }
+
         setState(PlayState::Null);
-        stopLoop();
+
         destroyPipeline();
+        stopLoop();
     }
 
-    PlayState
+    [[nodiscard]] PlayState
     state() const
     {
         return _state;
     }
 
-    bool
-    play(std::string_view audio)
+    [[nodiscard]] bool
+    play(const std::string_view audio)
     {
-        LOGI("Play audio content: size<{}>", audio.size());
-
-        if (state() != PlayState::Idle) {
+        if (state() == PlayState::Null or state() == PlayState::Error) {
             LOGE("Player is not ready to play");
             return false;
         }
 
-        LOGD("Start pipeline");
-        if (not startPipeline()) {
-            LOGE("Unable to apply playing state");
-            setState(PlayState::Error);
-            return false;
-        }
-
-        BOOST_ASSERT(not _bufferList);
-        _bufferList = std::make_unique<AudioBufferList>(audio);
+        LOGD("Buffer <{}> bytes of audio content", audio.size());
+        _bufferList.push(audio);
 
         setState(PlayState::Busy);
 
-        BOOST_ASSERT(_mainLoop);
-        _mainLoop->invoke([this]() { return feedPipeline(); });
+        if (not isFeedingActive()) {
+            LOGD("Schedule pipeline feeding");
+            scheduleFeeding();
+        }
 
         return true;
     }
@@ -124,74 +103,72 @@ private:
     void
     setState(PlayState newState)
     {
-        const auto oldState = _state.load();
-        if (oldState == newState) {
-            return;
+        if (const auto oldState = _state.load(); oldState != newState) {
+            LOGD("Update state: {} -> {}", oldState, newState);
+            _onStateUpdateSig(_state = newState);
         }
-        LOGI("Update state: {} -> {}", oldState, newState);
-        _onStateUpdateSig(_state = newState);
     }
 
-    void
+    bool
     startLoop()
     {
-        BOOST_ASSERT(not _mainLoop);
-        _mainLoop = std::make_unique<PlayerLoop>();
+        if (not _mainLoop.active()) {
+            LOGD("Start main loop");
+            _mainLoop.start();
+        }
+        return _mainLoop.active();
     }
 
     void
     stopLoop()
     {
-        _mainLoop.reset();
+        if (_mainLoop.active()) {
+            LOGD("Stop main loop");
+            _mainLoop.stop();
+        }
     }
 
-    bool
+    void
+    scheduleFeeding()
+    {
+        if (_feedingCon) {
+            LOGW("Feeding is already scheduled");
+            return;
+        }
+        _feedingCon = _mainLoop.onIdle(sigc::mem_fun(*this, &Impl::feedPipeline));
+    }
+
+    void
+    cancelFeeding()
+    {
+        if (_feedingCon) {
+            _feedingCon.disconnect();
+        }
+    }
+
+    [[nodiscard]] bool
+    isFeedingActive() const
+    {
+        return _feedingCon.connected();
+    }
+
+    [[nodiscard]] bool
     createPipeline()
     {
-        auto* const src = gst_element_factory_make("appsrc", "src");
-        if (src == nullptr) {
-            LOGE("Unable to create 'appsrc' element");
+        if (not createBin()) {
+            LOGE("Unable to create pipeline bin");
             return false;
         }
 
-        auto* const parser = gst_element_factory_make("wavparse", nullptr);
-        if (parser == nullptr) {
-            LOGE("Unable to create 'wavparse' element");
+        if (not createBus()) {
+            LOGE("Unable to create pipeline bus");
             return false;
         }
 
-        auto* const converter = gst_element_factory_make("audioconvert", nullptr);
-        if (converter == nullptr) {
-            LOGE("Unable to create 'audioconvert' element");
+        if (not createElements()) {
+            LOGE("Unable to create pipeline elements");
             return false;
         }
-
-        auto* const sink = gst_element_factory_make("autoaudiosink", nullptr);
-        if (sink == nullptr) {
-            LOGE("Unable to create 'autoaudiosink' element");
-            return false;
-        }
-
-        if (_pipeline = gst_pipeline_new("player"); _pipeline != nullptr) {
-            gst_bin_add_many(GST_BIN_CAST(_pipeline), src, parser, converter, sink, nullptr);
-        } else {
-            LOGE("Unable to create pipeline");
-            return false;
-        }
-
-        if (gst_element_link_many(src, parser, converter, sink, nullptr) != TRUE) {
-            LOGE("Unable to link pipeline elements");
-            finalize();
-            return false;
-        }
-
-        g_signal_connect(src, "enough-data", G_CALLBACK(onPipelineEnoughDataStatic), this);
-        g_signal_connect(src, "need-data", G_CALLBACK(onPipelineNeedDataStatic), this);
-
-        auto* bus = gst_element_get_bus(_pipeline);
-        BOOST_ASSERT(bus != nullptr);
-        gst_bus_add_watch(bus, GstBusFunc(onPipelineMessageStatic), this);
-        gst_object_unref(bus);
 
         return true;
     }
@@ -199,74 +176,166 @@ private:
     void
     destroyPipeline()
     {
-        if (_pipeline != nullptr) {
-            auto* bus = gst_element_get_bus(_pipeline);
-            BOOST_ASSERT(bus != nullptr);
-            gst_bus_remove_watch(bus);
+        destroyBus();
+        destroyBin();
+    }
 
-            gst_element_set_state(_pipeline, GST_STATE_NULL);
+    [[nodiscard]] bool
+    createBin()
+    {
+        BOOST_ASSERT(_pipeline == nullptr);
+        if (_pipeline = gst_pipeline_new("player"); _pipeline == nullptr) {
+            LOGE("Unable to create pipeline");
+            return false;
+        }
+        return true;
+    }
+
+    void
+    destroyBin()
+    {
+        if (_pipeline != nullptr) {
             gst_object_unref(_pipeline);
             _pipeline = nullptr;
         }
     }
 
-    bool
-    startPipeline()
+    [[nodiscard]] bool
+    createBus()
     {
         BOOST_ASSERT(_pipeline != nullptr);
-        return (gst_element_set_state(_pipeline, GST_STATE_PLAYING) != GST_STATE_CHANGE_FAILURE);
-    }
-
-    bool
-    stopPipeline()
-    {
-        BOOST_ASSERT(_pipeline != nullptr);
-        return (gst_element_set_state(_pipeline, GST_STATE_NULL) != GST_STATE_CHANGE_FAILURE);
-    }
-
-    bool
-    feedPipeline()
-    {
-        if (not _dataRequired) {
-            return true;
+        auto* bus = gst_element_get_bus(_pipeline);
+        if (bus == nullptr) {
+            LOGE("Unable to get pipeline bus");
+            return false;
         }
+        gst_bus_add_watch(bus, GstBusFunc(onGstPipelineMessage), this);
+        gst_object_unref(bus);
+        return true;
+    }
 
-        if (state() != PlayState::Busy) {
+    void
+    destroyBus() const
+    {
+        if (GstBus* bus = gst_element_get_bus(_pipeline); bus != nullptr) {
+            if (not gst_bus_remove_watch(bus)) {
+                LOGE("Unable to remove bus watcher");
+            }
+            gst_object_unref(bus);
+        }
+    }
+
+    [[nodiscard]] bool
+    createElements()
+    {
+        auto* const bin = GST_BIN(_pipeline);
+        BOOST_ASSERT(bin != nullptr);
+
+        auto* const src = gst_element_factory_make("appsrc", "src");
+        BOOST_ASSERT(src != nullptr);
+        if (not gst_bin_add(bin, src)) {
+            LOGE("Unable to add element");
+            return false;
+        }
+        g_signal_connect(src, "enough-data", G_CALLBACK(onGstPipelineEnoughData), this);
+        g_signal_connect(src, "need-data", G_CALLBACK(onGstPipelineNeedData), this);
+        g_object_set(src,
+                     "is-live",
+                     TRUE,
+                     "max-bytes",
+                     kInputQueueMaxSize,
+                     "do-timestamp",
+                     TRUE /* set timestamps for outgoing buffers */,
+                     nullptr);
+
+        auto* const parser = gst_element_factory_make("wavparse", nullptr);
+        BOOST_ASSERT(parser != nullptr);
+        if (not gst_bin_add(bin, parser)) {
+            LOGE("Unable to add element");
+            return false;
+        }
+        g_object_set(parser, "ignore-length", TRUE, nullptr);
+
+        auto* const queue = gst_element_factory_make("queue", nullptr);
+        BOOST_ASSERT(queue != nullptr);
+        if (not gst_bin_add(bin, queue)) {
+            LOGE("Unable to add element");
             return false;
         }
 
-        auto* src = gst_bin_get_by_name(GST_BIN(_pipeline), "src");
-        BOOST_ASSERT(src != nullptr);
-        if (_bufferList) {
-            if (_bufferList->empty()) {
-                LOGD("Buffer is empty");
-                return false;
-            }
+        auto* const converter = gst_element_factory_make("audioconvert", nullptr);
+        BOOST_ASSERT(converter != nullptr);
+        if (not gst_bin_add(bin, converter)) {
+            LOGE("Unable to add element");
+            return false;
+        }
 
-            auto* buffer = _bufferList->pop();
-            GstFlowReturn ret{GST_FLOW_OK};
-            g_signal_emit_by_name(src, "push-buffer", buffer, &ret);
-            gst_buffer_unref(buffer);
-            if (ret != GstFlowReturn::GST_FLOW_OK) {
-                LOGE("Unable to push buffer");
-            }
-        } else {
-            LOGD("Buffer is invalid");
+        auto* const resample = gst_element_factory_make("audioresample", nullptr);
+        BOOST_ASSERT(resample != nullptr);
+        if (not gst_bin_add(bin, resample)) {
+            LOGE("Unable to add element");
+            return false;
+        }
+
+        auto* const sink = gst_element_factory_make("autoaudiosink", nullptr);
+        BOOST_ASSERT(sink != nullptr);
+        if (not gst_bin_add(bin, sink)) {
+            LOGE("Unable to add element");
+            return false;
+        }
+        g_object_set(sink, "sync", FALSE, nullptr);
+
+        if (gst_element_link_many(src, parser, converter, resample, queue, sink, nullptr) != TRUE) {
+            LOGE("Unable to link pipeline elements");
             return false;
         }
 
         return true;
     }
 
+    [[nodiscard]] bool
+    startPipeline() const
+    {
+        BOOST_ASSERT(_pipeline != nullptr);
+        return (gst_element_set_state(_pipeline, GST_STATE_PLAYING) != GST_STATE_CHANGE_FAILURE);
+    }
+
+    [[nodiscard]] bool
+    stopPipeline() const
+    {
+        BOOST_ASSERT(_pipeline != nullptr);
+        return (gst_element_set_state(_pipeline, GST_STATE_NULL) != GST_STATE_CHANGE_FAILURE);
+    }
+
+    [[nodiscard]] bool
+    feedPipeline()
+    {
+        if (_bufferList.empty()) {
+            LOGD("Cancel feeding, buffer is empty");
+            setState(PlayState::Idle);
+            return false;
+        }
+
+        GstElement* src = gst_bin_get_by_name(GST_BIN(_pipeline), "src");
+        BOOST_ASSERT(src != nullptr);
+
+        GstBuffer* buffer = _bufferList.pop();
+        LOGD("Pushing buffer: size<{}>", gst_buffer_get_size(buffer));
+
+        if (gst_app_src_push_buffer(GST_APP_SRC(src), buffer) != GST_FLOW_OK) {
+            LOGE("Unable to push buffer");
+        }
+
+        return true;
+    }
+
     void
-    onPipelineError(const gchar* source, const gchar* message, gint code, const gchar* debugInfo)
+    onError(const gchar* source, const gchar* message, gint code, const gchar* debugInfo)
     {
         LOGE("Error from <{}> element: {} <{}>", source, message, code);
         if (debugInfo != nullptr) {
             LOGE("Debugging info: {}", debugInfo);
         }
-
-        _bufferList.reset();
 
         if (not stopPipeline()) {
             LOGE("Unable to stop pipeline");
@@ -276,11 +345,9 @@ private:
     }
 
     void
-    onPipelineEos()
+    onEos()
     {
         LOGD("EoS has been reached");
-
-        _bufferList.reset();
 
         if (not stopPipeline()) {
             LOGE("Unable to stop pipeline");
@@ -291,94 +358,80 @@ private:
     }
 
     void
-    onPipelineStateUpdate(GstObject* source, GstState oldState, GstState newState)
+    onEnoughData(GstElement* /*appsrc*/)
     {
-        if (source == GST_OBJECT(_pipeline)) {
-            LOGD("Pipeline state update: {} -> {}",
-                 gst_element_state_get_name(oldState),
-                 gst_element_state_get_name(newState));
+        LOGD("Pipeline enough data");
+
+        cancelFeeding();
+    }
+
+    void
+    onNeedData(GstElement* /*appsrc*/, guint /*length*/)
+    {
+        LOGD("Pipeline need data");
+
+        if (not isFeedingActive()) {
+            scheduleFeeding();
         }
-    }
-
-    void
-    onPipelineEnoughData(GstElement* /*appsrc*/)
-    {
-        _dataRequired = false;
-    }
-
-    void
-    onPipelineNeedData(GstElement* /*appsrc*/, guint /*length*/)
-    {
-        _dataRequired = true;
     }
 
 private:
     static gboolean
-    onPipelineMessageStatic(GstBus* /*bus*/, GstMessage* message, gpointer data)
+    onGstPipelineMessage(GstBus* /*bus*/, GstMessage* message, gpointer data)
     {
         auto* self = static_cast<Impl*>(data);
-        BOOST_ASSERT(self != nullptr);
         if (self == nullptr) {
-            LOGE("Invalid pointer");
+            LOGE("Invalid self pointer");
             return FALSE;
         }
 
-        if (GST_MESSAGE_TYPE(message) == GST_MESSAGE_ERROR) {
-            gchar* debug{nullptr};
-            GError* error{nullptr};
+        switch (GST_MESSAGE_TYPE(message)) {
+        case GST_MESSAGE_ERROR: {
+            gchar* debug{};
+            GError* error{};
             gst_message_parse_error(message, &error, &debug);
-            const auto* source = GST_OBJECT_NAME(message->src);
-            self->onPipelineError(source, error->message, error->code, debug);
+            self->onError(GST_OBJECT_NAME(message->src), error->message, error->code, debug);
             g_clear_error(&error);
             g_free(debug);
-            return TRUE;
+            break;
         }
-
-        if (GST_MESSAGE_TYPE(message) == GST_MESSAGE_STATE_CHANGED) {
-            GstState oldState, newState, pendingState;
-            gst_message_parse_state_changed(message, &oldState, &newState, &pendingState);
-            self->onPipelineStateUpdate(GST_MESSAGE_SRC(message), oldState, newState);
-            return TRUE;
+        case GST_MESSAGE_EOS: {
+            self->onEos();
+            break;
         }
-
-        if (GST_MESSAGE_TYPE(message) == GST_MESSAGE_EOS) {
-            self->onPipelineEos();
-            return TRUE;
+        default:
+            break;
         }
 
         return TRUE;
     }
 
     static void
-    onPipelineEnoughDataStatic(GstElement* appsrc, gpointer data)
+    onGstPipelineEnoughData(GstElement* appsrc, gpointer data)
     {
-        auto* self = static_cast<Impl*>(data);
-        BOOST_ASSERT(self != nullptr);
-        if (self == nullptr) {
-            LOGE("Invalid pointer");
+        if (auto* self = static_cast<Impl*>(data); self == nullptr) {
+            LOGE("Invalid self pointer");
         } else {
-            self->onPipelineEnoughData(appsrc);
+            self->onEnoughData(appsrc);
         }
     }
 
     static void
-    onPipelineNeedDataStatic(GstElement* appsrc, guint length, gpointer data)
+    onGstPipelineNeedData(GstElement* appsrc, const guint length, gpointer data)
     {
-        auto* self = static_cast<Impl*>(data);
-        BOOST_ASSERT(self != nullptr);
-        if (self == nullptr) {
-            LOGE("Invalid pointer");
+        if (auto* self = static_cast<Impl*>(data); self == nullptr) {
+            LOGE("Invalid self pointer");
         } else {
-            self->onPipelineNeedData(appsrc, length);
+            self->onNeedData(appsrc, length);
         }
     }
 
 private:
-    GstElement* _pipeline;
-    std::unique_ptr<AudioBufferList> _bufferList;
-    std::unique_ptr<PlayerLoop> _mainLoop;
-    std::atomic<bool> _dataRequired;
-    std::atomic<PlayState> _state;
+    GstElement* _pipeline{};
+    AudioBufferList _bufferList{kInputQueueMaxSize};
+    PlayerLoop _mainLoop;
+    std::atomic<PlayState> _state{PlayState::Null};
+    sigc::connection _feedingCon;
     OnStateUpdateSignal _onStateUpdateSig;
 };
 
@@ -397,17 +450,17 @@ Player::state() const
 }
 
 bool
-Player::initialize()
+Player::start()
 {
     BOOST_ASSERT(_impl);
-    return _impl->initialize();
+    return _impl->start();
 }
 
 void
-Player::finalize()
+Player::stop()
 {
     BOOST_ASSERT(_impl);
-    _impl->finalize();
+    _impl->stop();
 }
 
 bool

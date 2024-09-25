@@ -32,6 +32,7 @@ target_sources(${TARGET}
             src/SpeakerSubsystem.cpp
             src/ConfigLoader.cpp
             src/GeneralConfig.cpp
+            src/GstInitializer.cpp
 )
 
 if(ENABLE_DBUS_SUPPORT)

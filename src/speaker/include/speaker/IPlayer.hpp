@@ -22,11 +22,11 @@ public:
         = 0;
 
     [[nodiscard]] virtual bool
-    initialize()
+    start()
         = 0;
 
     virtual void
-    finalize()
+    stop()
         = 0;
 
     virtual bool

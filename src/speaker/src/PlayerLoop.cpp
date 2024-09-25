@@ -1,7 +1,5 @@
 #include "speaker/PlayerLoop.hpp"
 
-#include <jarvisto/Logger.hpp>
-
 #include <boost/assert.hpp>
 
 namespace jar {
@@ -9,15 +7,6 @@ namespace jar {
 PlayerLoop::PlayerLoop()
 {
     Glib::init();
-
-    _loop = Glib::MainLoop::create();
-    BOOST_ASSERT(_loop);
-
-    _thread = std::jthread{[loop = _loop]() {
-        LOGD("Player loop: begin");
-        loop->run();
-        LOGD("Player loop: end");
-    }};
 }
 
 PlayerLoop::~PlayerLoop()
@@ -25,24 +14,59 @@ PlayerLoop::~PlayerLoop()
     stop();
 }
 
-void
-PlayerLoop::stop()
+bool
+PlayerLoop::active() const
 {
-    if (!_loop->is_running()) {
-        return;
-    }
-
-    _loop->quit();
-    if (_thread.joinable()) {
-        _thread.join();
-    }
+    return _thread.joinable();
 }
 
 void
-PlayerLoop::invoke(const sigc::slot<bool()>& slot)
+PlayerLoop::start()
 {
-    BOOST_ASSERT(_loop->is_running());
-    _loop->get_context()->invoke(slot);
+    if (active()) {
+        throw std::runtime_error("Loop already started");
+    }
+
+    _mainLoop = Glib::MainLoop::create();
+    BOOST_ASSERT(_mainLoop);
+
+    _thread = std::jthread{[loop = _mainLoop]() { loop->run(); }};
+    BOOST_ASSERT(_thread.joinable());
+}
+
+void
+PlayerLoop::stop()
+{
+    if (_mainLoop) {
+        if (_mainLoop->is_running()) {
+            _mainLoop->quit();
+            if (_thread.joinable()) {
+                _thread.join();
+            }
+        }
+        _mainLoop.reset();
+    }
+}
+
+sigc::connection
+PlayerLoop::onIdle(const sigc::slot<bool()>& slot) const
+{
+    BOOST_ASSERT(_mainLoop);
+    if (_mainLoop) {
+        Glib::SignalIdle idle{unwrap(_mainLoop->get_context())};
+        return idle.connect(slot);
+    }
+    return {};
+}
+
+void
+PlayerLoop::onIdleOnce(const sigc::slot<void()>& slot) const
+{
+    BOOST_ASSERT(_mainLoop);
+    if (_mainLoop) {
+        Glib::SignalIdle idle{unwrap(_mainLoop->get_context())};
+        idle.connect_once(slot);
+    }
 }
 
 } // namespace jar

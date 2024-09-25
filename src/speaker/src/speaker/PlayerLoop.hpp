@@ -12,15 +12,24 @@ public:
 
     ~PlayerLoop();
 
+    [[nodiscard]] bool
+    active() const;
+
+    void
+    start();
+
     void
     stop();
 
+    [[nodiscard]] sigc::connection
+    onIdle(const sigc::slot<bool()>& slot) const;
+
     void
-    invoke(const sigc::slot<bool()>& slot);
+    onIdleOnce(const sigc::slot<void()>& slot) const;
 
 private:
     std::jthread _thread;
-    Glib::RefPtr<Glib::MainLoop> _loop;
+    Glib::RefPtr<Glib::MainLoop> _mainLoop;
 };
 
 } // namespace jar

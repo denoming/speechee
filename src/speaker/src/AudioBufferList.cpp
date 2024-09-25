@@ -2,18 +2,16 @@
 
 #include <boost/assert.hpp>
 
+#include <stdexcept>
+
 namespace jar {
 
-AudioBufferList::AudioBufferList(std::size_t initialSize)
+AudioBufferList::AudioBufferList(const size_t maxChunkSize, const size_t initialSize)
+    : _maxChunkSize{maxChunkSize}
 {
-    _bufferList = gst_buffer_list_new_sized(initialSize);
-    BOOST_ASSERT(_bufferList != nullptr);
-}
-
-AudioBufferList::AudioBufferList(std::string_view audio)
-    : AudioBufferList{}
-{
-    push(audio);
+    if (_bufferList = gst_buffer_list_new_sized(initialSize); _bufferList == nullptr) {
+        throw std::runtime_error("Unable to create audio buffer list");
+    }
 }
 
 AudioBufferList::~AudioBufferList()
@@ -22,16 +20,14 @@ AudioBufferList::~AudioBufferList()
 }
 
 void
-AudioBufferList::push(std::string_view audio)
+AudioBufferList::push(const std::string_view audio) const
 {
     const auto size = audio.size();
-    const auto step = size / 10;
-
-    std::size_t start{0};
-    while (start < size) {
-        std::size_t len = std::min(step, size - start);
-        push(&audio[start], len);
-        start += step;
+    size_t offset{0};
+    while (offset < size) {
+        const size_t len = std::min(_maxChunkSize, size - offset);
+        push(&audio[offset], len);
+        offset += len;
     }
 }
 
@@ -47,7 +43,7 @@ AudioBufferList::pop() const
     return buffer;
 }
 
-std::size_t
+size_t
 AudioBufferList::size() const
 {
     std::lock_guard lock{_guard};
@@ -61,7 +57,7 @@ AudioBufferList::empty() const
 }
 
 void
-AudioBufferList::push(const char* ptr, std::size_t len)
+AudioBufferList::push(const char* ptr, const size_t len) const
 {
     auto* buffer = gst_buffer_new_allocate(nullptr, len, nullptr);
     BOOST_ASSERT(buffer != nullptr);

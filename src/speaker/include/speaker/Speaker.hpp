@@ -3,13 +3,10 @@
 #include "speaker/ISpeaker.hpp"
 #include "speaker/Types.hpp"
 
-#include <sigc++/connection.h>
-
 #include <list>
 #include <mutex>
 #include <string>
-
-#include <system_error>
+#include <string_view>
 
 namespace jar {
 
@@ -19,8 +16,6 @@ class IPlayer;
 class Speaker final : public ISpeaker {
 public:
     Speaker(ISpeechSynthesizePool& synthesizePool, IPlayer& player);
-
-    ~Speaker() final;
 
     void
     synthesizeText(std::string_view text, std::string_view lang) final;
@@ -49,16 +44,12 @@ private:
     onSynthesizeDone(std::uint64_t id, std::string audio, std::exception_ptr exception);
 
     void
-    onPlayerStateUpdate(PlayState state);
-
-    void
-    playNext();
+    playAudio();
 
 private:
     mutable std::recursive_mutex _guard;
     ISpeechSynthesizePool& _synthesizePool;
     IPlayer& _player;
-    sigc::connection _onPlayerStateCon;
     Requests _requests;
 };
 

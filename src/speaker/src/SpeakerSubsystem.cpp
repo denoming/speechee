@@ -4,6 +4,7 @@
 #include "speaker/Player.hpp"
 #include "speaker/Speaker.hpp"
 #include "speaker/SpeechSynthesizePool.hpp"
+#include "speaker/GstInitializer.hpp"
 #include "speechee/Options.hpp"
 #include "tts/TextToSpeechClient.hpp"
 
@@ -28,6 +29,11 @@ public:
     void
     initialize(Application& /*application*/)
     {
+        _initializer = std::make_unique<GstInitializer>();
+        if (not _initializer->initialize()) {
+            LOGE("Unable to initialize gstreamer");
+        }
+
         _config = std::make_unique<GeneralConfig>();
         if (not _config->load()) {
             LOGE("Unable to load config file");
@@ -67,8 +73,8 @@ public:
         }
 
         BOOST_ASSERT(_player);
-        if (!_player->initialize()) {
-            LOGE("Unable to initialize player");
+        if (!_player->start()) {
+            LOGE("Unable to start player");
         }
 
 #ifdef ENABLE_DBUS_SUPPORT
@@ -113,7 +119,7 @@ public:
 #endif
 
         if (_player) {
-            _player->finalize();
+            _player->stop();
         }
 
         if (_mqttClient) {
@@ -141,10 +147,11 @@ public:
     }
 
 private:
+    std::unique_ptr<GstInitializer> _initializer;
     std::unique_ptr<GeneralConfig> _config;
     std::unique_ptr<Speaker> _speaker;
     std::unique_ptr<SpeechSynthesizePool> _synthesizePool;
-    std::unique_ptr<TextToSpeechClient> _client;
+    std::unique_ptr<ITextToSpeechClient> _client;
     std::unique_ptr<AvailabilityObserver> _observer;
     std::unique_ptr<Player> _player;
     std::unique_ptr<MqttBasicClient> _mqttClient;

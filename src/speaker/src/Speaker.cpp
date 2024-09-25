@@ -18,13 +18,8 @@ Speaker::Speaker(ISpeechSynthesizePool& synthesizePool, IPlayer& player)
     : _synthesizePool{synthesizePool}
     , _player{player}
 {
-    _onPlayerStateCon = _player.onStateUpdate(std::bind_front(&Speaker::onPlayerStateUpdate, this));
 }
 
-Speaker::~Speaker()
-{
-    _onPlayerStateCon.disconnect();
-}
 
 void
 Speaker::synthesizeText(std::string_view text, std::string_view lang)
@@ -71,7 +66,6 @@ Speaker::onSynthesizeDone(std::uint64_t id, std::string audio, std::exception_pt
     auto [ok, requestIt] = findRequest(id);
     if (not ok) {
         LOGE("Request with <{}> id not found", id);
-        playNext();
         return;
     }
 
@@ -87,24 +81,12 @@ Speaker::onSynthesizeDone(std::uint64_t id, std::string audio, std::exception_pt
         requestIt->audio = std::move(audio);
     }
 
-    playNext();
+    playAudio();
 }
 
 void
-Speaker::onPlayerStateUpdate(PlayState state)
+Speaker::playAudio()
 {
-    if (state == PlayState::Idle) {
-        playNext();
-    }
-}
-
-void
-Speaker::playNext()
-{
-    if (_player.state() == PlayState::Busy) {
-        return;
-    }
-
     std::lock_guard lock{_guard};
     if (!_requests.empty()) {
         const auto& next = _requests.front();
