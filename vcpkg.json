@@ -10,13 +10,6 @@
     "glibmm",
     "boost-core",
     "boost-json",
-    {
-      "name": "google-cloud-cpp",
-      "default-features": false,
-      "features": [
-        "texttospeech"
-      ]
-    },
     "libsigcpp",
     "libconfig"
   ],
@@ -40,6 +33,24 @@
           ]
         },
         "boost-beast"
+      ]
+    },
+    "online": {
+      "description": "Enable using online TTS engine (Google TTS)",
+      "dependencies": [
+        {
+          "name": "google-cloud-cpp",
+          "default-features": false,
+          "features": [
+            "texttospeech"
+          ]
+        }
+      ]
+    },
+    "offline": {
+      "description": "Enable using offline TTS engine (piper-phonemize + eSpeakNG)",
+      "dependencies": [
+        "voxer"
       ]
     },
     "tests": {

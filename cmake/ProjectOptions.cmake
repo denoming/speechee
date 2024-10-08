@@ -39,4 +39,27 @@ add_feature_info(
     ENABLE_INTEGRATION ENABLE_INTEGRATION "Enable HomeAssistant integration support"
 )
 
+option(ENABLE_ONLINE_TTS "Enable online TTS engine support" OFF)
+if(ENABLE_ONLINE_TTS)
+    list(APPEND VCPKG_MANIFEST_FEATURES "online")
+endif()
+add_feature_info(
+    ENABLE_ONLINE_TTS ENABLE_ONLINE_TTS "Enable online TTS engine support"
+)
+
+option(ENABLE_OFFLINE_TTS "Enable offline TTS engine support" ON)
+if(ENABLE_OFFLINE_TTS)
+    list(APPEND VCPKG_MANIFEST_FEATURES "offline")
+endif()
+add_feature_info(
+    ENABLE_OFFLINE_TTS ENABLE_OFFLINE_TTS "Enable offline TTS engine support"
+)
+
+if(ENABLE_ONLINE_TTS AND ENABLE_OFFLINE_TTS)
+    message(FATAL_ERROR "Only one TTS engine at a time can be enabled")
+endif()
+if(NOT ENABLE_ONLINE_TTS AND NOT ENABLE_OFFLINE_TTS)
+    message(FATAL_ERROR "At least one one TTS engine should be enabled")
+endif()
+
 feature_summary(WHAT ALL)

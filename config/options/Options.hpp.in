@@ -5,3 +5,5 @@
 #cmakedefine ENABLE_DBUS_SUPPORT
 #cmakedefine ENABLE_HTTP_SUPPORT
 #cmakedefine ENABLE_INTEGRATION
+#cmakedefine ENABLE_ONLINE_TTS
+#cmakedefine ENABLE_OFFLINE_TTS

@@ -1,12 +1,18 @@
 #include "speaker/SpeakerSubsystem.hpp"
 
 #include "speaker/GeneralConfig.hpp"
+#include "speaker/GstInitializer.hpp"
 #include "speaker/Player.hpp"
 #include "speaker/Speaker.hpp"
 #include "speaker/SpeechSynthesizePool.hpp"
-#include "speaker/GstInitializer.hpp"
 #include "speechee/Options.hpp"
-#include "tts/TextToSpeechClient.hpp"
+
+#ifdef ENABLE_ONLINE_TTS
+#include "tts/OnlineTextToSpeechClient.hpp"
+#endif
+#ifdef ENABLE_OFFLINE_TTS
+#include "tts/OfflineTextToSpeechEngine.hpp"
+#endif
 
 #ifdef ENABLE_DBUS_SUPPORT
 #include "speaker/DbusSpeakerService.hpp"
@@ -39,7 +45,22 @@ public:
             LOGE("Unable to load config file");
         }
 
-        _client = std::make_unique<TextToSpeechClient>();
+#ifdef ENABLE_ONLINE_TTS
+        _client = std::make_unique<OnlineTextToSpeechClient>();
+#endif
+#ifdef ENABLE_OFFLINE_TTS
+        if (const auto& modelPath = _config->synthesisVoiceModelPath(); modelPath) {
+            if (const auto& filesPath = _config->synthesisVoiceFilesPath(); filesPath) {
+                _client = std::make_unique<OfflineTextToSpeechEngine>(*modelPath, *filesPath);
+            } else {
+                _client = std::make_unique<OfflineTextToSpeechEngine>(*modelPath);
+            }
+        } else {
+            LOGE("Path to voice model is not set");
+            throw std::runtime_error("Unable create offline speech engine");
+        }
+#endif
+
         _synthesizePool
             = std::make_unique<SpeechSynthesizePool>(*_client, _config->synthesisThreads());
         _player = std::make_unique<Player>();

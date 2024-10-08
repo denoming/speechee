@@ -9,11 +9,15 @@ target_include_directories(${TARGET}
 
 target_link_libraries(${TARGET}
     PRIVATE Boost::headers
-            google-cloud-cpp::texttospeech
 )
 
-target_sources(${TARGET}
-    PRIVATE src/TextToSpeechClient.cpp
-)
+if(ENABLE_ONLINE_TTS)
+    target_link_libraries(${TARGET} PRIVATE google-cloud-cpp::texttospeech)
+    target_sources(${TARGET} PRIVATE src/OnlineTextToSpeechClient.cpp)
+endif()
+if(ENABLE_OFFLINE_TTS)
+    target_link_libraries(${TARGET} PRIVATE Voxer::Voxer)
+    target_sources(${TARGET} PRIVATE src/OfflineTextToSpeechEngine.cpp)
+endif()
 
 target_compile_features(${TARGET} PUBLIC cxx_std_23)

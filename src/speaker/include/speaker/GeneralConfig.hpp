@@ -2,8 +2,9 @@
 
 #include "speaker/ConfigLoader.hpp"
 
-#include <string>
 #include <filesystem>
+#include <optional>
+#include <string>
 
 namespace jar {
 
@@ -15,8 +16,14 @@ public:
 
     GeneralConfig() = default;
 
-     [[nodiscard]] size_t
+    [[nodiscard]] size_t
     synthesisThreads() const;
+
+    [[nodiscard]] const std::optional<std::string>&
+    synthesisVoiceFilesPath() const;
+
+    [[nodiscard]] const std::optional<std::string>&
+    synthesisVoiceModelPath() const;
 
     [[nodiscard]] const std::string&
     mqttUser() const;
@@ -39,6 +46,8 @@ private:
 
 private:
     uint32_t _synthesisThreads{kSynthesisThreads};
+    std::optional<std::string> _synthesisVoiceFilesPath;
+    std::optional<std::string> _synthesisVoiceModelPath;
     std::string _mqttUser;
     std::string _mqttPassword;
     std::string _mqttServer;

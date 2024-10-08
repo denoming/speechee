@@ -1,4 +1,4 @@
-#include "tts/TextToSpeechClient.hpp"
+#include "tts/OnlineTextToSpeechClient.hpp"
 
 #include <google/cloud/common_options.h>
 #include <google/cloud/grpc_options.h>
@@ -60,7 +60,7 @@ toAudioEncoding(AudioEncoding encoding)
 
 } // namespace
 
-class TextToSpeechClient::Impl final : public ITextToSpeechClient {
+class OnlineTextToSpeechClient::Impl final : public ITextToSpeechClient {
 public:
     Impl()
         : _connection{tts::MakeTextToSpeechConnection(getConnectionOptions())}
@@ -121,21 +121,21 @@ private:
     std::shared_ptr<tts::TextToSpeechConnection> _connection;
 };
 
-TextToSpeechClient::TextToSpeechClient()
+OnlineTextToSpeechClient::OnlineTextToSpeechClient()
     : _impl{std::make_unique<Impl>()}
 {
 }
 
-TextToSpeechClient::~TextToSpeechClient() = default;
+OnlineTextToSpeechClient::~OnlineTextToSpeechClient() = default;
 
 std::string
-TextToSpeechClient::synthesizeText(const std::string& text)
+OnlineTextToSpeechClient::synthesizeText(const std::string& text)
 {
     return synthesizeText(text, Voice{}, AudioConfig{});
 }
 
 std::string
-TextToSpeechClient::synthesizeText(const std::string& text,
+OnlineTextToSpeechClient::synthesizeText(const std::string& text,
                                    const Voice& voice,
                                    const AudioConfig& audioConfig)
 {
@@ -144,13 +144,13 @@ TextToSpeechClient::synthesizeText(const std::string& text,
 }
 
 std::string
-TextToSpeechClient::synthesizeSsml(const std::string& ssml)
+OnlineTextToSpeechClient::synthesizeSsml(const std::string& ssml)
 {
     return synthesizeSsml(ssml, Voice{}, AudioConfig{});
 }
 
 std::string
-TextToSpeechClient::synthesizeSsml(const std::string& ssml,
+OnlineTextToSpeechClient::synthesizeSsml(const std::string& ssml,
                                    const Voice& voice,
                                    const AudioConfig& audioConfig)
 {

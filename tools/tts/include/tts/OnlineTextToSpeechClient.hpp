@@ -6,11 +6,11 @@
 
 namespace jar {
 
-class TextToSpeechClient final : public ITextToSpeechClient {
+class OnlineTextToSpeechClient final : public ITextToSpeechClient {
 public:
-    TextToSpeechClient();
+    OnlineTextToSpeechClient();
 
-    ~TextToSpeechClient() final;
+    ~OnlineTextToSpeechClient() final;
 
     std::string
     synthesizeText(const std::string& text);
