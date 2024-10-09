@@ -1,4 +1,4 @@
-#include "org/denoming/speechee/HttpSpeakerClient.hpp"
+#include "speechee/HttpSpeakerClient.hpp"
 
 #include <jarvisto/Asio.hpp>
 #include <jarvisto/Http.hpp>

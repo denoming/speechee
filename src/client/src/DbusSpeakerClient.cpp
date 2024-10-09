@@ -1,4 +1,4 @@
-#include "org/denoming/speechee/DbusSpeakerClient.hpp"
+#include "speechee/DbusSpeakerClient.hpp"
 
 #include "client/DbusSpeakerProxy.hpp"
 #include "dbus/Config.hpp"

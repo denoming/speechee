@@ -1,7 +1,7 @@
 #pragma once
 
-#include <org/denoming/speechee/ISpeakerClient.hpp>
-#include <org/denoming/speechee/SpeecheeExport.hpp>
+#include "speechee/ISpeakerClient.hpp"
+#include "speechee/SpeecheeExport.hpp"
 
 #include <memory>
 #include <string>
