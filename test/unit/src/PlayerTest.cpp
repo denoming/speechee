@@ -72,14 +72,14 @@ TEST_F(PlayerTest, LifeCycle)
 
     waiter.onCheck([](const auto state) { return (state == PlayState::Idle); });
     EXPECT_CALL(callback, Call(PlayState::Idle)).RetiresOnSaturation();
-    EXPECT_TRUE(player.initialize());
+    EXPECT_TRUE(player.start());
     EXPECT_TRUE(waiter.wait(kDefaultTimeout));
 
     ASSERT_EQ(player.state(), PlayState::Idle);
 
     waiter.onCheck([](const auto state) { return (state == PlayState::Null); });
     EXPECT_CALL(callback, Call(PlayState::Null)).RetiresOnSaturation();
-    player.finalize();
+    player.stop();
     EXPECT_TRUE(waiter.wait(kDefaultTimeout));
 
     c.disconnect();
@@ -94,7 +94,7 @@ TEST_F(PlayerTest, Play)
 
     waiter.onCheck([](const auto state) { return (state == PlayState::Idle); });
     EXPECT_CALL(callback, Call(PlayState::Idle)).RetiresOnSaturation();
-    ASSERT_TRUE(player.initialize());
+    ASSERT_TRUE(player.start());
     EXPECT_TRUE(waiter.wait(kDefaultTimeout));
 
     EXPECT_CALL(callback, Call(PlayState::Busy)).Times(2).RetiresOnSaturation();
@@ -111,7 +111,7 @@ TEST_F(PlayerTest, Play)
     ASSERT_EQ(player.state(), PlayState::Idle);
 
     EXPECT_CALL(callback, Call(PlayState::Null)).RetiresOnSaturation();
-    player.finalize();
+    player.stop();
 
     c.disconnect();
 }
