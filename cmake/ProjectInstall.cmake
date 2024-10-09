@@ -1,8 +1,9 @@
 
-if (NOT WIN32)
+if (NOT WIN32 AND CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     # Set default install prefix path
     if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-        set(CMAKE_INSTALL_PREFIX "/opt/denoming/${PROJECT_NAME}" CACHE PATH "..." FORCE)
+        set(CMAKE_INSTALL_PREFIX "/opt/denoming.com/${PROJECT_NAME}"
+                CACHE PATH "Default install prefix" FORCE)
     endif()
 endif()
 
