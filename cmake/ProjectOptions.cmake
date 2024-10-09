@@ -22,16 +22,19 @@ add_feature_info(
 )
 
 option(ENABLE_DBUS_SUPPORT "Enable DBus support" OFF)
+if(ENABLE_DBUS_SUPPORT)
+    list(APPEND VCPKG_MANIFEST_FEATURES "dbus")
+endif()
 add_feature_info(
-    ENABLE_CLI ENABLE_CLI "Enable DBus support (client+service)"
+    ENABLE_DBUS_SUPPORT ENABLE_DBUS_SUPPORT "Enable DBus support (client+service)"
 )
 
 option(ENABLE_HTTP_SUPPORT "Enable HTTP support" ON)
-if(ENABLE_CLI)
+if(ENABLE_HTTP_SUPPORT)
     list(APPEND VCPKG_MANIFEST_FEATURES "http")
 endif()
 add_feature_info(
-    ENABLE_CLI ENABLE_CLI "Enable HTTP support (service)"
+    ENABLE_HTTP_SUPPORT ENABLE_HTTP_SUPPORT "Enable HTTP support (service)"
 )
 
 option(ENABLE_INTEGRATION "Enable HomeAssistant integration support" OFF)
