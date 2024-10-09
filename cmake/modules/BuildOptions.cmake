@@ -1,16 +1,10 @@
 include(CheckCCompilerFlag)
 
-option(ENABLE_COMPILER_CHECKING
-       "Enable compiler extra checking"
-       OFF)
-option(ENABLE_SEPARATING_DEBUG_SYMBOLS
-       "Enable separating debug symbols"
-       OFF)
-option(ENABLE_GOLD_LINKED
-       "Enable gold linger"
-       OFF)
+option(SPEECHEE_ENABLE_COMPILER_CHECKING "Enable compiler extra checking" OFF)
+option(SPEECHEE_ENABLE_SEPARATING_DEBUG_SYMBOLS "Enable separating debug symbols" OFF)
+option(SPEECHEE_ENABLE_GOLD_LINKED "Enable gold linger" OFF)
 
-if(ENABLE_COMPILER_CHECKING)
+if(SPEECHEE_ENABLE_COMPILER_CHECKING)
     if (MSVC)
         add_compile_options(/W4 /WX)
     else()
@@ -18,7 +12,7 @@ if(ENABLE_COMPILER_CHECKING)
     endif()
 endif()
 
-if (ENABLE_SEPARATING_DEBUG_SYMBOLS)
+if (SPEECHEE_ENABLE_SEPARATING_DEBUG_SYMBOLS)
     check_c_compiler_flag("-gsplit-dwarf" HAVE_SPLIT_DWARF)
     if (HAVE_SPLIT_DWARF)
         add_compile_options("$<$<CONFIG:Debug>:-gsplit-dwarf>")
@@ -27,6 +21,6 @@ if (ENABLE_SEPARATING_DEBUG_SYMBOLS)
     endif()
 endif()
 
-if (ENABLE_GOLD_LINKED)
+if (SPEECHEE_ENABLE_GOLD_LINKED)
     add_link_options(-fuse-ld=gold)
 endif()
