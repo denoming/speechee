@@ -23,8 +23,15 @@
         "boost-json"
       ]
     },
+    "dbus": {
+      "description": "Enable DBus PublicAPI",
+      "dependencies": [
+        "libsystemd",
+        "sdbus-cpp"
+      ]
+    },
     "http": {
-      "description": "HTTP API supporting",
+      "description": "Enable HTTP PublicAPI",
       "dependencies": [
         {
           "name": "boost-asio",

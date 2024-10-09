@@ -2,7 +2,12 @@
 
 namespace jar {
 
-DbusSpeakerProxy::DbusSpeakerProxy(sdbus::IProxy& proxy)
+DbusSpeakerProxy::DbusSpeakerProxy(sdbus::IProxy& /*proxy*/)
+{
+}
+
+void
+DbusSpeakerProxy::registerProxy()
 {
     /* Register signals here */
 }

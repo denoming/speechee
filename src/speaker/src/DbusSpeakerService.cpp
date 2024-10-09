@@ -17,7 +17,7 @@ getConnection()
 {
     static std::unique_ptr<sdbus::IConnection> connection;
     if (!connection) {
-        connection = sdbus::createSystemBusConnection(std::string{dbus::kServiceName});
+        connection = sdbus::createSystemBusConnection(dbus::kServiceName);
         BOOST_ASSERT(connection);
         connection->enterEventLoopAsync();
     }
