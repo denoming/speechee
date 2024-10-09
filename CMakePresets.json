@@ -28,7 +28,7 @@
       "displayName": "Release",
       "cacheVariables": {
         "ENABLE_CLI": true,
-        "ENABLE_TESTS": true
+        "ENABLE_TESTS": false
       }
     },
     {
