@@ -1,3 +1,4 @@
+#pragma once
 
 #cmakedefine ENABLE_DLT
 #cmakedefine ENABLE_CLI
