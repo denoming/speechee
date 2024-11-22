@@ -7,9 +7,9 @@
   "registries": [
     {
       "kind": "git",
-      "baseline": "3dca74d23a44413c780f0450406443d084166b81",
+      "baseline": "7ef9493cbc0c5fd527c568cad9bc2cd8a81e8d3a",
       "repository": "git@github.com:denoming/vcpkg-registry.git",
-      "packages": [ "automotive-dlt", "jarvisto", "libconfig", "mosquitto", "piper-phonemize", "voxer" ]
+      "packages": [ "jarvisto", "libconfig", "mosquitto", "voxer" ]
     }
   ]
 }
