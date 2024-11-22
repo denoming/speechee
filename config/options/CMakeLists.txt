@@ -1,4 +1,4 @@
 configure_file(
     "${CMAKE_CURRENT_LIST_DIR}/Options.hpp.in"
-    "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/options/speechee/Options.hpp"
+    "${VOXER_STAGE_DIR}/speechee/Options.hpp"
 @ONLY)

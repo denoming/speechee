@@ -16,7 +16,7 @@ target_link_libraries(${TARGET}
 )
 
 target_include_directories(${TARGET}
-    PRIVATE $<BUILD_INTERFACE:${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/options>
+    PRIVATE $<BUILD_INTERFACE:${VOXER_STAGE_DIR}>
 )
 
 target_compile_features(${TARGET} PUBLIC cxx_std_23)
