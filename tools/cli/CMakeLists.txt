@@ -25,5 +25,5 @@ target_compile_features(${TARGET} PRIVATE cxx_std_23)
 
 install(
     TARGETS ${TARGET}
-    COMPONENT SpeecheeRuntime
+    COMPONENT Speechee_Runtime
 )

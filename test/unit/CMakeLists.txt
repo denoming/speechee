@@ -17,7 +17,7 @@ target_compile_features(${TARGET} PUBLIC cxx_std_23)
 
 install(
     TARGETS ${TARGET}
-    COMPONENT SpeecheeRuntime
+    COMPONENT Speechee_Runtime
 )
 
 if (NOT CMAKE_CROSSCOMPILING)

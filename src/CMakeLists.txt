@@ -23,7 +23,7 @@ target_compile_features(${TARGET} PUBLIC cxx_std_23)
 
 install(
     TARGETS ${TARGET}
-    COMPONENT SpeecheeRuntime
+    COMPONENT Speechee_Runtime
 )
 
 if(ENABLE_DBUS_SUPPORT OR ENABLE_HTTP_SUPPORT)

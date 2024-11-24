@@ -69,7 +69,7 @@ install(TARGETS ${TARGET}
     EXPORT Speechee
     LIBRARY
         DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        COMPONENT SpeecheeRuntime
+        COMPONENT Speechee_Runtime
         NAMELINK_COMPONENT SpeecheeDevelopment
     ARCHIVE
         DESTINATION ${CMAKE_INSTALL_LIBDIR}
