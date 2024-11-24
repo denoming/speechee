@@ -1,11 +1,6 @@
 include(FeatureSummary)
 
-option(ENABLE_DLT "Enable DLT logging" OFF)
-add_feature_info(
-    ENABLE_DLT ENABLE_DLT "Build project with DLT logging"
-)
-
-option(ENABLE_CLI "Enable CLI building" OFF)
+option(ENABLE_CLI "Enable CLI building" ON)
 if(ENABLE_CLI)
     list(APPEND VCPKG_MANIFEST_FEATURES "cli")
 endif()
