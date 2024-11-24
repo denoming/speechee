@@ -1,6 +1,8 @@
 #include "speaker/PlayerLoop.hpp"
 
 #include <boost/assert.hpp>
+#include <glibmm/init.h>
+#include <glibmm/wrap.h>
 
 namespace jar {
 
@@ -53,20 +55,12 @@ PlayerLoop::onIdle(const sigc::slot<bool()>& slot) const
 {
     BOOST_ASSERT(_mainLoop);
     if (_mainLoop) {
-        Glib::SignalIdle idle{unwrap(_mainLoop->get_context())};
-        return idle.connect(slot);
+        const auto src = Glib::IdleSource::create();
+        auto c = src->connect(slot);
+        src->attach(_mainLoop->get_context());
+        return c;
     }
     return {};
-}
-
-void
-PlayerLoop::onIdleOnce(const sigc::slot<void()>& slot) const
-{
-    BOOST_ASSERT(_mainLoop);
-    if (_mainLoop) {
-        Glib::SignalIdle idle{unwrap(_mainLoop->get_context())};
-        idle.connect_once(slot);
-    }
 }
 
 } // namespace jar

@@ -2,7 +2,8 @@
 
 #include <thread>
 
-#include <glibmm.h>
+#include <glibmm/main.h>
+#include <sigc++/slot.h>
 
 namespace jar {
 
@@ -23,9 +24,6 @@ public:
 
     [[nodiscard]] sigc::connection
     onIdle(const sigc::slot<bool()>& slot) const;
-
-    void
-    onIdleOnce(const sigc::slot<void()>& slot) const;
 
 private:
     std::jthread _thread;
