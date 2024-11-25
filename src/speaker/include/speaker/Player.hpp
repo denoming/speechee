@@ -1,6 +1,7 @@
 #pragma once
 
 #include "speaker/IPlayer.hpp"
+#include "speaker/IPlayerLoop.hpp"
 
 #include <memory>
 
@@ -8,7 +9,7 @@ namespace jar {
 
 class Player final : public IPlayer {
 public:
-    Player();
+    explicit Player(IPlayerLoop& playerLoop);
 
     ~Player() override;
 
@@ -24,8 +25,8 @@ public:
     bool
     play(std::string_view audio) override;
 
-    [[nodiscard]] sigc::connection
-    onStateUpdate(OnStateUpdateSignal::slot_type&&) override;
+    [[nodiscard]] OnStateUpdateSignal
+    onStateUpdate() override;
 
 private:
     class Impl;

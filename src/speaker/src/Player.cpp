@@ -20,7 +20,9 @@ namespace jar {
 
 class Player::Impl {
 public:
-    Impl() = default;
+    explicit Impl(IPlayerLoop& playerLoop)
+        : _playerLoop{playerLoop}
+    {}
 
     [[nodiscard]] bool
     start()
@@ -30,20 +32,13 @@ public:
             return false;
         }
 
-        if (not startLoop()) {
-            LOGE("Unable to start main loop");
-            return false;
-        }
-
         if (not createPipeline()) {
-            stopLoop();
             LOGE("Unable to create pipeline");
             return false;
         }
 
         if (not startPipeline()) {
             destroyPipeline();
-            stopLoop();
             LOGE("Unable to start pipeline");
             return false;
         }
@@ -63,7 +58,6 @@ public:
         setState(PlayState::Null);
 
         destroyPipeline();
-        stopLoop();
     }
 
     [[nodiscard]] PlayState
@@ -109,25 +103,6 @@ private:
         }
     }
 
-    bool
-    startLoop()
-    {
-        if (not _mainLoop.active()) {
-            LOGD("Start main loop");
-            _mainLoop.start();
-        }
-        return _mainLoop.active();
-    }
-
-    void
-    stopLoop()
-    {
-        if (_mainLoop.active()) {
-            LOGD("Stop main loop");
-            _mainLoop.stop();
-        }
-    }
-
     void
     scheduleFeeding()
     {
@@ -135,7 +110,7 @@ private:
             LOGW("Feeding is already scheduled");
             return;
         }
-        _feedingCon = _mainLoop.onIdle(sigc::mem_fun(*this, &Impl::feedPipeline));
+        _feedingCon = _playerLoop.onIdle(sigc::mem_fun(*this, &Impl::feedPipeline));
     }
 
     void
@@ -237,8 +212,6 @@ private:
             LOGE("Unable to add element");
             return false;
         }
-        g_signal_connect(src, "enough-data", G_CALLBACK(onGstPipelineEnoughData), this);
-        g_signal_connect(src, "need-data", G_CALLBACK(onGstPipelineNeedData), this);
         g_object_set(src,
                      "is-live",
                      TRUE,
@@ -246,6 +219,8 @@ private:
                      kInputQueueMaxSize,
                      "do-timestamp",
                      TRUE /* set timestamps for outgoing buffers */,
+                     "block",
+                     TRUE,
                      nullptr);
 
         auto* const parser = gst_element_factory_make("wavparse", nullptr);
@@ -254,7 +229,7 @@ private:
             LOGE("Unable to add element");
             return false;
         }
-        g_object_set(parser, "ignore-length", TRUE, nullptr);
+        // g_object_set(parser, "ignore-length", TRUE, nullptr);
 
         auto* const queue = gst_element_factory_make("queue", nullptr);
         BOOST_ASSERT(queue != nullptr);
@@ -310,14 +285,14 @@ private:
     [[nodiscard]] bool
     feedPipeline()
     {
-        if (_bufferList.empty()) {
-            LOGD("Cancel feeding, buffer is empty");
-            setState(PlayState::Idle);
-            return false;
-        }
-
         GstElement* src = gst_bin_get_by_name(GST_BIN(_pipeline), "src");
         BOOST_ASSERT(src != nullptr);
+
+        if (_bufferList.empty()) {
+            LOGD("Cancel feeding, buffer is empty");
+            gst_app_src_end_of_stream(GST_APP_SRC(src));
+            return false;
+        }
 
         GstBuffer* buffer = _bufferList.pop();
         LOGD("Pushing buffer: size<{}>", gst_buffer_get_size(buffer));
@@ -347,7 +322,7 @@ private:
     void
     onEos()
     {
-        LOGD("EoS has been reached");
+        LOGD("EoS has been reached: {}", std::this_thread::get_id());
 
         if (not stopPipeline()) {
             LOGE("Unable to stop pipeline");
@@ -355,24 +330,6 @@ private:
         }
 
         setState(PlayState::Idle);
-    }
-
-    void
-    onEnoughData(GstElement* /*appsrc*/)
-    {
-        LOGD("Pipeline enough data");
-
-        cancelFeeding();
-    }
-
-    void
-    onNeedData(GstElement* /*appsrc*/, guint /*length*/)
-    {
-        LOGD("Pipeline need data");
-
-        if (not isFeedingActive()) {
-            scheduleFeeding();
-        }
     }
 
 private:
@@ -406,37 +363,17 @@ private:
         return TRUE;
     }
 
-    static void
-    onGstPipelineEnoughData(GstElement* appsrc, gpointer data)
-    {
-        if (auto* self = static_cast<Impl*>(data); self == nullptr) {
-            LOGE("Invalid self pointer");
-        } else {
-            self->onEnoughData(appsrc);
-        }
-    }
-
-    static void
-    onGstPipelineNeedData(GstElement* appsrc, const guint length, gpointer data)
-    {
-        if (auto* self = static_cast<Impl*>(data); self == nullptr) {
-            LOGE("Invalid self pointer");
-        } else {
-            self->onNeedData(appsrc, length);
-        }
-    }
-
 private:
+    IPlayerLoop& _playerLoop;
     GstElement* _pipeline{};
     AudioBufferList _bufferList{kInputQueueMaxSize};
-    PlayerLoop _mainLoop;
     std::atomic<PlayState> _state{PlayState::Null};
     sigc::connection _feedingCon;
     OnStateUpdateSignal _onStateUpdateSig;
 };
 
-Player::Player()
-    : _impl{std::make_unique<Impl>()}
+Player::Player(IPlayerLoop& playerLoop)
+    : _impl{std::make_unique<Impl>(playerLoop)}
 {
 }
 
@@ -470,11 +407,11 @@ Player::play(std::string_view audio)
     return _impl->play(audio);
 }
 
-sigc::connection
-Player::onStateUpdate(OnStateUpdateSignal::slot_type&& slot)
+[[nodiscard]] Player::OnStateUpdateSignal
+Player::onStateUpdate()
 {
     BOOST_ASSERT(_impl);
-    return _impl->onStateUpdate().connect(std::move(slot));
+    return _impl->onStateUpdate();
 }
 
 } // namespace jar

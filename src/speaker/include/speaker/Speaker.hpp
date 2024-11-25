@@ -1,21 +1,28 @@
 #pragma once
 
+#include "speaker/IPlayer.hpp"
+#include "speaker/IPlayerLoop.hpp"
 #include "speaker/ISpeaker.hpp"
+#include "speaker/ISpeechSynthesizePool.hpp"
 #include "speaker/Types.hpp"
 
 #include <list>
+#include <memory>
 #include <mutex>
 #include <string>
 #include <string_view>
 
+#include <sigc++/trackable.h>
+
 namespace jar {
 
 class ISpeechSynthesizePool;
-class IPlayer;
 
 class Speaker final : public ISpeaker {
 public:
-    Speaker(ISpeechSynthesizePool& synthesizePool, IPlayer& player);
+    explicit Speaker(ISpeechSynthesizePool& synthesizePool, IPlayerLoop& playerLoop);
+
+    ~Speaker() override;
 
     void
     synthesizeText(std::string_view text, std::string_view lang) final;
@@ -24,10 +31,10 @@ public:
     synthesizeSsml(std::string_view ssml, std::string_view lang) final;
 
 private:
-    struct Request {
+    struct Request : sigc::trackable {
         std::uint64_t id{0};
-        bool done{false};
-        std::string audio;
+        PlayState state{};
+        std::unique_ptr<IPlayer> player;
     };
     using Requests = std::list<Request>;
 
@@ -44,12 +51,12 @@ private:
     onSynthesizeDone(std::uint64_t id, std::string audio, std::exception_ptr exception);
 
     void
-    playAudio();
+    onPlayUpdate(std::uint64_t id, PlayState state);
 
 private:
     mutable std::recursive_mutex _guard;
     ISpeechSynthesizePool& _synthesizePool;
-    IPlayer& _player;
+    IPlayerLoop& _playerLoop;
     Requests _requests;
 };
 

@@ -13,7 +13,7 @@ PlayerLoop::PlayerLoop()
 
 PlayerLoop::~PlayerLoop()
 {
-    stop();
+    quit();
 }
 
 bool
@@ -39,15 +39,7 @@ PlayerLoop::start()
 void
 PlayerLoop::stop()
 {
-    if (_mainLoop) {
-        if (_mainLoop->is_running()) {
-            _mainLoop->quit();
-            if (_thread.joinable()) {
-                _thread.join();
-            }
-        }
-        _mainLoop.reset();
-    }
+    quit();
 }
 
 sigc::connection
@@ -61,6 +53,16 @@ PlayerLoop::onIdle(const sigc::slot<bool()>& slot) const
         return c;
     }
     return {};
+}
+
+void
+PlayerLoop::quit() const
+{
+    if (_mainLoop) {
+        if (_mainLoop->is_running()) {
+            _mainLoop->quit();
+        }
+    }
 }
 
 } // namespace jar

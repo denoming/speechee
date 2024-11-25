@@ -2,7 +2,7 @@
 
 #include "speaker/GeneralConfig.hpp"
 #include "speaker/GstInitializer.hpp"
-#include "speaker/Player.hpp"
+#include "speaker/PlayerLoop.hpp"
 #include "speaker/Speaker.hpp"
 #include "speaker/SpeechSynthesizePool.hpp"
 #include "speechee/Options.hpp"
@@ -63,8 +63,8 @@ public:
 
         _synthesizePool
             = std::make_unique<SpeechSynthesizePool>(*_client, _config->synthesisThreads());
-        _player = std::make_unique<Player>();
-        _speaker = std::make_unique<Speaker>(*_synthesizePool, *_player);
+        _playerLoop = std::make_unique<PlayerLoop>();
+        _speaker = std::make_unique<Speaker>(*_synthesizePool, *_playerLoop);
         _observer = std::make_unique<AvailabilityObserver>("speechee");
         _mqttClient = std::make_unique<MqttBasicClient>();
         _publisher = std::make_unique<AvailabilityPublisher>("speechee", *_mqttClient, *_observer);
@@ -93,10 +93,8 @@ public:
             }
         }
 
-        BOOST_ASSERT(_player);
-        if (!_player->start()) {
-            LOGE("Unable to start player");
-        }
+        BOOST_ASSERT(_playerLoop);
+        _playerLoop->start();
 
 #ifdef ENABLE_DBUS_SUPPORT
         BOOST_ASSERT(_observer);
@@ -139,8 +137,8 @@ public:
         }
 #endif
 
-        if (_player) {
-            _player->stop();
+        if (_playerLoop) {
+             _playerLoop->stop();
         }
 
         if (_mqttClient) {
@@ -161,7 +159,7 @@ public:
         _httpService.reset();
 #endif
         _speaker.reset();
-        _player.reset();
+        _playerLoop.reset();
         _synthesizePool.reset();
         _client.reset();
         _config.reset();
@@ -174,7 +172,7 @@ private:
     std::unique_ptr<SpeechSynthesizePool> _synthesizePool;
     std::unique_ptr<ITextToSpeechClient> _client;
     std::unique_ptr<AvailabilityObserver> _observer;
-    std::unique_ptr<Player> _player;
+    std::unique_ptr<PlayerLoop> _playerLoop;
     std::unique_ptr<MqttBasicClient> _mqttClient;
     std::unique_ptr<AvailabilityPublisher> _publisher;
 #ifdef ENABLE_DBUS_SUPPORT

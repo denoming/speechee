@@ -33,9 +33,8 @@ public:
     play(std::string_view audio)
         = 0;
 
-    [[nodiscard]] virtual sigc::connection
-    onStateUpdate(OnStateUpdateSignal::slot_type&& slot)
-        = 0;
+    [[nodiscard]] virtual OnStateUpdateSignal
+    onStateUpdate() = 0;
 };
 
 } // namespace jar
