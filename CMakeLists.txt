@@ -2,10 +2,8 @@ cmake_minimum_required(VERSION 3.25.1)
 
 include(cmake/ProjectOptions.cmake)
 
-project(speechee
-    VERSION 0.2.1
-    DESCRIPTION "Speechee Project"
-)
+project(speechee VERSION 0.2.1
+                 DESCRIPTION "Speechee Service Project")
 
 include(cmake/ProjectConfigs.cmake)
 if (PROJECT_IS_TOP_LEVEL)

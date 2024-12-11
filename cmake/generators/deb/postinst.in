@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+set -e
+
+SYSTEMD_UNAME=@SYSTEMD_UNAME@
+SYSTEMD_GNAME=@SYSTEMD_GNAME@
+
+create_group() {
+  if ! getent group | grep -q "^$SYSTEMD_GNAME:" ; then
+    echo -n "Adding group $SYSTEMD_GNAME.."
+    addgroup --quiet --system "$SYSTEMD_GNAME" \
+      2>/dev/null || true
+    echo "..done"
+  fi
+}
+
+create_user() {
+  if ! getent passwd | grep -q "^$SYSTEMD_UNAME:"; then
+    echo -n "Adding system user $SYSTEMD_UNAME.."
+    adduser --quiet \
+            --system \
+            --ingroup "$SYSTEMD_GNAME" \
+            --no-create-home \
+            --disabled-password \
+            "$SYSTEMD_UNAME" \
+             2>/dev/null || true
+    echo "..done"
+  fi
+  if getent passwd | grep -q "^$SYSTEMD_UNAME:"; then
+    usermod -c "Speechee service user" \
+            -g "$SYSTEMD_GNAME" \
+               "$SYSTEMD_UNAME"
+ fi
+}
+
+systemd_start() {
+  systemctl -q daemon-reload \
+    2>/dev/null || true
+  systemctl -q enable speechee.service \
+    2>/dev/null || true
+  systemctl -q start speechee.service \
+    2>/dev/null || true
+}
+
+case "$1" in
+  configure)
+    create_group
+    create_user
+  ;;
+esac
+
+systemd_start

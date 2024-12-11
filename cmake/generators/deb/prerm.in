@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+set -e
+
+case "$1" in
+    remove)
+        systemctl -q stop speechee \
+          2>/dev/null || true
+        systemctl -q disable speechee \
+          2>/dev/null || true
+        systemctl -q daemon-reload \
+          2>/dev/null || true
+        ;;
+    upgrade)
+        systemctl -q stop speechee \
+          2>/dev/null || true
+        ;;
+    purge)
+        ;;
+    *)
+        echo "Unrecognized prerm argument '$1'"
+        ;;
+esac

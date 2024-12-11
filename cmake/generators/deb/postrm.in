@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+set -e
+
+SYSTEMD_UNAME=@SYSTEMD_UNAME@
+
+rm_user() {
+  if getent passwd | grep -q "^$SYSTEMD_UNAME:"; then
+    echo -n "Removing user $SERVER_GROUP.."
+    userdel -r $SYSTEMD_UNAME \
+      2>/dev/null || true
+    echo "..done"
+  fi
+}
+
+case "$1" in
+  remove)
+    rm_user
+
+    # Update linker bindings
+    ldconfig \
+      2>/dev/null || true
+  ;;
+  purge)
+    rm -f -r /usr/share/speechee \
+      2>/dev/null || true
+  ;;
+esac

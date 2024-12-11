@@ -1,0 +1,23 @@
+[Unit]
+Description=Speechee Service
+Wants=network.target
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=@CMAKE_INSTALL_FULL_BINDIR@/speechee
+
+Restart=on-failure
+RestartSec=3s
+
+UMask=0007
+User=@SYSTEMD_UNAME@
+Group=@SYSTEMD_GNAME@
+
+StandardOutput=journal
+StandardError=journal
+
+Environment="SPEECHEE_CONFIG=/usr/share/speechee/speechee.cfg"
+
+[Install]
+WantedBy=basic.target

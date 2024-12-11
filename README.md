@@ -30,13 +30,13 @@ $ cmake --build --preset build-release
 
 Debug configuration:
 ```shell
-$ bash scripts/run-test-env.sh
+$ bash scripts/run-build-env.sh
 $ cmake --preset debug-docker
 $ cmake --build --preset build-debug-docker
 ```
 Release configuration:
 ```shell
-$ bash scripts/run-test-env.sh
+$ bash scripts/run-build-env.sh
 $ cmake --preset release-docker
 $ cmake --build --preset build-release-docker
 ```
@@ -46,9 +46,9 @@ $ cmake --build --preset build-release-docker
 ### By vcpkg (in docker)
 
 ```shell
-$ bash scripts/run-test-env.sh
+$ bash scripts/run-build-env.sh
 $ cmake --preset debug-docker
-$ cmake --build --preset build-debug-docker
+$ cmake --build --preset debug-docker
 $ ctest --preset unit-tests
 ```
 
@@ -89,7 +89,7 @@ Note: The service should be built previously.
 ### Inside docker
 
 ```shell
-$ bash scripts/run-test-env.sh
+$ bash scripts/run-build-env.sh
 $ build-debug-docker/stage/bin/speechee
 ...
 Start listening on <2350> port

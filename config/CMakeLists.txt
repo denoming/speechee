@@ -1,2 +1,6 @@
-add_subdirectory(dbus)
+if(ENABLE_DBUS_SUPPORT)
+    add_subdirectory(dbus)
+endif()
+add_subdirectory(package)
 add_subdirectory(options)
+add_subdirectory(systemd)

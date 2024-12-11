@@ -1,9 +1,7 @@
 include(CPackComponent)
 
 # Set default packaging install prefix path
-if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    set(CPACK_PACKAGING_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
-endif()
+set(CPACK_PACKAGING_INSTALL_PREFIX "/")
 
 set(CPACK_PACKAGE_NAME "speechee")
 set(CPACK_PACKAGE_CONTACT "maintainer@denoming.com")
@@ -11,15 +9,15 @@ set(CPACK_PACKAGE_VENDOR "DENOMING")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Speechee Project")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY ${CPACK_PACKAGE_NAME})
 set(CPACK_COMPONENTS_ALL
-    Speechee_Runtime
+        Speechee_Runtime
 )
 set(CPACK_COMPONENTS_GROUPING ONE_PER_GROUP)
 set(CPACK_VERBATIM_VARIABLES YES)
 set(CPACK_SOURCE_GENERATOR "TGZ")
 set(CPACK_SOURCE_IGNORE_FILES
-    /\\.git/
-    /\\.idea/
-    /build.*/
+        /\\.git/
+        /\\.idea/
+        /build.*/
 )
 
 set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
@@ -39,20 +37,19 @@ if (EXISTS "${PROJECT_SOURCE_DIR}/README.md")
     set(CPACK_RESOURCE_FILE_README "${PROJECT_SOURCE_DIR}/README.md")
 endif()
 
-list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/config/generators")
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set(CPACK_GENERATOR "TGZ;DEB")
-    include(tgzFormat)
-    include(debFormat)
+    include(cmake/generators/deb.cmake)
+    include(cmake/generators/tgz.cmake)
 else()
     set(CPACK_GENERATOR "TGZ")
-    include(tgzFormat)
+    include(cmake/generators/tgz.cmake)
 endif()
 
 cpack_add_component(Speechee_Runtime
-    DISPLAY_NAME Runtime
-    DESCRIPTION "Speechee runtime"
-    REQUIRED
+        DISPLAY_NAME Runtime
+        DESCRIPTION "Speechee runtime"
+        REQUIRED
 )
 
 include(CPack)
