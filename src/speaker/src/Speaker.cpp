@@ -1,6 +1,6 @@
 #include "speaker/Speaker.hpp"
 
-#include <jarvisto/Logger.hpp>
+#include <jarvisto/core/Logger.hpp>
 
 #include "speaker/Formatters.hpp"
 #include "speaker/Player.hpp"

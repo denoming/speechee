@@ -1,7 +1,7 @@
 #include "speaker/ConfigLoader.hpp"
 
-#include <jarvisto/Logger.hpp>
-#include <jarvisto/Utils.hpp>
+#include <jarvisto/core/Environment.hpp>
+#include <jarvisto/core/Logger.hpp>
 
 namespace fs = std::filesystem;
 

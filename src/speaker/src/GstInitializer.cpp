@@ -1,6 +1,6 @@
 #include "speaker/GstInitializer.hpp"
 
-#include <jarvisto/Logger.hpp>
+#include <jarvisto/core/Logger.hpp>
 
 #include <gst/gst.h>
 

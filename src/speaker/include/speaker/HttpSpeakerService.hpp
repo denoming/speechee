@@ -1,6 +1,6 @@
 #pragma once
 
-#include <jarvisto/AvailabilitySubject.hpp>
+#include <jarvisto/network/AvailabilitySubject.hpp>
 
 #include <cstdint>
 #include <memory>

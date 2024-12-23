@@ -21,10 +21,10 @@
 #include "speaker/HttpSpeakerService.hpp"
 #endif
 
-#include <jarvisto/AvailabilityObserver.hpp>
-#include <jarvisto/AvailabilityPublisher.hpp>
-#include <jarvisto/Logger.hpp>
-#include <jarvisto/MqttBasicClient.hpp>
+#include <jarvisto/core/Logger.hpp>
+#include <jarvisto/network/AvailabilityObserver.hpp>
+#include <jarvisto/network/AvailabilityPublisher.hpp>
+#include <jarvisto/network/MqttBasicClient.hpp>
 
 #include <boost/assert.hpp>
 
@@ -138,7 +138,7 @@ public:
 #endif
 
         if (_playerLoop) {
-             _playerLoop->stop();
+            _playerLoop->stop();
         }
 
         if (_mqttClient) {

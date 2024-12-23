@@ -1,6 +1,6 @@
 #include "speaker/HttpSpeakerService.hpp"
 
-#include <jarvisto/Logger.hpp>
+#include <jarvisto/core/Logger.hpp>
 
 #include "speaker/ISpeaker.hpp"
 

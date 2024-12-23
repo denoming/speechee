@@ -1,6 +1,6 @@
 #pragma once
 
-#include <jarvisto/Application.hpp>
+#include <jarvisto/core/Application.hpp>
 
 namespace jar {
 
@@ -12,6 +12,9 @@ public:
     name() const final;
 
 private:
+    void
+    proceed() final;
+
     void
     initialize(Application& application) final;
 };

@@ -11,7 +11,7 @@ target_sources(${TARGET}
 
 target_link_libraries(${TARGET}
     PRIVATE
-        Jarvisto::Jarvisto
+        Jarvisto::Core
         Speechee::Speaker
 )
 

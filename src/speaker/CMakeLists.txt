@@ -10,7 +10,8 @@ target_include_directories(${TARGET}
 )
 
 target_link_libraries(${TARGET}
-    PUBLIC Jarvisto::Jarvisto
+    PUBLIC Jarvisto::Core
+           Jarvisto::Network
            PkgConfig::SigCpp
     PRIVATE Boost::headers
             Boost::json
