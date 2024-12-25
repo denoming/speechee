@@ -1,22 +1,20 @@
 include(GNUInstallDirs)
 include(GenerateExportHeader)
 
-set(TARGET speechee-client)
+add_library(speechee-client SHARED)
+add_library(Speechee::Client ALIAS speechee-client)
 
-add_library(${TARGET} SHARED)
-add_library(Speechee::Client ALIAS ${TARGET})
-
-generate_export_header(${TARGET}
+generate_export_header(speechee-client
     BASE_NAME SPEECHEE
     EXPORT_FILE_NAME speechee/SpeecheeExport.hpp
 )
 
-set_target_properties(${TARGET}
+set_target_properties(speechee-client
     PROPERTIES
         EXPORT_NAME Speechee
 )
 
-set_target_properties(${TARGET}
+set_target_properties(speechee-client
     PROPERTIES
         VERSION ${PROJECT_VERSION}
         SOVERSION ${PROJECT_VERSION_MAJOR}
@@ -24,15 +22,15 @@ set_target_properties(${TARGET}
         VISIBILITY_INLINES_HIDDEN YES
 )
 
-target_compile_features(${TARGET} PUBLIC cxx_std_23)
+target_compile_features(speechee-client PUBLIC cxx_std_23)
 
-target_include_directories(${TARGET}
+target_include_directories(speechee-client
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
     PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>
 )
 
-target_sources(${TARGET}
+target_sources(speechee-client
     PUBLIC
         FILE_SET HEADERS
         BASE_DIRS "${CMAKE_CURRENT_BINARY_DIR}"
@@ -42,24 +40,24 @@ target_sources(${TARGET}
 )
 
 if(ENABLE_HTTP_SUPPORT)
-    target_sources(${TARGET}
+    target_sources(speechee-client
         PUBLIC
             FILE_SET HEADERS
             FILES "${CMAKE_CURRENT_LIST_DIR}/include/speechee/HttpSpeakerClient.hpp"
         PRIVATE
             src/HttpSpeakerClient.cpp
     )
-    target_link_libraries(${TARGET}
+    target_link_libraries(speechee-client
         PRIVATE Boost::headers
                 Boost::json
                 Jarvisto::Core
                 Jarvisto::Network
     )
-    target_compile_definitions(${TARGET} PRIVATE BOOST_ASIO_NO_DEPRECATED=1)
+    target_compile_definitions(speechee-client PRIVATE BOOST_ASIO_NO_DEPRECATED=1)
 endif()
 
 if(ENABLE_DBUS_SUPPORT)
-    target_sources(${TARGET}
+    target_sources(speechee-client
         PUBLIC
             FILE_SET HEADERS
             FILES "${CMAKE_CURRENT_LIST_DIR}/include/speechee/DbusSpeakerClient.hpp"
@@ -67,10 +65,10 @@ if(ENABLE_DBUS_SUPPORT)
             src/DbusSpeakerProxy.cpp
             src/DbusSpeakerClient.cpp
     )
-    target_link_libraries(${TARGET} PRIVATE Speechee::Dbus)
+    target_link_libraries(speechee-client PRIVATE Speechee::Dbus)
 endif()
 
-install(TARGETS ${TARGET}
+install(TARGETS speechee-client
     EXPORT Speechee
     LIBRARY
         DESTINATION ${CMAKE_INSTALL_LIBDIR}

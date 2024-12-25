@@ -1,23 +1,20 @@
-set(TARGET speechee-test-common)
+add_library(speechee-test-common STATIC)
+add_library(Speechee::Test::Common ALIAS speechee-test-common)
 
-add_library(${TARGET} STATIC)
-add_library(Speechee::Test::Common ALIAS ${TARGET})
-
-target_sources(${TARGET}
-    PRIVATE src/TestMain.cpp
-            src/MockPlayer.cpp
+target_sources(speechee-test-common
+    PRIVATE src/MockPlayer.cpp
             src/MockPlayerFactory.cpp
             src/MockSpeechSynthesizePool.cpp
 )
 
-target_include_directories(${TARGET}
+target_include_directories(speechee-test-common
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
 )
 
-target_link_libraries(${TARGET}
-    PUBLIC Speechee::Speaker
+target_link_libraries(speechee-test-common
+    PUBLIC Speechee::Service
            Speechee::Tts
-    PUBLIC GTest::gtest GTest::gmock
+           Speechee::Test
 )
 
-target_compile_features(${TARGET} PUBLIC cxx_std_23)
+target_compile_features(speechee-test-common PUBLIC cxx_std_23)

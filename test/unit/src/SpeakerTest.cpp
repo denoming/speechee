@@ -1,11 +1,11 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "speaker/Speaker.hpp"
-#include "speaker/SpeechSynthesizePool.hpp"
-#include "test/MockPlayer.hpp"
-#include "test/MockPlayerFactory.hpp"
-#include "test/MockSpeechSynthesizePool.hpp"
+#include "speechee/Speaker.hpp"
+#include "speechee/SpeechSynthesizePool.hpp"
+#include "speechee/MockPlayer.hpp"
+#include "speechee/MockPlayerFactory.hpp"
+#include "speechee/MockSpeechSynthesizePool.hpp"
 
 using namespace testing;
 using namespace jar;

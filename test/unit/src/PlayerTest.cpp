@@ -1,9 +1,9 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "speaker/GstInitializer.hpp"
-#include "speaker/Player.hpp"
-#include "speaker/PlayerLoop.hpp"
+#include "speechee/GstInitializer.hpp"
+#include "speechee/Player.hpp"
+#include "speechee/PlayerLoop.hpp"
 #include "test/Waiter.hpp"
 
 #include <chrono>

@@ -1,6 +1,6 @@
 #include "ServiceApplication.hpp"
 
-#include "speaker/SpeakerSubsystem.hpp"
+#include "speechee/SpeakerSubsystem.hpp"
 #include "speechee/Options.hpp"
 
 #include <jarvisto/core/LoggerInitializer.hpp>

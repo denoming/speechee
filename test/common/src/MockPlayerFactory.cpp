@@ -1,6 +1,6 @@
-#include "test/MockPlayerFactory.hpp"
+#include "speechee/MockPlayerFactory.hpp"
 
-#include "test/MockPlayer.hpp"
+#include "speechee/MockPlayer.hpp"
 
 using namespace testing;
 

@@ -11,13 +11,13 @@ class SPEECHEE_EXPORT DbusSpeakerClient final : public ISpeakerClient {
 public:
     DbusSpeakerClient();
 
-    ~DbusSpeakerClient() final;
+    ~DbusSpeakerClient() override;
 
     void
-    synthesizeText(const std::string& text, const std::string& lang) final;
+    synthesizeText(const std::string& text, const std::string& lang) override;
 
     void
-    synthesizeSsml(const std::string& ssml, const std::string& lang) final;
+    synthesizeSsml(const std::string& ssml, const std::string& lang) override;
 
 private:
     class Impl;
