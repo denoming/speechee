@@ -23,8 +23,7 @@ target_link_libraries(${TARGET}
 )
 
 target_sources(${TARGET}
-    PRIVATE src/Types.cpp
-            src/SpeechSynthesizePool.cpp
+    PRIVATE src/SpeechSynthesizePool.cpp
             src/SpeechSynthesizeTask.cpp
             src/AudioBufferList.cpp
             src/Player.cpp
