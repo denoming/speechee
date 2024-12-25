@@ -8,10 +8,7 @@
   "dependencies": [
     "jarvisto",
     "glibmm",
-    "boost-core",
-    "boost-json",
-    "libsigcpp",
-    "libconfig"
+    "libsigcpp"
   ],
   "features": {
     "cli": {
@@ -33,6 +30,7 @@
     "http": {
       "description": "Enable HTTP PublicAPI",
       "dependencies": [
+        "boost-json",
         {
           "name": "boost-asio",
           "features": [
