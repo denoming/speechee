@@ -1,7 +1,7 @@
 #pragma once
 
 #include "speaker/IPlayer.hpp"
-#include "speaker/IPlayerLoop.hpp"
+#include "speaker/IPlayerFactory.hpp"
 #include "speaker/ISpeaker.hpp"
 #include "speaker/ISpeechSynthesizePool.hpp"
 #include "speaker/Types.hpp"
@@ -20,7 +20,7 @@ class ISpeechSynthesizePool;
 
 class Speaker final : public ISpeaker {
 public:
-    explicit Speaker(ISpeechSynthesizePool& synthesizePool, IPlayerLoop& playerLoop);
+    explicit Speaker(ISpeechSynthesizePool& synthesizePool, IPlayerFactory& playerFactory);
 
     ~Speaker() override;
 
@@ -34,7 +34,7 @@ private:
     struct Request : sigc::trackable {
         std::uint64_t id{0};
         PlayState state{};
-        std::unique_ptr<IPlayer> player;
+        std::shared_ptr<IPlayer> player;
     };
     using Requests = std::list<Request>;
 
@@ -56,7 +56,7 @@ private:
 private:
     mutable std::recursive_mutex _guard;
     ISpeechSynthesizePool& _synthesizePool;
-    IPlayerLoop& _playerLoop;
+    IPlayerFactory& _playerFactory;
     Requests _requests;
 };
 

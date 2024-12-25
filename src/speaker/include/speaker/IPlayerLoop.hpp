@@ -22,7 +22,7 @@ public:
         = 0;
 
     [[nodiscard]] virtual sigc::connection
-    onIdle(const sigc::slot<bool()>& slot) const
+    onIdle(const sigc::slot<bool()>& slot)
         = 0;
 };
 

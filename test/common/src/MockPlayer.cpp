@@ -1,17 +1,28 @@
 #include "test/MockPlayer.hpp"
 
+using namespace testing;
+
 namespace jar {
 
+MockPlayer::MockPlayer()
+{
+    ON_CALL(*this, state).WillByDefault(Return(PlayState::Idle));
+
+    ON_CALL(*this, start).WillByDefault(Return(true));
+
+    ON_CALL(*this, play).WillByDefault(Return(true));
+}
+
 void
-MockPlayer::triggerStateUpdate(PlayState state)
+MockPlayer::triggerStateUpdate(PlayState state) const
 {
     _onStateUpdateSig(state);
 }
 
-sigc::connection
-MockPlayer::onStateUpdate(OnStateUpdateSignal::slot_type&& slot)
+IPlayer::OnStateUpdateSignal
+MockPlayer::onStateUpdate()
 {
-    return _onStateUpdateSig.connect(std::move(slot));
+    return _onStateUpdateSig;
 }
 
 } // namespace jar

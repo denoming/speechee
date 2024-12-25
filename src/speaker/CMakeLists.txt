@@ -13,9 +13,9 @@ target_link_libraries(${TARGET}
     PUBLIC Jarvisto::Core
            Jarvisto::Network
            PkgConfig::SigCpp
+           PkgConfig::GLibmm
     PRIVATE Boost::headers
             Boost::json
-            PkgConfig::GLibmm
             PkgConfig::Gst
             PkgConfig::GstApp
             PkgConfig::LibConfig
@@ -29,6 +29,7 @@ target_sources(${TARGET}
             src/AudioBufferList.cpp
             src/Player.cpp
             src/PlayerLoop.cpp
+            src/PlayerFactory.cpp
             src/Speaker.cpp
             src/SpeakerSubsystem.cpp
             src/ConfigLoader.cpp

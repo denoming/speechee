@@ -43,7 +43,7 @@ PlayerLoop::stop()
 }
 
 sigc::connection
-PlayerLoop::onIdle(const sigc::slot<bool()>& slot) const
+PlayerLoop::onIdle(const sigc::slot<bool()>& slot)
 {
     BOOST_ASSERT(_mainLoop);
     if (_mainLoop) {

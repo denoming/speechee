@@ -24,7 +24,7 @@ public:
     stop() override;
 
     [[nodiscard]] sigc::connection
-    onIdle(const sigc::slot<bool()>& slot) const override;
+    onIdle(const sigc::slot<bool()>& slot) override;
 
 private:
     void

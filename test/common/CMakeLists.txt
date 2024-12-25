@@ -6,6 +6,7 @@ add_library(Speechee::Test::Common ALIAS ${TARGET})
 target_sources(${TARGET}
     PRIVATE src/TestMain.cpp
             src/MockPlayer.cpp
+            src/MockPlayerFactory.cpp
             src/MockSpeechSynthesizePool.cpp
 )
 

@@ -3,6 +3,7 @@
 #include "speaker/GeneralConfig.hpp"
 #include "speaker/GstInitializer.hpp"
 #include "speaker/PlayerLoop.hpp"
+#include "speaker/PlayerFactory.hpp"
 #include "speaker/Speaker.hpp"
 #include "speaker/SpeechSynthesizePool.hpp"
 #include "speechee/Options.hpp"
@@ -64,7 +65,8 @@ public:
         _synthesizePool
             = std::make_unique<SpeechSynthesizePool>(*_client, _config->synthesisThreads());
         _playerLoop = std::make_unique<PlayerLoop>();
-        _speaker = std::make_unique<Speaker>(*_synthesizePool, *_playerLoop);
+        _playerFactory = std::make_unique<PlayerFactory>(*_playerLoop);
+        _speaker = std::make_unique<Speaker>(*_synthesizePool, *_playerFactory);
         _observer = std::make_unique<AvailabilityObserver>("speechee");
         _mqttClient = std::make_unique<MqttBasicClient>();
         _publisher = std::make_unique<AvailabilityPublisher>("speechee", *_mqttClient, *_observer);
@@ -159,6 +161,7 @@ public:
         _httpService.reset();
 #endif
         _speaker.reset();
+        _playerFactory.reset();
         _playerLoop.reset();
         _synthesizePool.reset();
         _client.reset();
@@ -173,6 +176,7 @@ private:
     std::unique_ptr<ITextToSpeechClient> _client;
     std::unique_ptr<AvailabilityObserver> _observer;
     std::unique_ptr<PlayerLoop> _playerLoop;
+    std::unique_ptr<PlayerFactory> _playerFactory;
     std::unique_ptr<MqttBasicClient> _mqttClient;
     std::unique_ptr<AvailabilityPublisher> _publisher;
 #ifdef ENABLE_DBUS_SUPPORT

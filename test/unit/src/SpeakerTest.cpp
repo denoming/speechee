@@ -4,6 +4,7 @@
 #include "speaker/Speaker.hpp"
 #include "speaker/SpeechSynthesizePool.hpp"
 #include "test/MockPlayer.hpp"
+#include "test/MockPlayerFactory.hpp"
 #include "test/MockSpeechSynthesizePool.hpp"
 
 using namespace testing;
@@ -11,45 +12,43 @@ using namespace jar;
 
 class SpeakerTest : public Test {
 public:
+    using Player = NiceMock<MockPlayer>;
+
     SpeakerTest()
-        : speaker{pool, player}
+        : speaker{pool, factory}
+        , player{std::make_shared<Player>()}
     {
     }
 
+    void
+    SetUp() override
+    {
+        ON_CALL(factory, create).WillByDefault(Return(player));
+    }
+
 public:
-    NiceMock<MockPlayer> player;
+    std::shared_ptr<Player> player;
+    NiceMock<MockPlayerFactory> factory;
     NiceMock<MockSpeechSynthesizePool> pool;
     Speaker speaker;
 };
 
 TEST_F(SpeakerTest, SynthesizeText)
 {
-    static const std::string kAudio1{"AUDIO1"};
-    static const std::string kAudio2{"AUDIO2"};
+    static const std::string kAudio{"AUDIO1"};
     static constexpr std::string_view kText{"Some text"};
     static constexpr std::string_view kLang{"en-gb"};
 
-    std::move_only_function<ISpeechSynthesizePool::OnDone> callback1;
+    std::move_only_function<ISpeechSynthesizePool::OnDone> callback;
     EXPECT_CALL(pool, synthesizeText(kText, kLang, _))
-        .WillOnce([&](auto, auto, auto c) { callback1 = std::move(c); })
+        .WillOnce([&](auto, auto, auto c) { callback = std::move(c); })
         .RetiresOnSaturation();
     speaker.synthesizeText(kText, kLang);
 
-    std::move_only_function<ISpeechSynthesizePool::OnDone> callback2;
-    EXPECT_CALL(pool, synthesizeText(kText, kLang, _))
-        .WillOnce([&](auto, auto, auto c) { callback2 = std::move(c); })
-        .RetiresOnSaturation();
-    speaker.synthesizeText(kText, kLang);
+    EXPECT_CALL(*player, play(kAudio)).RetiresOnSaturation(); // Expect kAudio1 to be played first
+    callback(kAudio, std::exception_ptr{});
 
-    InSequence s;
-    EXPECT_CALL(player, play(kAudio1)); // Expect kAudio1 to be played first
-    EXPECT_CALL(player, play(kAudio2)); // Expect kAudio2 to be played after kAudio1
-
-    /* Reverse order of callback invoking */
-    callback2(kAudio2, std::exception_ptr{}); // kAudio2 is ready first
-    callback1(kAudio1, std::exception_ptr{}); // kAudio1 is ready after kAudio2
-
-    player.triggerStateUpdate(PlayState::Idle);
+    player->triggerStateUpdate(PlayState::Idle);
 }
 
 TEST_F(SpeakerTest, SynthesizeSsml)

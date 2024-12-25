@@ -8,11 +8,13 @@ namespace jar {
 
 class MockPlayer : public IPlayer {
 public:
-    void
-    triggerStateUpdate(PlayState state);
+    MockPlayer();
 
-    sigc::connection
-    onStateUpdate(OnStateUpdateSignal::slot_type&& slot) override;
+    void
+    triggerStateUpdate(PlayState state) const;
+
+    OnStateUpdateSignal
+    onStateUpdate() override;
 
 public:
     MOCK_METHOD(PlayState, state, (), (const, override));

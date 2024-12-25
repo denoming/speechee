@@ -17,9 +17,9 @@ getId()
 
 namespace jar {
 
-Speaker::Speaker(ISpeechSynthesizePool& synthesizePool, IPlayerLoop& playerLoop)
+Speaker::Speaker(ISpeechSynthesizePool& synthesizePool, IPlayerFactory& playerFactory)
     : _synthesizePool{synthesizePool}
-    , _playerLoop{playerLoop}
+    , _playerFactory{playerFactory}
 {
 }
 
@@ -50,7 +50,7 @@ Speaker::createRequest()
     std::unique_lock lock{_guard};
     auto& r = _requests.emplace_back();
     r.id = id;
-    r.player = std::make_unique<Player>(_playerLoop);
+    r.player = _playerFactory.create();
     std::ignore = r.player->onStateUpdate().connect(
         track_obj([this, id](const auto state) { onPlayUpdate(id, state); }, r));
     lock.unlock();
