@@ -1,8 +1,8 @@
 #include "speechee/HttpSpeakerClient.hpp"
 
-#include <jarvisto/Asio.hpp>
-#include <jarvisto/Http.hpp>
-#include <jarvisto/Worker.hpp>
+#include <jarvisto/network/Asio.hpp>
+#include <jarvisto/network/Http.hpp>
+#include <jarvisto/network/Worker.hpp>
 
 #include <boost/assert.hpp>
 #include <boost/json.hpp>

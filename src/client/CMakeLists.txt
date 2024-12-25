@@ -49,7 +49,12 @@ if(ENABLE_HTTP_SUPPORT)
         PRIVATE
             src/HttpSpeakerClient.cpp
     )
-    target_link_libraries(${TARGET} PRIVATE Boost::headers Boost::json Jarvisto::Core)
+    target_link_libraries(${TARGET}
+        PRIVATE Boost::headers
+                Boost::json
+                Jarvisto::Core
+                Jarvisto::Network
+    )
     target_compile_definitions(${TARGET} PRIVATE BOOST_ASIO_NO_DEPRECATED=1)
 endif()
 
