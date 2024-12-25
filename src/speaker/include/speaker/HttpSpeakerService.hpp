@@ -2,7 +2,6 @@
 
 #include <jarvisto/network/AvailabilitySubject.hpp>
 
-#include <cstdint>
 #include <memory>
 
 namespace jar {
@@ -13,7 +12,7 @@ class HttpSpeakerService final : public AvailabilitySubject {
 public:
     explicit HttpSpeakerService(std::size_t concurrency, std::uint16_t port, ISpeaker& speaker);
 
-    ~HttpSpeakerService() final;
+    ~HttpSpeakerService() override;
 
     bool
     start();

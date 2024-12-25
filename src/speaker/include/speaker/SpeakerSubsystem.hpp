@@ -12,22 +12,22 @@ class SpeakerSubsystem final : public Subsystem {
 public:
     SpeakerSubsystem();
 
-    ~SpeakerSubsystem() final;
+    ~SpeakerSubsystem() override;
 
     [[nodiscard]] const char*
-    name() const final;
+    name() const override;
 
     void
-    initialize(Application& application) final;
+    initialize(Application& application) override;
 
     void
-    setUp(Application& application) final;
+    setUp(Application& application) override;
 
     void
-    tearDown() final;
+    tearDown() override;
 
     void
-    finalize() final;
+    finalize() override;
 
 private:
     class Impl;

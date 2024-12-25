@@ -3,7 +3,7 @@
 #include <functional>
 #include <string>
 #include <string_view>
-#include <system_error>
+#include <exception>
 
 namespace jar {
 
@@ -57,7 +57,7 @@ public:
                              std::move_only_function<OnDone> callback);
 
     void
-    perform() final;
+    perform() override;
 
 private:
     std::string _text;
@@ -72,7 +72,7 @@ public:
                              std::move_only_function<OnDone> callback);
 
     void
-    perform() final;
+    perform() override;
 
 private:
     std::string _ssml;

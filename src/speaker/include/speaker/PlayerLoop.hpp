@@ -8,7 +8,7 @@
 
 namespace jar {
 
-class PlayerLoop : public IPlayerLoop {
+class PlayerLoop final : public IPlayerLoop {
 public:
     PlayerLoop();
 

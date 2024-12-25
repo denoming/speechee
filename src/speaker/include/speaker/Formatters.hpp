@@ -9,7 +9,7 @@ template<>
 struct fmt::formatter<jar::PlayState> : fmt::formatter<std::string_view> {
     template<typename FormatContext>
     auto
-    format(jar::PlayState state, FormatContext& context) const
+    format(const jar::PlayState state, FormatContext& context) const
     {
         std::string_view output{"Unknown"};
         switch (state) {

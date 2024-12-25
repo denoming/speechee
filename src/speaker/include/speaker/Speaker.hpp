@@ -25,10 +25,10 @@ public:
     ~Speaker() override;
 
     void
-    synthesizeText(std::string_view text, std::string_view lang) final;
+    synthesizeText(std::string_view text, std::string_view lang) override;
 
     void
-    synthesizeSsml(std::string_view ssml, std::string_view lang) final;
+    synthesizeSsml(std::string_view ssml, std::string_view lang) override;
 
 private:
     struct Request : sigc::trackable {

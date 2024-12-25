@@ -2,7 +2,7 @@
 
 #include <functional>
 #include <string_view>
-#include <system_error>
+#include <exception>
 
 namespace jar {
 

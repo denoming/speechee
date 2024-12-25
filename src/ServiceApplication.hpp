@@ -4,19 +4,19 @@
 
 namespace jar {
 
-class ServiceApplication final : public jar::Application {
+class ServiceApplication final : public Application {
 public:
     ServiceApplication() = default;
 
     [[nodiscard]] const char*
-    name() const final;
+    name() const override;
 
 private:
     void
-    proceed() final;
+    proceed() override;
 
     void
-    initialize(Application& application) final;
+    initialize(Application& application) override;
 };
 
 } // namespace jar
