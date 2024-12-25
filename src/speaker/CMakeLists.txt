@@ -32,8 +32,6 @@ target_sources(${TARGET}
             src/PlayerFactory.cpp
             src/Speaker.cpp
             src/SpeakerSubsystem.cpp
-            src/ConfigLoader.cpp
-            src/GeneralConfig.cpp
             src/GstInitializer.cpp
 )
 

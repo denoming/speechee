@@ -1,6 +1,5 @@
 #include "speaker/SpeakerSubsystem.hpp"
 
-#include "speaker/GeneralConfig.hpp"
 #include "speaker/GstInitializer.hpp"
 #include "speaker/PlayerLoop.hpp"
 #include "speaker/PlayerFactory.hpp"
@@ -22,12 +21,17 @@
 #include "speaker/HttpSpeakerService.hpp"
 #endif
 
+#include <jarvisto/core/Config.hpp>
 #include <jarvisto/core/Logger.hpp>
 #include <jarvisto/network/AvailabilityObserver.hpp>
 #include <jarvisto/network/AvailabilityPublisher.hpp>
 #include <jarvisto/network/MqttBasicClient.hpp>
 
 #include <boost/assert.hpp>
+
+static constexpr int64_t kDefaultSynthesisThreads{2};
+static constexpr int64_t kDefaultServiceThreads{2};
+static constexpr int64_t kDefaultServicePort{2350};
 
 namespace jar {
 
@@ -41,58 +45,90 @@ public:
             LOGE("Unable to initialize gstreamer");
         }
 
-        _config = std::make_unique<GeneralConfig>();
-        if (not _config->load()) {
-            LOGE("Unable to load config file");
-        }
+        _config = std::make_unique<Config>();
+        _config->load();
 
 #ifdef ENABLE_ONLINE_TTS
         _client = std::make_unique<OnlineTextToSpeechClient>();
 #endif
 #ifdef ENABLE_OFFLINE_TTS
-        if (const auto& modelPath = _config->synthesisVoiceModelPath(); modelPath) {
-            if (const auto& filesPath = _config->synthesisVoiceFilesPath(); filesPath) {
+        std::optional<std::string> modelPath;
+        if (const auto value = _config->pick<std::string>("synthesis.voiceModelPath")) {
+            modelPath = *value;
+        }
+        std::optional<std::string> filesPath;
+        if (const auto value = _config->pick<std::string>("synthesis.voiceFilesPath")) {
+            filesPath = *value;
+        }
+        if (modelPath) {
+            if (filesPath) {
                 _client = std::make_unique<OfflineTextToSpeechEngine>(*modelPath, *filesPath);
             } else {
                 _client = std::make_unique<OfflineTextToSpeechEngine>(*modelPath);
             }
         } else {
-            LOGE("Path to voice model is not set");
+            LOGE("Paths to voice model must be set");
             throw std::runtime_error("Unable create offline speech engine");
         }
 #endif
 
-        _synthesizePool
-            = std::make_unique<SpeechSynthesizePool>(*_client, _config->synthesisThreads());
+        int64_t synthesisThreads{kDefaultSynthesisThreads};
+        if (const auto value = _config->pick<int64_t>("synthesis.threads")) {
+            synthesisThreads = *value;
+        }
+        _synthesizePool = std::make_unique<SpeechSynthesizePool>(*_client, synthesisThreads);
+
         _playerLoop = std::make_unique<PlayerLoop>();
         _playerFactory = std::make_unique<PlayerFactory>(*_playerLoop);
         _speaker = std::make_unique<Speaker>(*_synthesizePool, *_playerFactory);
         _observer = std::make_unique<AvailabilityObserver>("speechee");
         _mqttClient = std::make_unique<MqttBasicClient>();
         _publisher = std::make_unique<AvailabilityPublisher>("speechee", *_mqttClient, *_observer);
+
 #ifdef ENABLE_DBUS_SUPPORT
         _dbusService = std::make_unique<DbusSpeakerService>(*_speaker);
 #endif
 #ifdef ENABLE_HTTP_SUPPORT
         BOOST_ASSERT(_config);
-        _httpService = std::make_unique<HttpSpeakerService>(
-            _config->httpServiceThreads(), _config->httpServicePort(), *_speaker);
+        std::int64_t servicePort{kDefaultServicePort};
+        if (const auto value = _config->pick<std::int64_t>("services.http.port")) {
+            servicePort = *value;
+        }
+        std::int64_t serviceTreads{kDefaultServiceThreads};
+        if (const auto value = _config->pick<std::int64_t>("services.http.threads")) {
+            serviceTreads = *value;
+        }
+        _httpService = std::make_unique<HttpSpeakerService>(serviceTreads, servicePort, *_speaker);
 #endif
     }
 
     void
     setUp(Application& /*application*/)
     {
-        BOOST_ASSERT(_mqttClient);
         BOOST_ASSERT(_config);
-        auto ec = _mqttClient->credentials(_config->mqttUser(), _config->mqttPassword());
-        if (ec) {
-            LOGE("Unable to set MQTT credentials: {}", ec.message());
-        } else {
-            ec = _mqttClient->connectAsync(_config->mqttServer());
-            if (ec) {
-                LOGE("Unable to initiate connection to MQTT broker: {}", ec.message());
+
+        std::optional<std::string> mqttUser;
+        if (const auto value = _config->pick<std::string>("mqtt.user")) {
+            mqttUser = *value;
+        }
+        std::optional<std::string> mqttPass;
+        if (const auto value = _config->pick<std::string>("mqtt.password")) {
+            mqttPass = *value;
+        }
+
+        if (mqttUser and mqttPass) {
+            BOOST_ASSERT(_mqttClient);
+            if (const auto ec = _mqttClient->credentials(*mqttUser, *mqttPass); ec) {
+                LOGE("Unable to set MQTT credentials: {}", ec.message());
             }
+        }
+
+        std::string mqttServer{"localhost"};
+        if (const auto value = _config->pick<std::string>("mqtt.server")) {
+            mqttServer = *value;
+        }
+        if (const auto ec = _mqttClient->connectAsync(mqttServer); ec) {
+            LOGE("Unable to connect to <{}> MQTT broker: {}", mqttServer, ec.message());
         }
 
         BOOST_ASSERT(_playerLoop);
@@ -102,7 +138,7 @@ public:
         BOOST_ASSERT(_observer);
         _observer->add(*_dbusService);
         BOOST_ASSERT(_dbusService);
-        if (!_dbusService->start()) {
+        if (not _dbusService->start()) {
             LOGE("Unable to start Speaker DBus service");
         }
 #endif
@@ -111,7 +147,7 @@ public:
         BOOST_ASSERT(_observer);
         _observer->add(*_httpService);
         BOOST_ASSERT(_httpService);
-        if (!_httpService->start()) {
+        if (not _httpService->start()) {
             LOGE("Unable to start Speaker HTTP service");
         }
 #endif
@@ -170,7 +206,7 @@ public:
 
 private:
     std::unique_ptr<GstInitializer> _initializer;
-    std::unique_ptr<GeneralConfig> _config;
+    std::unique_ptr<Config> _config;
     std::unique_ptr<Speaker> _speaker;
     std::unique_ptr<SpeechSynthesizePool> _synthesizePool;
     std::unique_ptr<ITextToSpeechClient> _client;

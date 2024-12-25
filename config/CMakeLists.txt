@@ -1,3 +1,4 @@
+add_subdirectory(config)
 if(ENABLE_DBUS_SUPPORT)
     add_subdirectory(dbus)
 endif()
