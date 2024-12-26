@@ -15,10 +15,8 @@
     "cli": {
       "description": "CLI supporting",
       "dependencies": [
-        "jarvisto",
-        "boost-core",
-        "boost-json",
-        "boost-program-options"
+        "cxxopts",
+        "jarvisto"
       ]
     },
     "dbus": {

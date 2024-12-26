@@ -4,15 +4,10 @@
 #include "speechee/DbusSpeakerClient.hpp"
 #endif
 
-#include <boost/program_options.hpp>
+#include <cxxopts.hpp>
 
-#include <filesystem>
-#include <fstream>
 #include <iostream>
 #include <string>
-
-namespace fs = std::filesystem;
-namespace po = boost::program_options;
 
 using namespace jar;
 
@@ -53,7 +48,7 @@ synthesizeSsml(const std::string& ssml,
 }
 
 int
-main(int argn, char* argv[])
+main(const int argn, char* argv[])
 {
     std::string addr;
     std::string port;
@@ -61,39 +56,37 @@ main(int argn, char* argv[])
     std::string ssml;
     std::string lang;
 
-    po::options_description d{"Speechee CLI"};
+    cxxopts::Options options{"Speechee CLI"};
+
     // clang-format off
-    d.add_options()
+    options.add_options()
         ("help,h", "Display help")
 #ifdef USE_HTTP_CLIENT
-        ("address,a", po::value<std::string>(&addr)->default_value(HttpSpeakerClient::kDefaultHost),
-                   "Service address")
-        ("port,p", po::value<std::string>(&port)->default_value(HttpSpeakerClient::kDefaultPort),
-                   "Service port")
+        ("address,a", "Service address", cxxopts::value<std::string>(addr)->default_value(HttpSpeakerClient::kDefaultHost))
+        ("port,p", "Service port", cxxopts::value<std::string>(port)->default_value(HttpSpeakerClient::kDefaultPort))
 #endif
-        ("text,t", po::value<std::string>(&text), "Set text to synthesize")
-        ("ssml,s", po::value<std::string>(&ssml), "Set SSML markup to synthesize")
-        ("lang,l", po::value<std::string>(&lang)->default_value("en-US"), "Set language to use")
+        ("text,t", "Set text to synthesize", cxxopts::value<std::string>(text))
+        ("ssml,s", "Set SSML markup to synthesize", cxxopts::value<std::string>(ssml))
+        ("lang,l",  "Set language to use", cxxopts::value<std::string>(lang)->default_value("en-US"))
     ;
     // clang-format on
 
-    po::variables_map vm;
-    po::store(po::parse_command_line(argn, argv, d), vm);
-    po::notify(vm);
-
-    if (vm.contains("help")) {
-        std::cout << d << std::endl;
-        return EXIT_SUCCESS;
-    }
-
-    if (vm.contains("text")) {
-        synthesizeText(text, lang, addr, port);
-        return EXIT_SUCCESS;
-    }
-
-    if (vm.contains("ssml")) {
-        synthesizeSsml(ssml, lang, addr, port);
-        return EXIT_SUCCESS;
+    try {
+        const auto result = options.parse(argn, argv);
+        if (result.count("help")) {
+            std::cout << options.help() << std::endl;
+            return EXIT_SUCCESS;
+        }
+        if (result.count("text")) {
+            synthesizeText(text, lang, addr, port);
+            return EXIT_SUCCESS;
+        }
+        if (result.count("ssml")) {
+            synthesizeSsml(ssml, lang, addr, port);
+            return EXIT_SUCCESS;
+        }
+    } catch (std::exception& e) {
+        std::cerr << e.what() << std::endl;
     }
 
     std::cerr << "Nothing to do, exit." << std::endl;

@@ -9,8 +9,7 @@ target_sources(speechee-cli
 )
 
 target_link_libraries(speechee-cli
-    PRIVATE Boost::headers
-            Boost::program_options
+    PRIVATE cxxopts::cxxopts
             Speechee::Tts
             Speechee::Client
 )
