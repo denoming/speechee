@@ -6,9 +6,10 @@
 #include "speechee/ISpeaker.hpp"
 #include "speechee/SpeakerAdapter.hpp"
 
-#include <boost/assert.hpp>
 #include <sdbus-c++/AdaptorInterfaces.h>
 #include <sdbus-c++/IConnection.h>
+
+#include <gsl/gsl-lite.hpp>
 
 namespace jar {
 
@@ -16,9 +17,9 @@ static sdbus::IConnection&
 getConnection()
 {
     static std::unique_ptr<sdbus::IConnection> connection;
-    if (!connection) {
+    if (not connection) {
         connection = sdbus::createSystemBusConnection(dbus::kServiceName);
-        BOOST_ASSERT(connection);
+        gsl_Assert(connection);
         connection->enterEventLoopAsync();
     }
     return *connection;
@@ -69,7 +70,7 @@ bool
 DbusSpeakerService::start()
 {
     try {
-        BOOST_ASSERT(_impl);
+        gsl_Assert(_impl);
         if (_impl) {
             _impl->registerAdaptor();
             availability(AvailabilityState::Online);

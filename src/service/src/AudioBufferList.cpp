@@ -1,6 +1,6 @@
 #include "speechee/AudioBufferList.hpp"
 
-#include <boost/assert.hpp>
+#include <gsl/gsl-lite.hpp>
 
 #include <stdexcept>
 
@@ -34,10 +34,10 @@ AudioBufferList::push(const std::string_view audio) const
 GstBuffer*
 AudioBufferList::pop() const
 {
-    BOOST_ASSERT(!empty());
+    gsl_Assert(not empty());
     std::lock_guard lock{_guard};
     auto* buffer = gst_buffer_list_get(_bufferList, 0);
-    BOOST_ASSERT(buffer != nullptr);
+    gsl_Assert(buffer != nullptr);
     buffer = gst_buffer_ref(buffer);
     gst_buffer_list_remove(_bufferList, 0, 1);
     return buffer;
@@ -60,7 +60,7 @@ void
 AudioBufferList::push(const char* ptr, const size_t len) const
 {
     auto* buffer = gst_buffer_new_allocate(nullptr, len, nullptr);
-    BOOST_ASSERT(buffer != nullptr);
+    gsl_Assert(buffer != nullptr);
     GstMapInfo info;
     if (gst_buffer_map(buffer, &info, GST_MAP_WRITE) == TRUE) {
         memcpy(info.data, ptr, len);

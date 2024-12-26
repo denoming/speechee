@@ -1,0 +1,1 @@
+find_package(gsl-lite REQUIRED)

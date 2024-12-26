@@ -2,7 +2,7 @@
 
 #include "tts/ITextToSpeechClient.hpp"
 
-#include <boost/assert.hpp>
+#include <gsl/gsl-lite.hpp>
 
 #include <stdexcept>
 
@@ -14,7 +14,7 @@ SpeechSynthesizeTask::SpeechSynthesizeTask(ITextToSpeechClient& client,
     , _callback{std::move(callback)}
     , _ready{false}
 {
-    BOOST_ASSERT_MSG(_callback, "Invalid callback");
+    gsl_Expects(_callback);
 }
 
 bool

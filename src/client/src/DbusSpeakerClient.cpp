@@ -3,9 +3,10 @@
 #include "client/DbusSpeakerProxy.hpp"
 #include "dbus/Config.hpp"
 
-#include <boost/assert.hpp>
 #include <sdbus-c++/IConnection.h>
 #include <sdbus-c++/ProxyInterfaces.h>
+
+#include <gsl/gsl-lite.hpp>
 
 namespace jar {
 
@@ -53,14 +54,14 @@ DbusSpeakerClient::~DbusSpeakerClient() = default;
 void
 DbusSpeakerClient::synthesizeText(const std::string& text, const std::string& lang)
 {
-    BOOST_ASSERT(_impl);
+    gsl_Assert(_impl);
     _impl->synthesizeText(text, lang);
 }
 
 void
 DbusSpeakerClient::synthesizeSsml(const std::string& ssml, const std::string& lang)
 {
-    BOOST_ASSERT(_impl);
+    gsl_Assert(_impl);
     _impl->synthesizeSsml(ssml, lang);
 }
 

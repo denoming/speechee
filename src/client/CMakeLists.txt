@@ -22,7 +22,9 @@ set_target_properties(speechee-client
         VISIBILITY_INLINES_HIDDEN YES
 )
 
-target_compile_features(speechee-client PUBLIC cxx_std_23)
+target_link_libraries(speechee-client
+    PRIVATE gsl::gsl-lite-v1
+)
 
 target_include_directories(speechee-client
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
@@ -37,6 +39,8 @@ target_sources(speechee-client
         FILES "${CMAKE_CURRENT_LIST_DIR}/include/speechee/ISpeakerClient.hpp"
               "${CMAKE_CURRENT_BINARY_DIR}/speechee/SpeecheeExport.hpp"
 )
+
+target_compile_features(speechee-client PUBLIC cxx_std_23)
 
 if(ENABLE_HTTP_SUPPORT)
     target_sources(speechee-client

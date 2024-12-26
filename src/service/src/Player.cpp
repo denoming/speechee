@@ -6,7 +6,7 @@
 
 #include <jarvisto/core/Logger.hpp>
 
-#include <boost/assert.hpp>
+#include <gsl/gsl-lite.hpp>
 
 #include <gst/app/gstappsrc.h>
 #include <gst/gst.h>
@@ -158,7 +158,7 @@ private:
     [[nodiscard]] bool
     createBin()
     {
-        BOOST_ASSERT(_pipeline == nullptr);
+        gsl_Assert(_pipeline == nullptr);
         if (_pipeline = gst_pipeline_new("player"); _pipeline == nullptr) {
             LOGE("Unable to create pipeline");
             return false;
@@ -178,7 +178,7 @@ private:
     [[nodiscard]] bool
     createBus()
     {
-        BOOST_ASSERT(_pipeline != nullptr);
+        gsl_Assert(_pipeline != nullptr);
         auto* bus = gst_element_get_bus(_pipeline);
         if (bus == nullptr) {
             LOGE("Unable to get pipeline bus");
@@ -204,10 +204,10 @@ private:
     createElements()
     {
         auto* const bin = GST_BIN(_pipeline);
-        BOOST_ASSERT(bin != nullptr);
+        gsl_Assert(bin != nullptr);
 
         auto* const src = gst_element_factory_make("appsrc", "src");
-        BOOST_ASSERT(src != nullptr);
+        gsl_Assert(src != nullptr);
         if (not gst_bin_add(bin, src)) {
             LOGE("Unable to add element");
             return false;
@@ -224,7 +224,7 @@ private:
                      nullptr);
 
         auto* const parser = gst_element_factory_make("wavparse", nullptr);
-        BOOST_ASSERT(parser != nullptr);
+        gsl_Assert(parser != nullptr);
         if (not gst_bin_add(bin, parser)) {
             LOGE("Unable to add element");
             return false;
@@ -232,28 +232,28 @@ private:
         // g_object_set(parser, "ignore-length", TRUE, nullptr);
 
         auto* const queue = gst_element_factory_make("queue", nullptr);
-        BOOST_ASSERT(queue != nullptr);
+        gsl_Assert(queue != nullptr);
         if (not gst_bin_add(bin, queue)) {
             LOGE("Unable to add element");
             return false;
         }
 
         auto* const converter = gst_element_factory_make("audioconvert", nullptr);
-        BOOST_ASSERT(converter != nullptr);
+        gsl_Assert(converter != nullptr);
         if (not gst_bin_add(bin, converter)) {
             LOGE("Unable to add element");
             return false;
         }
 
         auto* const resample = gst_element_factory_make("audioresample", nullptr);
-        BOOST_ASSERT(resample != nullptr);
+        gsl_Assert(resample != nullptr);
         if (not gst_bin_add(bin, resample)) {
             LOGE("Unable to add element");
             return false;
         }
 
         auto* const sink = gst_element_factory_make("autoaudiosink", nullptr);
-        BOOST_ASSERT(sink != nullptr);
+        gsl_Assert(sink != nullptr);
         if (not gst_bin_add(bin, sink)) {
             LOGE("Unable to add element");
             return false;
@@ -271,14 +271,14 @@ private:
     [[nodiscard]] bool
     startPipeline() const
     {
-        BOOST_ASSERT(_pipeline != nullptr);
+        gsl_Assert(_pipeline != nullptr);
         return (gst_element_set_state(_pipeline, GST_STATE_PLAYING) != GST_STATE_CHANGE_FAILURE);
     }
 
     [[nodiscard]] bool
     stopPipeline() const
     {
-        BOOST_ASSERT(_pipeline != nullptr);
+        gsl_Assert(_pipeline != nullptr);
         return (gst_element_set_state(_pipeline, GST_STATE_NULL) != GST_STATE_CHANGE_FAILURE);
     }
 
@@ -286,7 +286,7 @@ private:
     feedPipeline()
     {
         GstElement* src = gst_bin_get_by_name(GST_BIN(_pipeline), "src");
-        BOOST_ASSERT(src != nullptr);
+        gsl_Assert(src != nullptr);
 
         if (_bufferList.empty()) {
             LOGD("Cancel feeding, buffer is empty");
@@ -382,35 +382,35 @@ Player::~Player() = default;
 PlayState
 Player::state() const
 {
-    BOOST_ASSERT(_impl);
+    gsl_Assert(_impl);
     return _impl->state();
 }
 
 bool
 Player::start()
 {
-    BOOST_ASSERT(_impl);
+    gsl_Assert(_impl);
     return _impl->start();
 }
 
 void
 Player::stop()
 {
-    BOOST_ASSERT(_impl);
+    gsl_Assert(_impl);
     _impl->stop();
 }
 
 bool
 Player::play(std::string_view audio)
 {
-    BOOST_ASSERT(_impl);
+    gsl_Assert(_impl);
     return _impl->play(audio);
 }
 
 [[nodiscard]] Player::OnStateUpdateSignal
 Player::onStateUpdate()
 {
-    BOOST_ASSERT(_impl);
+    gsl_Assert(_impl);
     return _impl->onStateUpdate();
 }
 

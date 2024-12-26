@@ -6,12 +6,13 @@
 
 #include <boost/asio/dispatch.hpp>
 #include <boost/asio/strand.hpp>
-#include <boost/assert.hpp>
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
 #include <boost/beast/version.hpp>
 #include <boost/config.hpp>
 #include <boost/json.hpp>
+
+#include <gsl/gsl-lite.hpp>
 
 #include <optional>
 #include <string>
@@ -264,8 +265,8 @@ public:
         , _ioc{static_cast<int>(concurrency)}
         , _listener{std::make_shared<HttpListener>(_ioc, tcp::endpoint{tcp::v4(), port}, speaker)}
     {
-        BOOST_ASSERT(concurrency > 0);
-        BOOST_ASSERT(port > 0);
+        gsl_Expects(concurrency > 0);
+        gsl_Expects(port > 0);
     }
 
     ~HttpServer()
@@ -388,7 +389,7 @@ bool
 HttpSpeakerService::start()
 {
     try {
-        BOOST_ASSERT(_impl);
+        gsl_Assert(_impl);
         if (_impl) {
             const bool started = _impl->start();
             if (started) {

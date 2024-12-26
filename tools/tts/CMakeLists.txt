@@ -6,7 +6,7 @@ target_include_directories(speechee-tts
 )
 
 target_link_libraries(speechee-tts
-    PRIVATE Boost::headers
+    PRIVATE gsl::gsl-lite-v1
 )
 
 if(ENABLE_ONLINE_TTS)

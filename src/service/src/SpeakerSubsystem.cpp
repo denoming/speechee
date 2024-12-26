@@ -27,7 +27,7 @@
 #include <jarvisto/network/AvailabilityPublisher.hpp>
 #include <jarvisto/network/MqttBasicClient.hpp>
 
-#include <boost/assert.hpp>
+#include <gsl/gsl-lite.hpp>
 
 static constexpr int64_t kDefaultSynthesisThreads{2};
 static constexpr int64_t kDefaultServiceThreads{2};
@@ -89,7 +89,7 @@ public:
         _dbusService = std::make_unique<DbusSpeakerService>(*_speaker);
 #endif
 #ifdef ENABLE_HTTP_SUPPORT
-        BOOST_ASSERT(_config);
+        gsl_Assert(_config);
         std::int64_t servicePort{kDefaultServicePort};
         if (const auto value = _config->pick<std::int64_t>("services.http.port")) {
             servicePort = *value;
@@ -105,7 +105,7 @@ public:
     void
     setUp(Application& /*application*/)
     {
-        BOOST_ASSERT(_config);
+        gsl_Assert(_config);
 
         std::optional<std::string> mqttUser;
         if (const auto value = _config->pick<std::string>("mqtt.user")) {
@@ -117,7 +117,7 @@ public:
         }
 
         if (mqttUser and mqttPass) {
-            BOOST_ASSERT(_mqttClient);
+            gsl_Assert(_mqttClient);
             if (const auto ec = _mqttClient->credentials(*mqttUser, *mqttPass); ec) {
                 LOGE("Unable to set MQTT credentials: {}", ec.message());
             }
@@ -131,22 +131,22 @@ public:
             LOGE("Unable to connect to <{}> MQTT broker: {}", mqttServer, ec.message());
         }
 
-        BOOST_ASSERT(_playerLoop);
+        gsl_Assert(_playerLoop);
         _playerLoop->start();
 
 #ifdef ENABLE_DBUS_SUPPORT
-        BOOST_ASSERT(_observer);
+        gsl_Assert(_observer);
         _observer->add(*_dbusService);
-        BOOST_ASSERT(_dbusService);
+        gsl_Assert(_dbusService);
         if (not _dbusService->start()) {
             LOGE("Unable to start Speaker DBus service");
         }
 #endif
 
 #ifdef ENABLE_HTTP_SUPPORT
-        BOOST_ASSERT(_observer);
+        gsl_Assert(_observer);
         _observer->add(*_httpService);
-        BOOST_ASSERT(_httpService);
+        gsl_Assert(_httpService);
         if (not _httpService->start()) {
             LOGE("Unable to start Speaker HTTP service");
         }
@@ -241,7 +241,7 @@ SpeakerSubsystem::initialize(Application& application)
 {
     Subsystem::initialize(application);
 
-    BOOST_ASSERT(_impl);
+    gsl_Assert(_impl);
     _impl->initialize(application);
 }
 
@@ -250,7 +250,7 @@ SpeakerSubsystem::setUp(Application& application)
 {
     Subsystem::setUp(application);
 
-    BOOST_ASSERT(_impl);
+    gsl_Assert(_impl);
     _impl->setUp(application);
 }
 
@@ -259,7 +259,7 @@ SpeakerSubsystem::tearDown()
 {
     Subsystem::tearDown();
 
-    BOOST_ASSERT(_impl);
+    gsl_Assert(_impl);
     _impl->tearDown();
 }
 
@@ -268,7 +268,7 @@ SpeakerSubsystem::finalize()
 {
     Subsystem::finalize();
 
-    BOOST_ASSERT(_impl);
+    gsl_Assert(_impl);
     _impl->finalize();
 }
 

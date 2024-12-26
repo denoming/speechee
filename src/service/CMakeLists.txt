@@ -10,8 +10,7 @@ target_link_libraries(speechee-service
     PUBLIC Jarvisto::Core
            PkgConfig::SigCpp
            PkgConfig::GLibmm
-    PRIVATE Boost::headers
-            Boost::json
+    PRIVATE gsl::gsl-lite-v1
             PkgConfig::Gst
             PkgConfig::GstApp
             Speechee::Tts
@@ -42,7 +41,9 @@ endif()
 
 if(ENABLE_HTTP_SUPPORT)
     target_link_libraries(speechee-service
-        PRIVATE Jarvisto::Network
+        PRIVATE Boost::headers
+                Boost::json
+                Jarvisto::Network
     )
 
     target_sources(speechee-service

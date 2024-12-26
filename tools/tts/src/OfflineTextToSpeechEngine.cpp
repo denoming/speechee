@@ -3,7 +3,7 @@
 #include <voxer/FormattedDataHandler.hpp>
 #include <voxer/Voxer.hpp>
 
-#include <boost/assert.hpp>
+#include <gsl/gsl-lite.hpp>
 
 #include <stdexcept>
 
@@ -91,7 +91,7 @@ OfflineTextToSpeechEngine::synthesizeText(const std::string& text,
                                           const Voice& voice,
                                           const AudioConfig& audioConfig)
 {
-    BOOST_ASSERT(_impl);
+    gsl_Assert(_impl);
     return _impl->synthesizeText(text, voice, audioConfig);
 }
 

@@ -1,6 +1,7 @@
 #include "speechee/PlayerLoop.hpp"
 
-#include <boost/assert.hpp>
+#include <gsl/gsl-lite.hpp>
+
 #include <glibmm/init.h>
 #include <glibmm/wrap.h>
 
@@ -30,10 +31,10 @@ PlayerLoop::start()
     }
 
     _mainLoop = Glib::MainLoop::create();
-    BOOST_ASSERT(_mainLoop);
+    gsl_Assert(_mainLoop);
 
     _thread = std::jthread{[loop = _mainLoop]() { loop->run(); }};
-    BOOST_ASSERT(_thread.joinable());
+    gsl_Assert(_thread.joinable());
 }
 
 void
@@ -45,7 +46,7 @@ PlayerLoop::stop()
 sigc::connection
 PlayerLoop::onIdle(const sigc::slot<bool()>& slot)
 {
-    BOOST_ASSERT(_mainLoop);
+    gsl_Assert(_mainLoop);
     if (_mainLoop) {
         const auto src = Glib::IdleSource::create();
         auto c = src->connect(slot);

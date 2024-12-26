@@ -4,16 +4,17 @@
 #include <jarvisto/network/Http.hpp>
 #include <jarvisto/network/Worker.hpp>
 
-#include <boost/assert.hpp>
 #include <boost/json.hpp>
+
+#include <gsl/gsl-lite.hpp>
 
 namespace json = boost::json;
 
 namespace {
 
-const std::string_view kContent{"application/json"};
-const std::string_view kTextTarget{"/synthesize-text"};
-const std::string_view kSsmlTarget{"/synthesize-ssml"};
+constexpr std::string_view kContent{"application/json"};
+constexpr std::string_view kTextTarget{"/synthesize-text"};
+constexpr std::string_view kSsmlTarget{"/synthesize-ssml"};
 
 std::string
 getTextPayload(const std::string& text, const std::string& lang)
@@ -140,14 +141,14 @@ HttpSpeakerClient::~HttpSpeakerClient() = default;
 void
 HttpSpeakerClient::synthesizeText(const std::string& text, const std::string& lang)
 {
-    BOOST_ASSERT(_impl);
+    gsl_Assert(_impl);
     _impl->synthesizeText(text, lang);
 }
 
 void
 HttpSpeakerClient::synthesizeSsml(const std::string& ssml, const std::string& lang)
 {
-    BOOST_ASSERT(_impl);
+    gsl_Assert(_impl);
     _impl->synthesizeSsml(ssml, lang);
 }
 

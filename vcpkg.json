@@ -6,6 +6,7 @@
   ],
   "supports": "linux and !windows",
   "dependencies": [
+    "gsl-lite",
     "jarvisto",
     "glibmm",
     "libsigcpp"
@@ -16,14 +17,13 @@
       "dependencies": [
         "jarvisto",
         "boost-core",
-        "boost-program-options",
-        "boost-json"
+        "boost-json",
+        "boost-program-options"
       ]
     },
     "dbus": {
       "description": "Enable DBus PublicAPI",
       "dependencies": [
-        "libsystemd",
         "sdbus-cpp"
       ]
     },

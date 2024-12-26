@@ -1,4 +1,5 @@
 find_package(Boost 1.81.0
     REQUIRED
-    COMPONENTS json program_options
+    COMPONENTS program_options
+    OPTIONAL_COMPONENTS json
     CONFIG)
