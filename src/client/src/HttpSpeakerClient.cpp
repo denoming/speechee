@@ -47,13 +47,13 @@ public:
         _worker.start();
     }
 
-    ~Impl() final
+    ~Impl() override
     {
         _worker.stop();
     }
 
     void
-    synthesizeText(const std::string& text, const std::string& lang) final
+    synthesizeText(const std::string& text, const std::string& lang) override
     {
         if (text.empty() or lang.empty()) {
             throw std::invalid_argument{"Invalid arguments"};
@@ -64,7 +64,7 @@ public:
     }
 
     void
-    synthesizeSsml(const std::string& ssml, const std::string& lang) final
+    synthesizeSsml(const std::string& ssml, const std::string& lang) override
     {
         if (ssml.empty() or lang.empty()) {
             throw std::invalid_argument{"Invalid arguments"};
@@ -87,8 +87,8 @@ private:
         return stream;
     }
 
-    http::request<http::string_body>
-    prepareTextRequest(const std::string& text, const std::string& lang)
+    [[nodiscard]] http::request<http::string_body>
+    prepareTextRequest(const std::string& text, const std::string& lang) const
     {
         http::request<http::string_body> req{http::verb::post, kTextTarget, kHttpVersion11};
         req.set(http::field::host, _host);
@@ -99,8 +99,8 @@ private:
         return req;
     }
 
-    http::request<http::string_body>
-    prepareSsmlRequest(const std::string& ssml, const std::string& lang)
+    [[nodiscard]] http::request<http::string_body>
+    prepareSsmlRequest(const std::string& ssml, const std::string& lang) const
     {
         http::request<http::string_body> req{http::verb::post, kSsmlTarget, kHttpVersion11};
         req.set(http::field::host, _host);

@@ -1,4 +1,8 @@
+#ifdef USE_HTTP_CLIENT
 #include "speechee/HttpSpeakerClient.hpp"
+#else
+#include "speechee/DbusSpeakerClient.hpp"
+#endif
 
 #include <boost/program_options.hpp>
 
@@ -19,7 +23,11 @@ synthesizeText(const std::string& text,
                const std::string& port)
 {
     try {
+#ifdef USE_HTTP_CLIENT
         HttpSpeakerClient client{addr, port};
+#else
+        DbusSpeakerClient client;
+#endif
         client.synthesizeText(text, lang);
     } catch (const std::exception& e) {
         std::cout << "Unable to synthesize text: " << e.what() << std::endl;
@@ -33,7 +41,11 @@ synthesizeSsml(const std::string& ssml,
                const std::string& port)
 {
     try {
+#ifdef USE_HTTP_CLIENT
         HttpSpeakerClient client{addr, port};
+#else
+        DbusSpeakerClient client;
+#endif
         client.synthesizeSsml(ssml, lang);
     } catch (const std::exception& e) {
         std::cout << "Unable to synthesize SSML: " << e.what() << std::endl;
@@ -53,10 +65,12 @@ main(int argn, char* argv[])
     // clang-format off
     d.add_options()
         ("help,h", "Display help")
+#ifdef USE_HTTP_CLIENT
         ("address,a", po::value<std::string>(&addr)->default_value(HttpSpeakerClient::kDefaultHost),
                    "Service address")
         ("port,p", po::value<std::string>(&port)->default_value(HttpSpeakerClient::kDefaultPort),
                    "Service port")
+#endif
         ("text,t", po::value<std::string>(&text), "Set text to synthesize")
         ("ssml,s", po::value<std::string>(&ssml), "Set SSML markup to synthesize")
         ("lang,l", po::value<std::string>(&lang)->default_value("en-US"), "Set language to use")

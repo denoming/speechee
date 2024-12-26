@@ -1,12 +1,5 @@
 include(FeatureSummary)
-
-option(ENABLE_CLI "Enable CLI building" ON)
-if(ENABLE_CLI)
-    list(APPEND VCPKG_MANIFEST_FEATURES "cli")
-endif()
-add_feature_info(
-    ENABLE_CLI ENABLE_CLI "Enable building project with CLI"
-)
+include(CMakeDependentOption)
 
 option(ENABLE_TESTS "Enable testing" OFF)
 if(ENABLE_TESTS)
@@ -30,6 +23,14 @@ if(ENABLE_HTTP_SUPPORT)
 endif()
 add_feature_info(
     ENABLE_HTTP_SUPPORT ENABLE_HTTP_SUPPORT "Enable HTTP support (service)"
+)
+
+cmake_dependent_option(ENABLE_CLI "Enable CLI building" ON "ENABLE_DBUS_SUPPORT OR ENABLE_HTTP_SUPPORT" OFF)
+if(ENABLE_CLI)
+    list(APPEND VCPKG_MANIFEST_FEATURES "cli")
+endif()
+add_feature_info(
+    ENABLE_CLI ENABLE_CLI "Enable building project with CLI"
 )
 
 option(ENABLE_INTEGRATION "Enable HomeAssistant integration support" OFF)

@@ -26,7 +26,6 @@ target_compile_features(speechee-client PUBLIC cxx_std_23)
 
 target_include_directories(speechee-client
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-           $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
     PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>
 )
 
@@ -47,13 +46,17 @@ if(ENABLE_HTTP_SUPPORT)
         PRIVATE
             src/HttpSpeakerClient.cpp
     )
+
     target_link_libraries(speechee-client
         PRIVATE Boost::headers
                 Boost::json
                 Jarvisto::Core
                 Jarvisto::Network
     )
-    target_compile_definitions(speechee-client PRIVATE BOOST_ASIO_NO_DEPRECATED=1)
+
+    target_compile_definitions(speechee-client
+        PUBLIC USE_HTTP_CLIENT=1
+    )
 endif()
 
 if(ENABLE_DBUS_SUPPORT)
@@ -65,7 +68,12 @@ if(ENABLE_DBUS_SUPPORT)
             src/DbusSpeakerProxy.cpp
             src/DbusSpeakerClient.cpp
     )
+
     target_link_libraries(speechee-client PRIVATE Speechee::Dbus)
+
+    target_compile_definitions(speechee-client
+        PUBLIC USE_DBUS_CLIENT=1
+    )
 endif()
 
 install(TARGETS speechee-client
