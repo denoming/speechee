@@ -1,13 +1,13 @@
 {
   "default-registry": {
     "kind": "git",
-    "baseline": "1de2026f28ead93ff1773e6e680387643e914ea1",
+    "baseline": "6f29f12e82a8293156836ad81cc9bf5af41fe836",
     "repository": "https://github.com/microsoft/vcpkg"
   },
   "registries": [
     {
       "kind": "git",
-      "baseline": "35cc685204cb461fe72ea9635b4747d23d0e30b6",
+      "baseline": "b8203f94040b83937d95a4b833b6d027e87d82ed",
       "repository": "git@github.com:denoming/vcpkg-registry.git",
       "packages": [ "jarvisto", "mosquitto", "voxer" ]
     }
