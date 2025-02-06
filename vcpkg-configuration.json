@@ -7,7 +7,7 @@
   "registries": [
     {
       "kind": "git",
-      "baseline": "b8203f94040b83937d95a4b833b6d027e87d82ed",
+      "baseline": "eed4d084c50ed94228f9c489d3a47410efca243e",
       "repository": "git@github.com:denoming/vcpkg-registry.git",
       "packages": [ "jarvisto", "mosquitto", "voxer" ]
     }
