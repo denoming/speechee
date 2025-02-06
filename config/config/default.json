@@ -1,8 +1,8 @@
 {
   "synthesis": {
     "threads": 2,
-    "voiceModelPath": "/usr/share/voxer/voices/en_US-amy-medium.onnx",
-    "voiceFilesPath": "/usr/share/share/espeak-ng-data"
+    "modelFile": "/usr/share/voxer/voices/en_US-amy-medium.onnx",
+    "espeakDir": "/usr/share/share/espeak-ng-data"
   },
   "services": {
     "http": {
