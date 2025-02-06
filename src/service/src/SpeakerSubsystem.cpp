@@ -1,5 +1,6 @@
 #include "speechee/SpeakerSubsystem.hpp"
 
+#include "speechee/Constants.hpp"
 #include "speechee/GstInitializer.hpp"
 #include "speechee/Options.hpp"
 #include "speechee/PlayerFactory.hpp"
@@ -29,10 +30,6 @@
 
 #include <gsl/gsl-lite.hpp>
 
-static constexpr int64_t kDefaultSynthesisThreads{2};
-static constexpr int64_t kDefaultServiceThreads{2};
-static constexpr int64_t kDefaultServicePort{2350};
-
 namespace jar {
 
 class SpeakerSubsystem::Impl {
@@ -40,148 +37,36 @@ public:
     void
     initialize(Application& /*application*/)
     {
-        _initializer = std::make_unique<GstInitializer>();
-        if (not _initializer->initialize()) {
-            LOGE("Unable to initialize gstreamer");
-        }
-
         _config = std::make_unique<Config>();
         _config->load();
 
-#ifdef ENABLE_ONLINE_TTS
-        _client = std::make_unique<OnlineTextToSpeechClient>();
-#endif
-#ifdef ENABLE_OFFLINE_TTS
-        std::optional<std::string> modelPath;
-        if (const auto value = _config->pick<std::string>("synthesis.voiceModelPath")) {
-            modelPath = *value;
-        }
-        std::optional<std::string> filesPath;
-        if (const auto value = _config->pick<std::string>("synthesis.voiceFilesPath")) {
-            filesPath = *value;
-        }
-        if (modelPath) {
-            if (filesPath) {
-                _client = std::make_unique<OfflineTextToSpeechEngine>(*modelPath, *filesPath);
-            } else {
-                _client = std::make_unique<OfflineTextToSpeechEngine>(*modelPath);
-            }
-        } else {
-            LOGE("Paths to voice model must be set");
-            throw std::runtime_error("Unable create offline speech engine");
-        }
-#endif
-
-        int64_t synthesisThreads{kDefaultSynthesisThreads};
-        if (const auto value = _config->pick<int64_t>("synthesis.threads")) {
-            synthesisThreads = *value;
-        }
-        _synthesizePool = std::make_unique<SpeechSynthesizePool>(*_client, synthesisThreads);
-
-        _playerLoop = std::make_unique<PlayerLoop>();
-        _playerFactory = std::make_unique<PlayerFactory>(*_playerLoop);
-        _speaker = std::make_unique<Speaker>(*_synthesizePool, *_playerFactory);
-        _observer = std::make_unique<AvailabilityObserver>("speechee");
-        _mqttClient = std::make_unique<MqttBasicClient>();
-        _publisher = std::make_unique<AvailabilityPublisher>("speechee", *_mqttClient, *_observer);
-
-#ifdef ENABLE_DBUS_SUPPORT
-        _dbusService = std::make_unique<DbusSpeakerService>(*_speaker);
-#endif
-#ifdef ENABLE_HTTP_SUPPORT
-        gsl_Assert(_config);
-        std::int64_t servicePort{kDefaultServicePort};
-        if (const auto value = _config->pick<std::int64_t>("services.http.port")) {
-            servicePort = *value;
-        }
-        std::int64_t serviceTreads{kDefaultServiceThreads};
-        if (const auto value = _config->pick<std::int64_t>("services.http.threads")) {
-            serviceTreads = *value;
-        }
-        _httpService = std::make_unique<HttpSpeakerService>(serviceTreads, servicePort, *_speaker);
-#endif
+        createAvailabilityClient();
+        createTextToSpeechClient();
+        createSpeaker();
+        createSpeakerServices();
     }
 
     void
     setUp(Application& /*application*/)
     {
-        gsl_Assert(_config);
-
-        std::optional<std::string> mqttUser;
-        if (const auto value = _config->pick<std::string>("mqtt.user")) {
-            mqttUser = *value;
-        }
-        std::optional<std::string> mqttPass;
-        if (const auto value = _config->pick<std::string>("mqtt.password")) {
-            mqttPass = *value;
-        }
-
-        if (mqttUser and mqttPass) {
-            gsl_Assert(_mqttClient);
-            if (const auto ec = _mqttClient->credentials(*mqttUser, *mqttPass); ec) {
-                LOGE("Unable to set MQTT credentials: {}", ec.message());
-            }
-        }
-
-        std::string mqttServer{"localhost"};
-        if (const auto value = _config->pick<std::string>("mqtt.server")) {
-            mqttServer = *value;
-        }
-        if (const auto ec = _mqttClient->connectAsync(mqttServer); ec) {
-            LOGE("Unable to connect to <{}> MQTT broker: {}", mqttServer, ec.message());
-        }
+        connectAvailabilityClient();
 
         gsl_Assert(_playerLoop);
         _playerLoop->start();
 
-#ifdef ENABLE_DBUS_SUPPORT
-        gsl_Assert(_observer);
-        _observer->add(*_dbusService);
-        gsl_Assert(_dbusService);
-        if (not _dbusService->start()) {
-            LOGE("Unable to start Speaker DBus service");
-        }
-#endif
-
-#ifdef ENABLE_HTTP_SUPPORT
-        gsl_Assert(_observer);
-        _observer->add(*_httpService);
-        gsl_Assert(_httpService);
-        if (not _httpService->start()) {
-            LOGE("Unable to start Speaker HTTP service");
-        }
-#endif
+        startSpeakerServices();
     }
 
     void
     tearDown()
     {
-#ifdef ENABLE_DBUS_SUPPORT
-        if (_dbusService) {
-            _dbusService->stop();
-        }
-        if (_observer) {
-            _observer->remove(*_dbusService);
-        }
-
-#endif
-
-#ifdef ENABLE_HTTP_SUPPORT
-        if (_httpService) {
-            _httpService->stop();
-        }
-        if (_observer) {
-            _observer->remove(*_httpService);
-        }
-#endif
+        stopSpeakerServices();
 
         if (_playerLoop) {
             _playerLoop->stop();
         }
 
-        if (_mqttClient) {
-            std::ignore = _mqttClient->disconnect();
-        }
+        disconnectAvailabilityClient();
     }
 
     void
@@ -202,6 +87,178 @@ public:
         _synthesizePool.reset();
         _client.reset();
         _config.reset();
+    }
+
+private:
+    void
+    createAvailabilityClient()
+    {
+        _observer = std::make_unique<AvailabilityObserver>("speechee");
+        _mqttClient = std::make_unique<MqttBasicClient>();
+        _publisher = std::make_unique<AvailabilityPublisher>("speechee", *_mqttClient, *_observer);
+    }
+
+    void
+    createTextToSpeechClient()
+    {
+#ifdef ENABLE_ONLINE_TTS
+        _client = std::make_unique<OnlineTextToSpeechClient>();
+#endif
+#ifdef ENABLE_OFFLINE_TTS
+        std::optional<std::string> modelPath;
+        if (const auto value = _config->pick<std::string>("synthesis.modelFile")) {
+            modelPath = *value;
+        }
+        std::optional<std::string> filesPath;
+        if (const auto value = _config->pick<std::string>("synthesis.espeakDir")) {
+            filesPath = *value;
+        }
+        if (modelPath) {
+            gsl_Assert(not _client);
+            if (filesPath) {
+                LOGD("Create offline TTS using <{}> model and <{}> eSpeak dir",
+                     *modelPath,
+                     *filesPath);
+                _client = std::make_unique<OfflineTextToSpeechEngine>(*modelPath, *filesPath);
+            } else {
+                LOGD("Create offline TTS using <{}> model");
+                _client = std::make_unique<OfflineTextToSpeechEngine>(*modelPath);
+            }
+        } else {
+            LOGE("Paths to voice model must be set");
+            throw std::runtime_error("Unable create offline speech engine");
+        }
+#endif
+    }
+
+    void
+    createSpeaker()
+    {
+        if (_initializer = std::make_unique<GstInitializer>(); not _initializer->initialize()) {
+            throw std::runtime_error("Unable to initialize gstreamer");
+        }
+
+        int64_t synthesisThreads{kSynthesisPoolThreads};
+        gsl_Assert(_config);
+        if (const auto value = _config->pick<int64_t>("synthesis.threads")) {
+            synthesisThreads = *value;
+        }
+        LOGD("Create synthesize pool with <{}> threads", synthesisThreads);
+        _synthesizePool = std::make_unique<SpeechSynthesizePool>(*_client, synthesisThreads);
+
+        _playerLoop = std::make_unique<PlayerLoop>();
+        _playerFactory = std::make_unique<PlayerFactory>(*_playerLoop);
+
+        LOGD("Create speaker");
+        _speaker = std::make_unique<Speaker>(*_synthesizePool, *_playerFactory);
+    }
+
+    void
+    createSpeakerServices()
+    {
+#ifdef ENABLE_DBUS_SUPPORT
+        LOGD("Create dbus service");
+        _dbusService = std::make_unique<DbusSpeakerService>(*_speaker);
+#endif
+
+#ifdef ENABLE_HTTP_SUPPORT
+        gsl_Assert(_config);
+        std::int64_t servicePort{kHttpServiceThreads};
+        if (const auto value = _config->pick<std::int64_t>("services.http.port")) {
+            servicePort = *value;
+        }
+        std::int64_t serviceTreads{kHttpServiceThreads};
+        if (const auto value = _config->pick<std::int64_t>("services.http.threads")) {
+            serviceTreads = *value;
+        }
+        LOGD("Create HTTP service on <{}> port with <{}> threads", servicePort, serviceTreads);
+        _httpService = std::make_unique<HttpSpeakerService>(serviceTreads, servicePort, *_speaker);
+#endif
+    }
+
+    void
+    startSpeakerServices() const
+    {
+#ifdef ENABLE_DBUS_SUPPORT
+        LOGD("Start dbus service");
+        gsl_Assert(_observer);
+        _observer->add(*_dbusService);
+        gsl_Assert(_dbusService);
+        if (not _dbusService->start()) {
+            LOGE("Unable to start Speaker DBus service");
+        }
+#endif
+
+#ifdef ENABLE_HTTP_SUPPORT
+        LOGD("Start HTTP service");
+        gsl_Assert(_observer);
+        _observer->add(*_httpService);
+        gsl_Assert(_httpService);
+        if (not _httpService->start()) {
+            LOGE("Unable to start Speaker HTTP service");
+        }
+#endif
+    }
+
+    void
+    stopSpeakerServices() const
+    {
+#ifdef ENABLE_DBUS_SUPPORT
+        if (_dbusService) {
+            LOGD("Stop dbus service");
+            _dbusService->stop();
+            if (_observer) {
+                _observer->remove(*_dbusService);
+            }
+        }
+#endif
+
+#ifdef ENABLE_HTTP_SUPPORT
+        if (_httpService) {
+            LOGD("Stop HTTP service");
+            _httpService->stop();
+            if (_observer) {
+                _observer->remove(*_httpService);
+            }
+        }
+#endif
+    }
+
+    void
+    connectAvailabilityClient() const
+    {
+        gsl_Assert(_config);
+        std::optional<std::string> mqttUser;
+        if (const auto value = _config->pick<std::string>("mqtt.user")) {
+            mqttUser = *value;
+        }
+        std::optional<std::string> mqttPass;
+        if (const auto value = _config->pick<std::string>("mqtt.password")) {
+            mqttPass = *value;
+        }
+        std::string mqttServer{"localhost"};
+        if (const auto value = _config->pick<std::string>("mqtt.server")) {
+            mqttServer = *value;
+        }
+
+        gsl_Assert(_mqttClient);
+        if (mqttUser and mqttPass) {
+            if (const auto ec = _mqttClient->credentials(*mqttUser, *mqttPass); ec) {
+                LOGE("Unable to set MQTT credentials: {}", ec.message());
+            }
+        }
+        LOGD("Connect to <{}> server", mqttServer);
+        if (const auto ec = _mqttClient->connectAsync(mqttServer); ec) {
+            LOGE("Unable to connect to <{}> MQTT broker: {}", mqttServer, ec.message());
+        }
+    }
+
+    void
+    disconnectAvailabilityClient() const
+    {
+        if (_mqttClient) {
+            std::ignore = _mqttClient->disconnect();
+        }
     }
 
 private:

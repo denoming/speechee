@@ -1,5 +1,7 @@
 #pragma once
 
+#include "speechee/ISpeakerService.hpp"
+
 #include <jarvisto/network/AvailabilitySubject.hpp>
 
 #include <memory>
@@ -8,17 +10,17 @@ namespace jar {
 
 class ISpeaker;
 
-class HttpSpeakerService final : public AvailabilitySubject {
+class HttpSpeakerService final : public ISpeakerService, public AvailabilitySubject {
 public:
     explicit HttpSpeakerService(std::size_t concurrency, std::uint16_t port, ISpeaker& speaker);
 
     ~HttpSpeakerService() override;
 
     bool
-    start();
+    start() override;
 
     void
-    stop();
+    stop() override;
 
 private:
     class Impl;
