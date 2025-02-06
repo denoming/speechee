@@ -11,6 +11,7 @@ ARG VOXER_URL2
 ARG JARVISTO_URL1
 ARG JARVISTO_URL2
 ARG ONNX_URL
+ARG GSLL_URL
 ARG PULSE_SERVER="unix:/run/user/$UID/pulse/native"
 
 USER root
@@ -19,19 +20,31 @@ RUN apt update \
  && apt install -y build-essential autoconf automake autopoint sudo vim git \
                    cmake ninja-build gdb curl tar zip unzip sudo dbus flex \
                    bison nasm texinfo wget file pkg-config libtool python3 \
-                   libspdlog-dev libboost1.81-dev libboost-program-options1.81-dev \
+                   libspdlog-dev libboost1.81-dev libboost-program-options1.81-dev libcxxopts-dev \
                    libboost-url1.81-dev libboost-json1.81-dev libhowardhinnant-date-dev \
-                   libmosquitto-dev libmosquittopp-dev libssl-dev libsigc++-3.0-dev \
+                   libmosquitto-dev libmosquittopp-dev libssl-dev libsigc++-3.0-dev nlohmann-json3-dev \
                    libconfig++-dev libglibmm-2.68-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
                    gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-tools \
                    gstreamer1.0-alsa gstreamer1.0-pulseaudio
+
+
+# Install GST Lite
+RUN mkdir /tmp/gsl \
+ && wget -qO- $GSLL_URL | tar xz -C /tmp/gsl --strip-components=1 \
+ && cd /tmp/gsl \
+ && cmake -B build \
+ && cmake --build build --target install \
+ && cd - \
+ && rm -fr /tmp/gsl
 
 # Install ONNX Runtime Library
 RUN mkdir /tmp/onnx \
  && wget -qO- $ONNX_URL | tar xz -C /tmp/onnx --strip-components=1 \
  && cd /tmp/onnx \
- && cp -pr lib/* /lib/aarch64-linux-gnu \
- && cd $HOME \
+ && mkdir -p /usr/local/include/onnxruntime \
+ && cp -pr include/* /usr/local/include/onnxruntime \
+ && cp -pr lib/* /usr/local/lib \
+ && cd - \
  && rm -rf /tmp/onnx
 
 # Install libvoxer library

@@ -8,14 +8,16 @@ PROJECT_ROOT=$(dirname "$(dirname "$(realpath -s $0)")")
 PLATFORM_ARCH="${1:-arm64}"
 PLATFORM_VARIANT="${2:-v8}"
 USER_NAME="${3:-$(whoami)}"
-ONNX_VERSION="${4:-1.19.2}"
+ONNX_VERSION="${4:-1.20.1}"
+GSLL_VERSION="${5:-0.42.0}"
 
 # Define variables
 ONNX_URL="https://github.com/microsoft/onnxruntime/releases/download/v${ONNX_VERSION}/onnxruntime-linux-aarch64-${ONNX_VERSION}.tgz"
-VOXER_URL1=https://github.com/denoming/voxer/releases/download/v0.2.3/libvoxer_0.2.3_arm64.deb
-VOXER_URL2=https://github.com/denoming/voxer/releases/download/v0.2.3/libvoxer-dev_0.2.3_arm64.deb
-JARVISTO_URL1=https://github.com/denoming/jarvisto/releases/download/v0.3.5/libjarvisto_0.3.5_arm64.deb
-JARVISTO_URL2=https://github.com/denoming/jarvisto/releases/download/v0.3.5/libjarvisto-dev_0.3.5_arm64.deb
+GSLL_URL="https://github.com/gsl-lite/gsl-lite/archive/refs/tags/v${GSLL_VERSION}.tar.gz"
+VOXER_URL1=https://github.com/denoming/voxer/releases/download/v0.2.5/libvoxer_0.2.5_arm64.deb
+VOXER_URL2=https://github.com/denoming/voxer/releases/download/v0.2.5/libvoxer-dev_0.2.5_arm64.deb
+JARVISTO_URL1=https://github.com/denoming/jarvisto/releases/download/v0.3.7/libjarvisto_0.3.7_arm64.deb
+JARVISTO_URL2=https://github.com/denoming/jarvisto/releases/download/v0.3.7/libjarvisto-dev_0.3.7_arm64.deb
 USER_UID="$(id ${USER_NAME} -u)"
 USER_GID="$(id ${USER_NAME} -g)"
 PLATFORM="${PLATFORM_ARCH}${PLATFORM_VARIANT}"
@@ -50,6 +52,7 @@ build_image() {
   --build-arg "JARVISTO_URL1=${JARVISTO_URL1}" \
   --build-arg "JARVISTO_URL2=${JARVISTO_URL2}" \
   --build-arg "ONNX_URL=${ONNX_URL}" \
+  --build-arg "GSLL_URL=${GSLL_URL}" \
   --build-arg PULSE_SERVER="unix:${XDG_RUNTIME_DIR}/pulse/native" \
   --file "${PROJECT_ROOT}/Dockerfile"
   "${PROJECT_ROOT}")
@@ -66,7 +69,7 @@ run_image() {
   --platform "linux/${PLATFORM_ARCH}/${PLATFORM_VARIANT}" \
   --device /dev/snd \
   --rm \
-  #--user "${USER_UID}:${USER_GID}" \
+  --user "${USER_UID}:${USER_GID}" \
   --volume "${HOME}/.ssh:${HOME}/.ssh" \
   --volume "${PROJECT_ROOT}:${PROJECT_ROOT}" \
   --volume "${XDG_RUNTIME_DIR}/pulse:${XDG_RUNTIME_DIR}/pulse" \
