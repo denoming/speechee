@@ -11,39 +11,45 @@ The main features of this service are following:
 The integration with HomeAssistant as custom component is provided additionally. Using this integration you will
 be able to use synthesizing feature in your automation.
 
-## Build
+## Building
 
-### By vcpkg (locally)
+Output artifacts default location is `<build-dir>/stage`.
 
-Debug configuration:
-```shell
-$ cmake --preset debug
-$ cmake --build --preset build-debug
-```
-Release configuration:
-```shell
-$ cmake --preset release
-$ cmake --build --preset build-release
-```
+Packing artifacts includes the following files:
 
-### By vcpkg (in docker)
+* `libvoxer_<version>_.deb`
+* `libvoxer-dev_<version>_.deb`
+* (optional) `libvoxer-data_<version>_.deb`
 
-Debug configuration:
+### Locally
+
+Build and packing:
+
 ```shell
-$ bash scripts/run-build-env.sh
-$ cmake --preset debug-docker
-$ cmake --build --preset build-debug-docker
-```
-Release configuration:
-```shell
-$ bash scripts/run-build-env.sh
-$ cmake --preset release-docker
-$ cmake --build --preset build-release-docker
+# Debug
+$ cmake --workflow --fresh --preset debug
+# Release
+$ cmake --workflow --fresh --preset release
 ```
 
-## Test
+### By Docker
 
-### By vcpkg (in docker)
+Build and packing:
+
+```shell
+# Debug
+$ cmake --workflow --fresh --preset debug-docker
+# Release
+$ cmake --workflow --fresh --preset release-docker
+```
+
+## Installing
+
+```shell
+$ cmake --install <build-dir> --prefix <destination-path>/speechee
+```
+
+## Testing
 
 ```shell
 $ bash scripts/run-build-env.sh
@@ -52,54 +58,32 @@ $ cmake --build --preset debug-docker
 $ ctest --preset unit-tests
 ```
 
-## Install
-
-```shell
-$ cmake --install <build-dir> --prefix <destination-path>/speechee
-```
-
 Note: The project should be built previously.
 
-## Run
+## Usage
 
-### Locally
+### Run offline TTS service
 
-To run speechee service locally the following environment variable should be set:
-* `SPEECHEE_CONFIG` - main config file
+Run service:
+```shell
+$ export JAR_CONFIG_DIR="$HOME/.local/share/speechee/config"
+$ <build-dir>/stage/bin/speechee
+```
+
+### Run online TTS service
+
+Set environment variable:
+* `JAR_CONFIG_DIR` - dir with config files
 * `GOOGLE_APPLICATION_CREDENTIALS` - cloud credentials config file
-* `GST_PLUGIN_SCANNER` - path to `gst-plugin-scanner` tool in build directory
-* `GST_PLUGIN_PATH` - path to dir with gstreamer plugins in build directory
 
 Example:
 ```shell
-$ export SPEECHEE_CONFIG=$HOME/.local/share/speechee/speechee.cfg
+$ export JAR_CONFIG_DIR="$HOME/.local/share/speechee/config"
 $ export GOOGLE_APPLICATION_CREDENTIALS=$HOME/.local/share/speechee/speechee-cloud-access.json
-$ export GST_PLUGIN_SCANNER=$PWD/build-debug/vcpkg_installed/x64-linux-dynamic/tools/gstreamer/gst-plugin-scanner
-$ export GST_PLUGIN_PATH=$PWD/build-debug/vcpkg_installed/x64-linux-dynamic/debug/plugins/gstreamer
-
-After above environment variables are set the service can be run:
-```shell
 $ build-debug/stage/bin/speechee
-...
-Start listening on <2350> port
 ```
 
-Note: The service should be built previously.
-
-### Inside docker
-
-```shell
-$ bash scripts/run-build-env.sh
-$ build-debug-docker/stage/bin/speechee
-...
-Start listening on <2350> port
-```
-
-Note: The service should be built previously.
-
-## Use
-
-### By CLI
+### Use voxer CLI
 
 Synthesize text request example:
 ```shell
@@ -111,7 +95,7 @@ Synthesize SSML text request example:
 $ build-debug/stage/bin/speechee-cli --ssml "<speak>Hello <break time=\"1s\"/> World</speak>"
 ```
 
-### By CURL
+### Use CURL
 
 Synthesize text request example:
 ```bash
