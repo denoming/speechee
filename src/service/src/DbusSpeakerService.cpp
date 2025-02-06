@@ -18,7 +18,7 @@ getConnection()
 {
     static std::unique_ptr<sdbus::IConnection> connection;
     if (not connection) {
-        connection = sdbus::createSystemBusConnection(dbus::kServiceName);
+        connection = sdbus::createBusConnection(dbus::kServiceName);
         gsl_Assert(connection);
         connection->enterEventLoopAsync();
     }
@@ -34,13 +34,13 @@ public:
     }
 
     void
-    synthesizeText(const std::string& text, const std::string& lang) final
+    synthesizeText(const std::string& text, const std::string& lang) override
     {
         _speaker.synthesizeText(text, lang);
     }
 
     void
-    synthesizeSsml(const std::string& ssml, const std::string& lang) final
+    synthesizeSsml(const std::string& ssml, const std::string& lang) override
     {
         _speaker.synthesizeSsml(ssml, lang);
     }
@@ -70,16 +70,17 @@ bool
 DbusSpeakerService::start()
 {
     try {
-        gsl_Assert(_impl);
-        if (_impl) {
-            _impl->registerAdaptor();
-            availability(AvailabilityState::Online);
-            return true;
+        if (not _impl) {
+            LOGE("Pointer to impl is invalid");
+            return false;
         }
+        _impl->registerAdaptor();
+        availability(AvailabilityState::Online);
+        return true;
     } catch (const std::exception& e) {
         LOGE("Exception: {}", e.what());
+        return false;
     }
-    return false;
 }
 
 void
@@ -89,6 +90,8 @@ DbusSpeakerService::stop()
         if (_impl) {
             availability(AvailabilityState::Offline);
             _impl->unregisterAdaptor();
+        } else {
+            LOGE("Pointer to impl is invalid");
         }
     } catch (const std::exception& e) {
         LOGE("Exception: {}", e.what());

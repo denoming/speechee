@@ -389,18 +389,19 @@ bool
 HttpSpeakerService::start()
 {
     try {
-        gsl_Assert(_impl);
-        if (_impl) {
-            const bool started = _impl->start();
-            if (started) {
-                availability(AvailabilityState::Online);
-            }
-            return started;
+        if (not _impl) {
+            LOGE("Pointer to impl is invalid");
+            return false;
         }
+        const bool started = _impl->start();
+        if (started) {
+            availability(AvailabilityState::Online);
+        }
+        return started;
     } catch (const std::exception& e) {
         LOGE("Exception: {}", e.what());
+        return false;
     }
-    return false;
 }
 
 void
@@ -410,6 +411,8 @@ HttpSpeakerService::stop()
         if (_impl) {
             availability(AvailabilityState::Offline);
             _impl->stop();
+        } else {
+            LOGE("Pointer to impl is invalid");
         }
     } catch (const std::exception& e) {
         LOGE("Exception: {}", e.what());
