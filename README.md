@@ -1,10 +1,37 @@
 # Speechee
 
+## Prerequisites
+
+| Name             | Source | Component           |
+|------------------|--------|---------------------|
+| gstreamer        | host   | core                |
+| gsl-lite         | vcpkg  | core                |
+| jarvisto         | vcpkg  | core                |
+| glibmm           | vcpkg  | core                |
+| libsigcpp        | vcpkg  | core                |
+| boost-json       | vcpkg  | HTTP service        |
+| boost-asio       | vcpkg  | HTTP service        |
+| boost-beast      | vcpkg  | HTTP service        |
+| sdbus-cpp        | vcpkg  | DBus service        |
+| cxxopts          | vcpkg  | CLI                 |
+| google-cloud-cpp | vcpkg  | Online TTS backend  |
+| voxer            | vcpkg  | Offline TTS backend |
+
+Install gstreamer:
+
+```shell
+$ sudo apt install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgstreamer-plugins-bad1.0-dev \
+           gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad \
+           gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-tools gstreamer1.0-x \
+           gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3 gstreamer1.0-qt5 gstreamer1.0-pulseaudio
+```
+
 ## Introduction
 
 The speechee service provides synthesizing text into speech opportunities.
 
 The main features of this service are following:
+
 * synthesizing plain text into speech and play on default audio device
 * synthesizing SSML Google TTS into speech and play on default audio device
 
@@ -65,6 +92,7 @@ Note: The project should be built previously.
 ### Run offline TTS service
 
 Run service:
+
 ```shell
 $ export JAR_CONFIG_DIR="$HOME/.local/share/speechee/config"
 $ <build-dir>/stage/bin/speechee
@@ -73,10 +101,12 @@ $ <build-dir>/stage/bin/speechee
 ### Run online TTS service
 
 Set environment variable:
+
 * `JAR_CONFIG_DIR` - dir with config files
 * `GOOGLE_APPLICATION_CREDENTIALS` - cloud credentials config file
 
 Example:
+
 ```shell
 $ export JAR_CONFIG_DIR="$HOME/.local/share/speechee/config"
 $ export GOOGLE_APPLICATION_CREDENTIALS=$HOME/.local/share/speechee/speechee-cloud-access.json
@@ -86,11 +116,13 @@ $ build-debug/stage/bin/speechee
 ### Use voxer CLI
 
 Synthesize text request example:
+
 ```shell
 $ build-debug/stage/bin/speechee-cli --text "Hello World"
 ```
 
 Synthesize SSML text request example:
+
 ```shell
 $ build-debug/stage/bin/speechee-cli --ssml "<speak>Hello <break time=\"1s\"/> World</speak>"
 ```
@@ -98,6 +130,7 @@ $ build-debug/stage/bin/speechee-cli --ssml "<speak>Hello <break time=\"1s\"/> W
 ### Use CURL
 
 Synthesize text request example:
+
 ```bash
 curl -X POST http://<ip-address>:8080/synthesize-text \
   -H "Content-Type: application/json" \
@@ -105,6 +138,7 @@ curl -X POST http://<ip-address>:8080/synthesize-text \
 ```
 
 Synthesize SSML text request example:
+
 ```bash
 curl -X POST http://<ip-address>:8080/synthesize-ssml \
   -H "Content-Type: application/json" \
@@ -112,6 +146,7 @@ curl -X POST http://<ip-address>:8080/synthesize-ssml \
 ```
 
 Bad request example 1:
+
 ```bash
 curl -X POST http://<ip-address>:8080/synthesize-ssml \
   -H "Content-Type: application/json" \
@@ -119,6 +154,7 @@ curl -X POST http://<ip-address>:8080/synthesize-ssml \
 ```
 
 Bad request example 2:
+
 ```bash
 curl -X GET http://<ip-address>:8080/synthesize-ssml
 ```
