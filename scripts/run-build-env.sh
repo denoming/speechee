@@ -2,35 +2,33 @@
 
 set -e
 
-PROJECT_ROOT=$(dirname "$(dirname "$(realpath -s $0)")")
+make_image=false
+push_image=false
+platform="arm64"
 
-# Handle arguments
-PLATFORM_ARCH="${1:-arm64}"
-PLATFORM_VARIANT="${2:-v8}"
-USER_NAME="${3:-$(whoami)}"
-ONNX_VERSION="${4:-1.20.1}"
-GSLL_VERSION="${5:-0.42.0}"
+while getopts "mpe:" flag; do
+  case "$flag" in
+    m)
+      make_image=true
+      ;;
+    p)
+      push_image=true
+      ;;
+    e)
+      platform="$OPTARG"
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+  esac
+done
 
-# Define variables
-ONNX_URL="https://github.com/microsoft/onnxruntime/releases/download/v${ONNX_VERSION}/onnxruntime-linux-aarch64-${ONNX_VERSION}.tgz"
-GSLL_URL="https://github.com/gsl-lite/gsl-lite/archive/refs/tags/v${GSLL_VERSION}.tar.gz"
-VOXER_URL1=https://github.com/denoming/voxer/releases/download/v0.2.5/libvoxer_0.2.5_arm64.deb
-VOXER_URL2=https://github.com/denoming/voxer/releases/download/v0.2.5/libvoxer-dev_0.2.5_arm64.deb
-JARVISTO_URL1=https://github.com/denoming/jarvisto/releases/download/v0.3.7/libjarvisto_0.3.7_arm64.deb
-JARVISTO_URL2=https://github.com/denoming/jarvisto/releases/download/v0.3.7/libjarvisto-dev_0.3.7_arm64.deb
-USER_UID="$(id ${USER_NAME} -u)"
-USER_GID="$(id ${USER_NAME} -g)"
-PLATFORM="${PLATFORM_ARCH}${PLATFORM_VARIANT}"
-IMAGE_NAME="my/speechee:${PLATFORM_ARCH}${PLATFORM_VARIANT}"
-CONFIG_DIR="$HOME/.local/share/speechee"
-
-echo "=============================="
-echo "        Platform: ${PLATFORM}"
-echo "           Image: ${IMAGE_NAME}"
-echo "        Username: ${USER_NAME}"
-echo "         User ID: ${USER_UID}"
-echo "        Group ID: ${USER_GID}"
-echo "=============================="
+root_dir="$(dirname "$(dirname "$(realpath -s $0)")")"
+user_uid="$(id -u)"
+user_gid="$(id -g)"
+image="denoming/speechee:latest"
+config_dir="$HOME/.local/share/speechee"
 
 command -v docker > /dev/null
 if [ $? != 0 ]; then
@@ -39,55 +37,67 @@ if [ $? != 0 ]; then
     exit 1
 fi
 
-build_image() {
-  BUILD_CMD=(docker build \
-  --platform "linux/${PLATFORM_ARCH}/${PLATFORM_VARIANT}" \
-  --tag "${IMAGE_NAME}" \
-  --build-arg "PLATFORM=${PLATFORM}" \
-  --build-arg "USER_NAME=${USER_NAME}" \
-  --build-arg "USER_UID=${USER_UID}" \
-  --build-arg "USER_GID=${USER_GID}" \
-  --build-arg "VOXER_URL1=${VOXER_URL1}" \
-  --build-arg "VOXER_URL2=${VOXER_URL2}" \
-  --build-arg "JARVISTO_URL1=${JARVISTO_URL1}" \
-  --build-arg "JARVISTO_URL2=${JARVISTO_URL2}" \
-  --build-arg "ONNX_URL=${ONNX_URL}" \
-  --build-arg "GSLL_URL=${GSLL_URL}" \
-  --build-arg PULSE_SERVER="unix:${XDG_RUNTIME_DIR}/pulse/native" \
-  --file "${PROJECT_ROOT}/Dockerfile"
-  "${PROJECT_ROOT}")
+make_image() {
+  CMD=(docker build \
+  --platform "linux/amd64,linux/arm64" \
+  --tag "${image}" \
+  --build-arg "BASE_CONTAINER=python:3.12-bookworm" \
+  --build-arg "USERNAME=bender" \
+  --build-arg "USER_UID=${user_uid}" \
+  --build-arg "USER_GID=${user_gid}" \
+  --file "${root_dir}/Dockerfile"
+  "${root_dir}")
 
-  if [ -z "$(docker images -q ${IMAGE_NAME})" ]; then
-    echo -e "Building <${IMAGE_NAME}> image"
-    echo "${BUILD_CMD[@]}"
-    "${BUILD_CMD[@]}"
+  if [ -z "$(docker images -q ${image})" ]; then
+    echo -e "Building <${image}> image"
+    echo "${CMD[@]}"
+    "${CMD[@]}"
   fi
 }
 
 run_image() {
-  RUN_CMD=(docker run -it \
-  --platform "linux/${PLATFORM_ARCH}/${PLATFORM_VARIANT}" \
+  if ! [ -n "$(docker images -q ${image})" ]; then
+    echo "Pull <${image}> docker image"
+    docker pull ${image}
+  fi
+
+  CMD=(docker run -it \
+  --platform "linux/${platform}" \
   --device /dev/snd \
   --rm \
-  --user "${USER_UID}:${USER_GID}" \
+  --user "${user_uid}:${user_gid}" \
   --volume "${HOME}/.ssh:${HOME}/.ssh" \
-  --volume "${PROJECT_ROOT}:${PROJECT_ROOT}" \
+  --volume "${root_dir}:${root_dir}" \
+  --volume "${config_dir}:${config_dir}" \
   --volume "${XDG_RUNTIME_DIR}/pulse:${XDG_RUNTIME_DIR}/pulse" \
-  --volume "${CONFIG_DIR}:${CONFIG_DIR}" \
-  --network "host" \
-  --workdir "${PROJECT_ROOT}" \
-  --env SPEECHEE_CONFIG="${CONFIG_DIR}/speechee.cfg" \
-  --env GOOGLE_APPLICATION_CREDENTIALS="${CONFIG_DIR}/speechee-cloud-access.json" \
+  --env SPEECHEE_CONFIG="${config_dir}/speechee.cfg" \
+  --env GOOGLE_APPLICATION_CREDENTIALS="${config_dir}/speechee-cloud-access.json" \
   --env PULSE_SERVER="unix:${XDG_RUNTIME_DIR}/pulse/native" \
+  --network "host" \
+  --workdir "${root_dir}" \
   --entrypoint="/usr/sbin/entrypoint.sh" \
-  "${IMAGE_NAME}")
+  "${image}")
 
-  if [ -n "$(docker images -q ${IMAGE_NAME})" ]; then
-    "${RUN_CMD[@]}"
+  echo -e "Running <${image}> image"
+  echo "${CMD[@]}"
+  "${CMD[@]}"
+}
+
+push_image() {
+  CMD=(docker image push ${image})
+  if [ -n "$(docker images -q ${image})" ]; then
+    echo -e "Pushing <${image}> image"
+    echo "${CMD[@]}"
+    "${CMD[@]}"
   else
-    echo "Docker image <${IMAGE_NAME}> is absent"
+    echo "Docker image <${image}> is absent"
   fi
 }
 
-build_image
+if [ "$make_image" == "true" ]; then
+  make_image
+fi
+if [ "$push_image" == "true" ]; then
+  push_image
+fi
 run_image
