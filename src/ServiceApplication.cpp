@@ -1,9 +1,8 @@
 #include "ServiceApplication.hpp"
 
 #include "speechee/SpeakerSubsystem.hpp"
-#include "speechee/Options.hpp"
+#include "speechee/ServiceLogger.hpp"
 
-#include <jarvisto/core/LoggerInitializer.hpp>
 #include <jarvisto/core/SignalHandler.hpp>
 
 namespace jar {
@@ -24,7 +23,8 @@ ServiceApplication::proceed()
 void
 ServiceApplication::initialize(Application& application)
 {
-    LoggerInitializer::instance().initialize();
+    ServiceLogger logger{"SPEECHEE"};
+    logger.create("MAIN", SPDLOG_LEVEL_DEBUG);
 
     addSubsystem(std::make_unique<SpeakerSubsystem>());
 

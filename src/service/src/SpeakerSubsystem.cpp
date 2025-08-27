@@ -26,7 +26,7 @@
 #include <jarvisto/core/Logger.hpp>
 #include <jarvisto/network/AvailabilityObserver.hpp>
 #include <jarvisto/network/AvailabilityPublisher.hpp>
-#include <jarvisto/network/MqttBasicClient.hpp>
+#include <jarvisto/network/MqttClient.hpp>
 
 #include <gsl/gsl-lite.hpp>
 
@@ -94,7 +94,7 @@ private:
     createAvailabilityClient()
     {
         _observer = std::make_unique<AvailabilityObserver>("speechee");
-        _mqttClient = std::make_unique<MqttBasicClient>();
+        _mqttClient = std::make_unique<MqttClient>();
         _publisher = std::make_unique<AvailabilityPublisher>("speechee", *_mqttClient, *_observer);
     }
 
@@ -270,7 +270,7 @@ private:
     std::unique_ptr<AvailabilityObserver> _observer;
     std::unique_ptr<PlayerLoop> _playerLoop;
     std::unique_ptr<PlayerFactory> _playerFactory;
-    std::unique_ptr<MqttBasicClient> _mqttClient;
+    std::unique_ptr<MqttClient> _mqttClient;
     std::unique_ptr<AvailabilityPublisher> _publisher;
 #ifdef ENABLE_DBUS_SUPPORT
     std::unique_ptr<DbusSpeakerService> _dbusService;

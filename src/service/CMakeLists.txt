@@ -26,6 +26,7 @@ target_sources(speechee-service
             src/Speaker.cpp
             src/SpeakerSubsystem.cpp
             src/GstInitializer.cpp
+            src/ServiceLogger.cpp
 )
 
 if(ENABLE_DBUS_SUPPORT)
