@@ -1,5 +1,8 @@
 # Speechee
 
+[![CI](https://github.com/denoming/speechee/actions/workflows/build.yaml/badge.svg)](https://github.com/denoming/speechee/actions/workflows/build.yaml)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
 ## Prerequisites
 
 | Name             | Source | Component           |
