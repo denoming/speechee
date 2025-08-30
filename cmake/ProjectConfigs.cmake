@@ -26,6 +26,16 @@ include(BuildType)
 include(BuildLocation)
 include(BuildOptions)
 
+if(ENABLE_CODE_FORMAT)
+    message(STATUS "Configure code formatting targets")
+    set(CLANG_FORMAT_INCLUDE_DIRS
+            ${PROJECT_SOURCE_DIR}/src
+            ${PROJECT_SOURCE_DIR}/tools
+            ${PROJECT_SOURCE_DIR}/test
+    )
+    include(EnableCodeFormat)
+endif()
+
 if (ENABLE_TESTS)
     enable_testing()
     include(AddGoogleTest)

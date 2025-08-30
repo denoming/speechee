@@ -30,7 +30,7 @@ apt install -y build-essential autoconf automake autopoint sudo vim git \
                libmosquitto-dev libmosquittopp-dev libssl-dev libsigc++-3.0-dev nlohmann-json3-dev \
                libconfig++-dev libglibmm-2.68-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
                gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-tools \
-               gstreamer1.0-alsa gstreamer1.0-pulseaudio libespeak-ng-dev
+               gstreamer1.0-alsa gstreamer1.0-pulseaudio libespeak-ng-dev clang-format-16
 
 # Install GST Lite
 mkdir /tmp/gsl

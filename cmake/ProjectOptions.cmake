@@ -15,6 +15,11 @@
 include(FeatureSummary)
 include(CMakeDependentOption)
 
+option(ENABLE_CODE_FORMAT "Enable code formatting" ON)
+add_feature_info(
+    ENABLE_CODE_FORMAT ENABLE_CODE_FORMAT "Enable code formatting support"
+)
+
 option(ENABLE_TESTS "Enable testing" OFF)
 if(ENABLE_TESTS)
     list(APPEND VCPKG_MANIFEST_FEATURES "tests")
