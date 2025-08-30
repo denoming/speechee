@@ -15,8 +15,8 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "speechee/SpeechSynthesizePool.hpp"
 #include "speechee/MockTextToSpeechClient.hpp"
+#include "speechee/SpeechSynthesizePool.hpp"
 #include "test/Waiter.hpp"
 
 #include <chrono>

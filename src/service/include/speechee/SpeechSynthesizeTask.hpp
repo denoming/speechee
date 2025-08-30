@@ -14,10 +14,10 @@
 
 #pragma once
 
+#include <exception>
 #include <functional>
 #include <string>
 #include <string_view>
-#include <exception>
 
 namespace jar {
 

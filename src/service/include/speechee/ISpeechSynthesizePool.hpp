@@ -14,9 +14,9 @@
 
 #pragma once
 
+#include <exception>
 #include <functional>
 #include <string_view>
-#include <exception>
 
 namespace jar {
 

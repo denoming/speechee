@@ -150,8 +150,8 @@ OnlineTextToSpeechClient::synthesizeText(const std::string& text)
 
 std::string
 OnlineTextToSpeechClient::synthesizeText(const std::string& text,
-                                   const Voice& voice,
-                                   const AudioConfig& audioConfig)
+                                         const Voice& voice,
+                                         const AudioConfig& audioConfig)
 {
     BOOST_ASSERT(_impl);
     return _impl->synthesizeText(text, voice, audioConfig);
@@ -165,8 +165,8 @@ OnlineTextToSpeechClient::synthesizeSsml(const std::string& ssml)
 
 std::string
 OnlineTextToSpeechClient::synthesizeSsml(const std::string& ssml,
-                                   const Voice& voice,
-                                   const AudioConfig& audioConfig)
+                                         const Voice& voice,
+                                         const AudioConfig& audioConfig)
 {
     BOOST_ASSERT(_impl);
     return _impl->synthesizeSsml(ssml, voice, audioConfig);

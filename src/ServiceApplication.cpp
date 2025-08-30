@@ -14,8 +14,8 @@
 
 #include "ServiceApplication.hpp"
 
-#include "speechee/SpeakerSubsystem.hpp"
 #include "speechee/ServiceLogger.hpp"
+#include "speechee/SpeakerSubsystem.hpp"
 
 #include <jarvisto/core/SignalHandler.hpp>
 

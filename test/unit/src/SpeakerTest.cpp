@@ -15,11 +15,11 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "speechee/Speaker.hpp"
-#include "speechee/SpeechSynthesizePool.hpp"
 #include "speechee/MockPlayer.hpp"
 #include "speechee/MockPlayerFactory.hpp"
 #include "speechee/MockSpeechSynthesizePool.hpp"
+#include "speechee/Speaker.hpp"
+#include "speechee/SpeechSynthesizePool.hpp"
 
 using namespace testing;
 using namespace jar;

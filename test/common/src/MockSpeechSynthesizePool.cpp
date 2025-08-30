@@ -24,14 +24,16 @@ MockSpeechSynthesizePool::MockSpeechSynthesizePool()
         .WillByDefault([](std::string_view text,
                           std::string_view lang,
                           std::move_only_function<OnDone> callback) {
-            callback(std::string{}, std::make_exception_ptr(std::runtime_error{"Invalid argument"}));
+            callback(std::string{},
+                     std::make_exception_ptr(std::runtime_error{"Invalid argument"}));
         });
 
     ON_CALL(*this, synthesizeSsml)
         .WillByDefault([](std::string_view ssml,
                           std::string_view lang,
                           std::move_only_function<OnDone> callback) {
-            callback(std::string{}, std::make_exception_ptr(std::runtime_error{"Invalid argument"}));
+            callback(std::string{},
+                     std::make_exception_ptr(std::runtime_error{"Invalid argument"}));
         });
 }
 

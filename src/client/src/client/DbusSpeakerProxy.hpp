@@ -24,7 +24,8 @@ public:
 
     virtual ~DbusSpeakerProxy() = default;
 
-    void registerProxy();
+    void
+    registerProxy();
 };
 
 } // namespace jar

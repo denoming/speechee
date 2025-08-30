@@ -36,7 +36,8 @@ class Player::Impl {
 public:
     explicit Impl(IPlayerLoop& playerLoop)
         : _playerLoop{playerLoop}
-    {}
+    {
+    }
 
     [[nodiscard]] bool
     start()

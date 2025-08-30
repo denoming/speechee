@@ -48,7 +48,8 @@ public:
         = 0;
 
     [[nodiscard]] virtual OnStateUpdateSignal
-    onStateUpdate() = 0;
+    onStateUpdate()
+        = 0;
 };
 
 } // namespace jar

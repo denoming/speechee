@@ -14,8 +14,8 @@
 
 #pragma once
 
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace jar {
 
@@ -29,7 +29,8 @@ enum class SsmlVoiceGender {
 };
 
 enum class AudioEncoding {
-    // Uncompressed 16-bit signed little-endian samples (Linear PCM). Audio content returned with WAV header.
+    // Uncompressed 16-bit signed little-endian samples (Linear PCM). Audio content returned with
+    // WAV header.
     Linear16,
     // MP3 audio at 32kbps
     MP3,
@@ -57,7 +58,8 @@ struct AudioConfig {
     double speakingRate{0.0};
     // Speaking pitch, in the range [-20.0, 20.0]
     double pitch{0.0};
-    // Volume gain in the range [-96.0, 16.0] (in dB) of the normal native volume (0.0 normal native signal amplitude)
+    // Volume gain in the range [-96.0, 16.0] (in dB) of the normal native volume (0.0 normal native
+    // signal amplitude)
     double volumeGainDb{0.0};
     // The synthesis sample rate (in hertz)
     int32_t sampleRateHz{0};

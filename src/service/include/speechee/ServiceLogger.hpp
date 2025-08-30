@@ -22,8 +22,7 @@ namespace jar {
 
 class ServiceLogger final : public LoggerFactory {
 public:
-    explicit
-    ServiceLogger(std::string ident);
+    explicit ServiceLogger(std::string ident);
 
 private:
     void
