@@ -17,7 +17,7 @@ add_library(Speechee::Service ALIAS speechee-service)
 
 target_include_directories(speechee-service
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-    PRIVATE $<BUILD_INTERFACE:${SPEECHEE_STAGE_DIR}>
+    PRIVATE $<BUILD_INTERFACE:${PROJECT_OUTPUT_DIR}>
 )
 
 target_link_libraries(speechee-service

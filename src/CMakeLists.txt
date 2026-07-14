@@ -28,7 +28,7 @@ target_link_libraries(speechee
 )
 
 target_include_directories(speechee
-    PRIVATE $<BUILD_INTERFACE:${SPEECHEE_STAGE_DIR}>
+    PRIVATE $<BUILD_INTERFACE:${PROJECT_OUTPUT_DIR}>
 )
 
 target_compile_features(speechee PUBLIC cxx_std_23)
